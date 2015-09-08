@@ -42,17 +42,12 @@ app.set('io', io);
 //=========================================
 
 app.use(logger('dev'));
-//app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json({strict: false, limit: 1024 * 1024 * 200}));
 app.use(bodyParser.urlencoded({extended: false}));
-//app.use( cookieParser());
-
 
 connectOptions = {
-    //db: { native_parser: true },
     db: {native_parser: false},
     server: {poolSize: 5},
-    //replset: { rs_name: 'myReplicaSetName' },
     user: process.env.DB_USER,
     pass: process.env.DB_PASS,
     w: 1,
@@ -82,19 +77,13 @@ mainDb.once('open', function callback() {
 
     require('./routes')(app, mainDb);
 
-    //scheduleHelper(mainDb);
 
     server.listen(app.get('port'), function () {
         console.log("Express server listening on port " + app.get('port'));
         console.log("HOST: " + process.env.HOST);
-        //console.log("RDS_HOSTNAME: " + process.env.RDS_HOSTNAME);
         console.log("DATABASE: " + process.env.DB_NAME);
-        ///console.log("REDIS_HOST: " + process.env.REDIS_HOST);
     });
 
 
-    /*server.listen(8859, function () {
-        console.log('Server up successfully on port 8859');
-    });*/
 });
 

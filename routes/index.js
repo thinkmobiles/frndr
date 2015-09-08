@@ -2,21 +2,11 @@
 module.exports = function(app, db){
     var logWriter = require('../modules/logWriter')();
     var models = require('../models/index')(db);
-    /*var plantsRouter = require('./plants')(db);
-    var pricesRouter = require('./prices')(db);
-    var importRouter = require('./import')(db);*/
 
 
     app.get('/', function(req, res, next){
         res.status(200).send( 'Express start succeed' );
     });
-
-    /*app.use('/plants', plantsRouter);
-    app.use('/prices', pricesRouter);
-    app.use('/importFromCsv', importRouter);*/
-
-
-
 
     function notFound(req, res, next){
         next();
