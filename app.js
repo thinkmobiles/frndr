@@ -1,7 +1,5 @@
-
 var express = require('express');
 var app = express();
-var path = require('path');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 var http = require('http');
@@ -34,8 +32,14 @@ if (process.env.NODE_ENV === 'production') {
 app.set('port', process.env.PORT || 8859);
 
 //=====socket.io==========================
-var Io = require('./helpers/sockets');
-var io = Io(server);
+//var Io = require('./helpers/sockets');
+//var io = Io(server);
+var io = require('socket.io')(
+    server,
+    {
+        transports: ['websocket']
+    }
+);
 var SocketEvents = require('./helpers/socketEvents');
 var socketEvents = SocketEvents(io);
 app.set('io', io);
@@ -63,17 +67,17 @@ mainDb.once('open', function callback() {
     console.log("Connection to " + process.env.DB_NAME + " is success");
 
     app.use(session({
-     secret: '111',
-     resave: true,
-     saveUninitialized: true,
-     store: new MongoStore({
-         host: process.env.DB_HOST,
-         port: process.env.DB_PORT,
-         db: process.env.DB_NAME,
-         autoReconnect: true,
-         ssl: false
-     })
-     }));
+        secret: '111',
+        resave: true,
+        saveUninitialized: true,
+        store: new MongoStore({
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            db: process.env.DB_NAME,
+            autoReconnect: true,
+            ssl: false
+        })
+    }));
 
     require('./routes')(app, mainDb);
 
