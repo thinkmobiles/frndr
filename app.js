@@ -10,12 +10,7 @@ var server = http.createServer(app);
 var connectOptions;
 var mainDb;
 var session = require('express-session');
-var MemoryStore = require('connect-redis')(session);
-var redisConfig = {
-    db: parseInt(process.env.REDIS_DB_KEY),
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT) || 6379
-};
+var MongoStore = require('connect-mongo')(session);
 //var cookieParser = require('cookie-parser');
 
 if (!process.env.NODE_ENV) {
@@ -53,7 +48,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 //app.use( cookieParser());
 
 
-
 connectOptions = {
     //db: { native_parser: true },
     db: {native_parser: false},
@@ -77,7 +71,13 @@ mainDb.once('open', function callback() {
      secret: '111',
      resave: true,
      saveUninitialized: true,
-     store: new MemoryStore(redisConfig)
+     store: new MongoStore({
+         host: process.env.DB_HOST,
+         port: process.env.DB_PORT,
+         db: process.env.DB_NAME,
+         autoReconnect: true,
+         ssl: false
+     })
      }));
 
     require('./routes')(app, mainDb);
