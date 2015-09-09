@@ -10,7 +10,7 @@ var UserHandler = function(db){
         var pushToken = body.pushToken;
         var pushTokensArray = [];
 
-        pushTokensArray = pushTokensArray.push(pushToken);
+        pushTokensArray.push(pushToken);
 
         var options = {
             fbId: fbId,
@@ -34,7 +34,7 @@ var UserHandler = function(db){
 
                 if (model) {
                     if (model.pushTokens.indexOf(pushToken) === -1){
-                        model.pushTokens = model.pushTokens.push(pushToken);
+                        model.pushTokens.push(pushToken);
                     }
 
                     model.save(function(err){
