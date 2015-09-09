@@ -1,4 +1,5 @@
 var SessionHandler = require('./sessions');
+var async = require('async');
 
 var UserHandler = function (db) {
     var User = db.model('User');
@@ -7,32 +8,12 @@ var UserHandler = function (db) {
     function prepareSaveData(data) {
         var saveData = {};
 
-        if (data.fbId) {
-            saveData.fbId = data.fbId;
-        }
-        if (data.pushToken) {
-            saveData.pushTokens = [];
-            saveData.pushTokens.push(data.pushToken);
-        }
         if (data.coordinates) {
             saveData.loc = {};
             saveData.loc.coordinates = data.coordinates;
         }
 
         return saveData;
-    }
-
-    function prepareModelToSave(model, data) {
-
-        /*if (data.pushTokens) {
-            var tokens = model.get('pushTokens');
-            if (tokens.indexOf(data.pushTokens[0]) === -1) {
-                tokens.push(data.pushTokens[0]);
-                model.set({pushTokens: tokens})
-            }
-        }*/
-
-        return model;
     }
 
     this.signInClient = function (req, res, next) {
@@ -42,49 +23,48 @@ var UserHandler = function (db) {
 
         saveData = prepareSaveData(options);
 
-        if (!options || (Object.keys(saveData).length === 0) || !saveData.fbId) {
+        if (!options || !options.fbId) {
             err = new Error('Bad Request');
             err.status = 400;
             return next(err);
         }
 
+        async.waterfall([
 
-        User
-            .findOne({fbId: saveData.fbId})
-            .exec(function (err, model) {
-                if (err) {
-                    return next(err)
-                }
-
-                if (model) {
-                    //prepareModelToSave(model, saveData);
-
-                    model.save(function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-                        return session.register(req, res, model._id.toString());
-                    });
-
-                } else {
-
-                    model = new User(saveData);
-
-                    model
-                        .save(function (err) {
+                function (cb) {
+                    User
+                        .findOneAndUpdate({fbId: saveData.fbId}, saveData, {
+                            upsert: true,
+                            new: true
+                        }, function (err, userModel) {
                             if (err) {
                                 return next(err);
                             }
-
-                            return session.register(req, res, model._id.toString());
+                            cb(null, userModel);
                         });
-                }
+                },
 
+                function (userModel, cb) {
+                    //pushTokens
+
+                    cb(null, userModel);
+                }
+            ],
+            function (err, userModel) {
+                if (err) {
+                    return next(err);
+                }
+                return session.register(req, res, userModel._id.toString());
             });
+
     };
 
     this.signOut = function (req, res, next) {
         session.kill(req, res, next);
+    };
+
+    this.createUser = function(req, res, next){
+
     };
 };
 
