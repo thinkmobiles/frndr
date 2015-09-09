@@ -9,14 +9,7 @@ var UserHandler = function(db){
         var fbId = body.fbId;
         var pushToken = body.pushToken;
         var pushTokensArray = [];
-
-        pushTokensArray = pushTokensArray.push(pushToken);
-
-        var options = {
-            fbId: fbId,
-            pushTokens: pushTokensArray
-        };
-
+        var options;
         var err;
 
         if ( !body || !fbId || !pushToken ) {
@@ -24,6 +17,11 @@ var UserHandler = function(db){
             err.status = 400;
             return next( err );
         }
+        pushTokensArray.push(pushToken);
+        options = {
+            fbId: fbId,
+            pushTokens: pushTokensArray
+        };
 
         User
             .findOne( { fbId: fbId })
@@ -34,7 +32,7 @@ var UserHandler = function(db){
 
                 if (model) {
                     if (model.pushTokens.indexOf(pushToken) === -1){
-                        model.pushTokens = model.pushTokens.push(pushToken);
+                        model.pushTokens.push(pushToken);
                     }
 
                     model.save(function(err){
