@@ -7,10 +7,8 @@ module.exports = function (db) {
     var mongoose = require('mongoose');
     var Schema = mongoose.Schema;
 
-    var User = new Schema({
-        fbId: String,
-        profile: {
-            name: String,
+    var Profile = new Schema({
+        name: String,
             age: Number,
             sex: {
                 type: String,
@@ -35,7 +33,11 @@ module.exports = function (db) {
                 type: Boolean,
                 default: true
             }
-        },
+    });
+    
+    var User = new Schema({
+        fbId: String,
+        profile: Profile,
         notification: {
             newFriends: {
                 type: Boolean,
