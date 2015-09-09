@@ -1,6 +1,5 @@
+module.exports = function () {
 
-module.exports = function(){
-    
     var express = require('express');
     var app = express();
     var path = require('path');
@@ -72,17 +71,17 @@ module.exports = function(){
         console.log("Connection to " + process.env.DB_NAME + " is success");
 
         app.use(session({
-         secret: '111',
-         resave: true,
-         saveUninitialized: true,
-         store: new MongoStore({
-             host: process.env.DB_HOST,
-             port: process.env.DB_PORT,
-             db: process.env.DB_NAME,
-             autoReconnect: true,
-             ssl: false
-         })
-         }));
+            secret: '111',
+            resave: true,
+            saveUninitialized: true,
+            store: new MongoStore({
+                host: process.env.DB_HOST,
+                port: process.env.DB_PORT,
+                db: process.env.DB_NAME,
+                autoReconnect: true,
+                ssl: false
+            })
+        }));
 
         require('./routes')(app, mainDb);
 
@@ -93,6 +92,6 @@ module.exports = function(){
             console.log("DATABASE: " + process.env.DB_NAME);
         });
     });
-    
+
     return app;
 }

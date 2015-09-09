@@ -1,5 +1,5 @@
 
-var Session = function ( db ) {
+var Session = function () {
 
     this.register = function ( req, res, userId ) {
         req.session.loggedIn = true;

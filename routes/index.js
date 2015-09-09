@@ -1,12 +1,16 @@
+var UserHandler = require('../handlers/users');
 
 module.exports = function(app, db){
     var logWriter = require('../modules/logWriter')();
     var models = require('../models/index')(db);
-
+    var userHandler = new UserHandler(db);
 
     app.get('/', function(req, res, next){
         res.status(200).send( 'Express start succeed' );
     });
+
+    app.post('/signIn', userHandler.signInClient);
+    app.post('/signOut', userHandler.signOut);
 
     function notFound(req, res, next){
         next();
