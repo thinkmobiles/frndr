@@ -19,14 +19,14 @@ module.exports = function (db) {
             },
             relStatus: {
                 type: String,
-                match: '',
+                //match: '',
                 default: RELSTATUS.SINGLE
             },
             jobTitle: String,
             smoker: Boolean,
             sexual: {
                 type: String,
-                match: '',
+                //match: '',
                 default: SEXUAL.STRAIGHT
             },
             things: [String],
