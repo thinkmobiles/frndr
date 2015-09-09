@@ -1,3 +1,4 @@
+
 module.exports = function(){
     
     var express = require('express');
@@ -35,11 +36,18 @@ module.exports = function(){
     app.set('port', process.env.PORT || 8859);
 
     //=====socket.io==========================
-    var Io = require('./helpers/sockets');
-    var io = Io(server);
+    //var Io = require('./helpers/sockets');
+    //var io = Io(server);
+    var io = require('socket.io')(
+        server,
+        {
+            transports: ['websocket']
+        }
+    );
     var SocketEvents = require('./helpers/socketEvents');
     var socketEvents = SocketEvents(io);
     app.set('io', io);
+
     //=========================================
 
     app.use(logger('dev'));
@@ -84,10 +92,7 @@ module.exports = function(){
             console.log("HOST: " + process.env.HOST);
             console.log("DATABASE: " + process.env.DB_NAME);
         });
-
-
     });
     
     return app;
 }
-
