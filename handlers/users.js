@@ -8,6 +8,9 @@ var UserHandler = function (db) {
     function prepareSaveData(data) {
         var saveData = {};
 
+        if (data.fbId){
+            saveData.fbId = data.fbId;
+        }
         if (data.coordinates) {
             saveData.loc = {};
             saveData.loc.coordinates = data.coordinates;
@@ -33,15 +36,27 @@ var UserHandler = function (db) {
 
                 function (cb) {
                     User
-                        .findOneAndUpdate({fbId: saveData.fbId}, saveData, {
-                            upsert: true,
-                            new: true
-                        }, function (err, userModel) {
+                        .findOne({fbId: saveData.fbId}, function (err, userModel) {
                             if (err) {
                                 return next(err);
                             }
-                            cb(null, userModel);
+                            if (!userModel){
+                                userModel = new User(saveData);
+                            } else {
+                                userModel.set(saveData);
+                            }
+                                cb (null, userModel);
                         });
+                },
+
+                function(userModel, cb){
+
+                    userModel.save(function(err){
+                        if (err){
+                            return cb (err);
+                        }
+                        cb (null, userModel);
+                    })
                 },
 
                 function (userModel, cb) {
