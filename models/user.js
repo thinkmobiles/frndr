@@ -45,7 +45,6 @@ module.exports = function (db) {
             }
         },
         friends: [String],
-        pushTokens: [String],
         loc: {
             type: {
                 type: String,
@@ -60,6 +59,5 @@ module.exports = function (db) {
 
 
     db.model('User', User);
-
 
 };

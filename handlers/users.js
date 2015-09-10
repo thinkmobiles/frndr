@@ -26,7 +26,7 @@ var UserHandler = function(db){
         }
 
         User
-            .findOne( { fbId: fbId })
+            .findOne({ fbId: fbId })
             .exec( function ( err, model ) {
                 if (err) {
                     return next(err)
