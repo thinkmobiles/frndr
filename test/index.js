@@ -14,11 +14,12 @@ var User = db.model('User');
 var Like = db.model('Like');
 var Message = db.model('Message');
 var SearchSettings = db.model('SearchSettings');
+var PushTokens = db.model('PushTokens');
 
 describe('Database initialization', function () {
     this.timeout(5000);
 
-    it('Drop the tables', function (done) {
+    it('Drop the collections', function (done) {
         /*db.dropDatabase(function(err, result){
             if (err){
                 return done(err);
@@ -57,6 +58,15 @@ describe('Database initialization', function () {
 
                 function (cb) {
                     SearchSettings.remove({}, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+                        cb();
+                    })
+                },
+
+                function (cb) {
+                    PushTokens.remove({}, function (err) {
                         if (err) {
                             return cb(err);
                         }

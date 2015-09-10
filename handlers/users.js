@@ -1,5 +1,6 @@
 var SessionHandler = require('./sessions');
 var async = require('async');
+var badRequests = require('../helpers/badRequests');
 
 
 var UserHandler = function (db) {
@@ -50,11 +51,6 @@ var UserHandler = function (db) {
                             if (err) {
                                 return next(err);
                             }
-                        
-                            if (!userModel){
-                                return cb(null, null);
-                            }
-                        
                             cb(null, userModel);
                         });
                 },
@@ -83,33 +79,36 @@ var UserHandler = function (db) {
 
     
     this.getCurrentUser = function (req, res, next) {
-        var userId = req.session.userId;
+        var currentUserId = req.session.userId;
 
-        User
-            .findOne({_id: userId}, function (err, userModel) {
-                if (err) {
-                    return next(err);
-                }
-                if (!userModel) {
-                    return next(badRequests.NotFound());
-                }
-                res.status(200).send(userModel);
-            })
+        userHelper.getUserById(currentUserId, function(err, userModel){
+            if(err){
+                return next(err);
+            }
+            res.status(200).send(userModel);
+        })
     };
 
     this.getUserById = function (req, res, next) {
-        var fbId = req.params.id;
+        var userId = req.params.id;
 
-        User
-            .findOne({fbId: fbId}, function (err, userModel) {
-                if (err) {
-                    return next(err);
-                }
-                if (!userModel) {
-                    return next(badRequests.NotFound());
-                }
-                res.status(200).send(userModel);
-            })
+        userHelper.getUserById(userId, function(err, userModel){
+            if(err){
+                return next(err);
+            }
+            res.status(200).send(userModel);
+        })
+    };
+
+    this.deleteUserById = function (req, res, next) {
+        var userId = req.params.id;
+
+        userHelper.deleteUserById(userId, function(err){
+            if(err){
+                return next(err);
+            }
+            res.status(200).send({success:'User was removed successfully'});
+        })
     };
 
     this.likeUserById = function (req, res, next) {
