@@ -7,6 +7,7 @@ module.exports = function(app, db){
 
     router.get('/', userHandler.getCurrentUser);
     router.get('/:id', userHandler.getUserById);
+    router.delete('/:id', userHandler.deleteUserById);
 
     return router;
 };
