@@ -1,10 +1,11 @@
 var SessionHandler = require('./sessions');
 var async = require('async');
-var badRequests = require('../helpers/badRequests');
+
 
 var UserHandler = function (db) {
     var User = db.model('User');
     var session = new SessionHandler();
+    var userHelper = require('../helpers/user')(db);
 
     function prepareSaveData(data) {
         var saveData = {};
@@ -12,9 +13,17 @@ var UserHandler = function (db) {
         if (data.fbId) {
             saveData.fbId = data.fbId;
         }
+        
         if (data.coordinates) {
             saveData.loc = {};
             saveData.loc.coordinates = data.coordinates;
+        }
+        
+        if (data.pushToken){
+            saveData.pushToken = {
+                token: data.pushToken,
+                os: data.os
+            };
         }
 
         return saveData;
@@ -41,36 +50,29 @@ var UserHandler = function (db) {
                             if (err) {
                                 return next(err);
                             }
-                            if (!userModel) {
-                                userModel = new User(saveData);
-                            } else {
-                                userModel.set(saveData);
+                        
+                            if (!userModel){
+                                return cb(null, null);
                             }
+                        
                             cb(null, userModel);
                         });
                 },
 
                 function (userModel, cb) {
 
-                    userModel.save(function (err) {
-                        if (err) {
-                            return cb(err);
-                        }
-                        cb(null, userModel);
-                    })
-                },
-
-                function (userModel, cb) {
-                    //pushTokens
-
-                    cb(null, userModel);
+                    if (!userModel) {
+                        userHelper.createUser(saveData, cb);
+                    }
+                        
                 }
+
             ],
-            function (err, userModel) {
+            function (err, uId) {
                 if (err) {
                     return next(err);
                 }
-                return session.register(req, res, userModel._id.toString());
+                return session.register(req, res, uId.toString());
             });
 
     };
@@ -79,6 +81,7 @@ var UserHandler = function (db) {
         session.kill(req, res, next);
     };
 
+    
     this.getCurrentUser = function (req, res, next) {
         var userId = req.session.userId;
 
