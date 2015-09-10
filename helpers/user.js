@@ -122,12 +122,33 @@ module.exports = function(db){
     }
 
     function updateUser (userModel, updateData, callback) {
+        var tokenObj = updateData.pushToken;
+        var uId = userModel.get('_id');
 
+        userModel.loc.coordinates = updateData.loc.coordinates;
+
+        userModel
+            .save(function(err){
+                if (err){
+                    return callback(err);
+                }
+
+                PushTokens
+                    .findOneAndUpdate({user: uId}, {$set: {token: tokenObj.token, os: tokenObj.os}}, function(err){
+                        if (err){
+                            return callback(err);
+                        }
+
+                        callback(null, uId);
+
+                    });
+            });
     }
     
     
     return {
-        createUser: createUser
+        createUser: createUser,
+        updateUser: updateUser
     }
 
 };

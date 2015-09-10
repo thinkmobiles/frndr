@@ -21,9 +21,12 @@ var UserHandler = function (db) {
         
         if (data.pushToken){
             saveData.pushToken = {
-                token: data.pushToken,
-                os: data.os
+                token: data.pushToken
             };
+        }
+
+        if (data.os){
+            saveData.pushToken.os = os;
         }
 
         return saveData;
@@ -63,6 +66,8 @@ var UserHandler = function (db) {
 
                     if (!userModel) {
                         userHelper.createUser(saveData, cb);
+                    } else {
+                        userHelper.updateUser(userModel, saveData, cb);
                     }
                         
                 }
