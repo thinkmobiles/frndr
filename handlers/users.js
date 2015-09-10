@@ -1,68 +1,88 @@
 var SessionHandler = require('./sessions');
+var async = require('async');
 
-var UserHandler = function(db){
+
+var UserHandler = function (db) {
     var User = db.model('User');
     var session = new SessionHandler();
+    var userHelper = require('../helpers/user')(db);
 
-    this.signInClient = function ( req, res, next ) {
-        var body = req.body;
-        var fbId = body.fbId;
-        var pushToken = body.pushToken;
-        var pushTokensArray = [];
+    function prepareSaveData(data) {
+        var saveData = {};
 
-        pushTokensArray.push(pushToken);
-
-        var options = {
-            fbId: fbId,
-            pushTokens: pushTokensArray
-        };
-
-        var err;
-
-        if ( !body || !fbId || !pushToken ) {
-            err = new Error('Bad Request');
-            err.status = 400;
-            return next( err );
+        if (data.fbId) {
+            saveData.fbId = data.fbId;
+        }
+        
+        if (data.coordinates) {
+            saveData.loc = {};
+            saveData.loc.coordinates = data.coordinates;
+        }
+        
+        if (data.pushToken){
+            saveData.pushToken = {
+                token: data.pushToken,
+                os: data.os
+            };
         }
 
-        User
-            .findOne({ fbId: fbId })
-            .exec( function ( err, model ) {
-                if (err) {
-                    return next(err)
-                }
+        return saveData;
+    }
 
-                if (model) {
-                    if (model.pushTokens.indexOf(pushToken) === -1){
-                        model.pushTokens.push(pushToken);
-                    }
+    this.signInClient = function (req, res, next) {
+        var options = req.body;
+        var saveData;
+        var err;
 
-                    model.save(function(err){
-                        if (err){
-                            return next(err);
-                        }
-                        return session.register(req, res, model._id.toString());
-                    });
+        saveData = prepareSaveData(options);
 
-                } else {
+        if (!options || !options.fbId || (Object.keys(saveData) === 0)) {
+            err = new Error('Bad Request');
+            err.status = 400;
+            return next(err);
+        }
 
-                    model = new User(options);
+        async.waterfall([
 
-                    model
-                        .save(function (err) {
+                function (cb) {
+                    User
+                        .findOne({fbId: saveData.fbId}, function (err, userModel) {
                             if (err) {
                                 return next(err);
                             }
-
-                            return session.register(req, res, model._id.toString());
+                        
+                            if (!userModel){
+                                return cb(null, null);
+                            }
+                        
+                            cb(null, userModel);
                         });
+                },
+
+                function (userModel, cb) {
+
+                    if (!userModel) {
+                        userHelper.createUser(saveData, cb);
+                    }
+                        
                 }
 
+            ],
+            function (err, uId) {
+                if (err) {
+                    return next(err);
+                }
+                return session.register(req, res, uId.toString());
             });
+
     };
 
-    this.signOut = function ( req, res, next ) {
-        session.kill( req, res, next );
+    this.signOut = function (req, res, next) {
+        session.kill(req, res, next);
+    };
+
+    this.getUserById = function (req, res, next) {
+
     };
 };
 
