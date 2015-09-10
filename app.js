@@ -65,6 +65,8 @@ module.exports = function () {
 
 
     mainDb = mongoose.createConnection(process.env.DB_HOST, process.env.DB_NAME, process.env.DB_PORT, connectOptions);
+    require('./models/index')(mainDb);
+    app.set('db', mainDb);
 
     mainDb.on('error', console.error.bind(console, 'connection error:'));
     mainDb.once('open', function callback() {
@@ -94,4 +96,4 @@ module.exports = function () {
     });
 
     return app;
-}
+};
