@@ -1,47 +1,20 @@
 var SessionHandler = require('./sessions');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
+var mongoose = require('mongoose');
 
 
 var UserHandler = function (db) {
     var User = db.model('User');
+    var PushTokens = db.model('PushTokens');
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
-
-    function prepareSaveData(data) {
-        var saveData = {};
-
-        if (data.fbId) {
-            saveData.fbId = data.fbId;
-        }
-        
-        if (data.coordinates) {
-            saveData.loc = {
-                coordinates : data.coordinates
-            };
-        }
-        
-        if (data.pushToken){
-            saveData.pushToken = {
-                token: data.pushToken
-            };
-        }
-
-        if (data.os){
-            saveData.pushToken.os = data.os;
-        }
-
-        return saveData;
-    }
+    var ObjectId = mongoose.Types.ObjectId;
 
     this.signInClient = function (req, res, next) {
         var options = req.body;
-        var saveData;
-        var err;
 
-        saveData = prepareSaveData(options);
-
-        if (!options || !options.fbId || (Object.keys(saveData) === 0)) {
+        if (!options || !options.fbId) {
             return next(badRequests.NotEnParams({required:'fbId'}));
         }
 
@@ -49,7 +22,7 @@ var UserHandler = function (db) {
 
                 function (cb) {
                     User
-                        .findOne({fbId: saveData.fbId}, function (err, userModel) {
+                        .findOne({fbId: options.fbId}, function (err, userModel) {
                             if (err) {
                                 return next(err);
                             }
@@ -60,9 +33,9 @@ var UserHandler = function (db) {
                 function (userModel, cb) {
 
                     if (!userModel) {
-                        userHelper.createUser(saveData, cb);
+                        userHelper.createUser(options, cb);
                     } else {
-                        userHelper.updateUser(userModel, saveData, cb);
+                        userHelper.updateUser(userModel, options, cb);
                     }
                         
                 }
@@ -82,7 +55,6 @@ var UserHandler = function (db) {
     };
 
     this.getUserById = function (req, res, next) {
-
         var userId = req.params.id || req.session.uId;
 
         userHelper.getUserById(userId, function(err, userModel){
@@ -100,7 +72,14 @@ var UserHandler = function (db) {
             if(err){
                 return next(err);
             }
-            res.status(200).send({success:'User was removed successfully'});
+
+            PushTokens.remove({user: ObjectId(userId)}, function(err){
+               if (err){
+                   return next(err);
+               }
+
+               res.status(200).send({success:'User was removed successfully'});
+            });
         })
     };
 
