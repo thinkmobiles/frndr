@@ -26,6 +26,7 @@ module.exports = function (db, defaults) {
     var user1 = {
         fbId: 'test1',
         pushToken: "125478963",
+        os: 'APPLE',
         coordinates: [88.23, 75.66]
     };
 

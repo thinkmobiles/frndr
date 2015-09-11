@@ -11,7 +11,7 @@ module.exports = function (db) {
             ref: 'User'
         },
         token: String,
-        os: {type: String, match: /APPLE|GOOGLE|WINDOWS/, default: 'APPLE'}
+        os: {type: String, default: 'APPLE'}
     }, {
         collection: 'PushTokens'
     });

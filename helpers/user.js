@@ -5,6 +5,62 @@ module.exports = function (db) {
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
 
+    function prepareModelToSave(userModel, options, callback) {
+
+        if (options.fbId) {
+            userModel.fbId = options.fbId;
+        }
+
+        if (options.coordinates && options.coordinates.length) {
+            var validateError = validateCoordinates(options.coordinates);
+
+            if (validateError && validateError.constructor === Error) {
+                return callback(validateError);
+            }
+
+            userModel.loc = {
+                type: 'Point',
+                coordinates: options.coordinates
+            };
+        }
+
+        if (options.profile) {
+            var profile = options.profile;
+
+            userModel.profile = {};
+
+            if (profile.name) {
+                userModel.profile.name = profile.name;
+            }
+            if (profile.age) {
+                userModel.profile.age = profile.age;
+            }
+            if (profile.relStatus) {
+                userModel.profile.relStatus = profile.relStatus;
+            }
+            if (profile.jobTitle) {
+                userModel.profile.jobTitle = profile.jobTitle;
+            }
+            if (profile.smoker) {
+                userModel.profile.smoker = profile.smoker;
+            }
+            if (profile.sexual) {
+                userModel.profile.sexual = profile.sexual;
+            }
+            /*if (profile.things) {
+             userModel.profile.things = profile.things;
+             }*/
+            if (profile.bio) {
+                userModel.profile.bio = profile.bio;
+            }
+            if (profile.visible) {
+                userModel.profile.visible = profile.visible;
+            }
+        }
+
+        callback(null, userModel);
+    }
+
     function validateCoordinates(coordinates) {
         var err;
         var longitude;
@@ -31,84 +87,60 @@ module.exports = function (db) {
 
     function createUser(profileData, callback) {
         var err;
-        var saveObj;
-        var location;
         var userModel;
         var pushTokenModel;
         var uId;
-        var locationObj = profileData.loc;
-        var validationErr;
 
         if (profileData.constructor === Object) {
 
-            if (!profileData.fbId || !profileData.pushToken) {
-
-                err = new Error('Not enought parameters');
-                err.status = 400;
-                return callback(err);
-
+            if (!profileData.fbId || !profileData.pushToken || !profileData.os) {
+                return callback(badRequests.NotEnParams({required: 'fbId and pushToken and os'}));
+            }
+            if (!(profileData.os === 'APPLE' || profileData.os === 'GOOGLE' || profileData.os === 'WINDOWS')) {
+                return callback(badRequests.InvalidValue({name: 'os'}));
             }
 
-            if (locationObj && locationObj.coordinates && locationObj.coordinates.length) {
+            userModel = new User();
+            prepareModelToSave(userModel, profileData, function (err, newUserModel) {
 
-                validationErr = validateCoordinates(locationObj.coordinates);
-
-                if (validationErr && validationErr.constructor === Error) {
-                    return callback(validationErr);
-                }
-
-                location = {
-                    type: 'Point',
-                    coordinates: locationObj.coordinates
-                };
-
-                saveObj = {
-                    fbId: profileData.fbId,
-                    loc: location
-                };
-            } else {
-
-                saveObj = {
-                    fbId: profileData.fbId
-                };
-            }
-            userModel = new User(saveObj);
-
-            userModel
-                .save(function (err) {
-                    if (err) {
-                        return callback(err);
-                    }
-
-                    PushTokens.findOne({token: profileData.pushToken.token}, function (err, resultModel) {
+                newUserModel
+                    .save(function (err) {
                         if (err) {
                             return callback(err);
                         }
 
-                        uId = userModel.get('_id');
+                        PushTokens.findOne({token: profileData.pushToken}, function (err, resultModel) {
+                            if (err) {
+                                return callback(err);
+                            }
 
-                        if (!resultModel) {
-                            pushTokenModel = new PushTokens({
-                                user: uId,
-                                token: profileData.pushToken.token,
-                                os: profileData.pushToken.os
-                            });
+                            uId = userModel.get('_id');
 
-                            pushTokenModel.save(function (err) {
-                                if (err) {
-                                    return callback(err);
-                                }
+                            if (!resultModel) {
+                                pushTokenModel = new PushTokens({
+                                    user: uId,
+                                    token: profileData.pushToken,
+                                    os: profileData.os
+                                });
 
+                                pushTokenModel.save(function (err) {
+                                    if (err) {
+                                        return callback(err);
+                                    }
+
+                                    callback(null, uId);
+                                });
+
+                            } else {
                                 callback(null, uId);
-                            });
+                            }
 
-                        } else {
-                            callback(null, uId);
-                        }
+                        });
 
                     });
+            });
 
-                });
+
         } else {
 
             err = new Error('Expected profile data as Object');
@@ -119,29 +151,53 @@ module.exports = function (db) {
 
     }
 
-    
-    function updateUser (userModel, updateData, callback) {
-        var tokenObj = updateData.pushToken;
+
+    function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
 
-        userModel.loc.coordinates = updateData.loc.coordinates;
+        if (Object.keys(updateData).length === 0) {
+            return callback(badRequests.NotEnParams());
+        }
 
-        userModel
-            .save(function(err){
-                if (err){
-                    return callback(err);
-                }
+        prepareModelToSave(userModel, updateData, function (err, newUserModel) {
 
-                PushTokens
-                    .findOneAndUpdate({user: uId}, {$set: {token: tokenObj.token, os: tokenObj.os}}, function(err){
-                        if (err){
-                            return callback(err);
+            newUserModel
+                .save(function (err) {
+                    var tokenObj;
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    if (updateData.pushToken && updateData.os) {
+                        if (!(updateData.os === 'APPLE' || updateData.os === 'GOOGLE' || updateData.os === 'WINDOWS')) {
+                            return callback(badRequests.InvalidValue({name: 'os'}));
                         }
 
-                        callback(null, uId);
+                        tokenObj = {
+                            token: updateData.pushToken,
+                            os: updateData.os
 
-                    });
-            });
+                        };
+
+                        PushTokens
+                            .findOneAndUpdate({user: uId}, {
+                                $set: {
+                                    token: tokenObj.token,
+                                    os: tokenObj.os
+                                }
+                            }, function (err) {
+                                if (err) {
+                                    return callback(err);
+                                }
+
+                                callback(null, uId);
+
+                            });
+                    }
+                });
+        });
+
+
     }
 
     function getUserById(userId, callback) {
