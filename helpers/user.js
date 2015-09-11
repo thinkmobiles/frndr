@@ -223,7 +223,7 @@ module.exports = function (db) {
             })
     }
 
-    function getAllUserbyGeoLocation ()
+    /*function getAllUserbyGeoLocation ()*/
 
     return {
         createUser: createUser,

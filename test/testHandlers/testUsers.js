@@ -237,7 +237,7 @@ module.exports = function (db, defaults) {
                                 expect(resultUser).to.equals(null);
 
                                 PushTokens
-                                    .find({user: uId}, function(err, resultToken){
+                                    .findOne({user: uId}, function(err, resultToken){
 
                                         if (err){
                                             return done(err);
