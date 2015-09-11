@@ -5,9 +5,6 @@ var expect = require('chai').expect;
 var async = require('async');
 var _ = require('lodash');
 
-var badRequests = require('../../helpers/badRequests');
-var notEnParamsMessage = badRequests.NotEnParams().message;
-
 module.exports = function (db, defaults) {
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
@@ -213,8 +210,47 @@ module.exports = function (db, defaults) {
                         expect(user.loc.coordinates[1]).to.equals(newCoordinates[1]);
 
                         done();
+
                     });
 
+            });
+
+            it('Delete User', function(done){
+
+                var url = '/users/' + uId.toString();
+
+                userAgent
+                    .delete(url)
+                    .expect(200, function(err, res){
+
+                        if (err){
+                            return done(err);
+                        }
+
+                        User
+                            .findOne({_id: uId}, function(err, resultUser){
+
+                                if (err){
+                                    return done(err);
+                                }
+
+                                expect(resultUser).to.equals(null);
+
+                                PushTokens
+                                    .find({user: uId}, function(err, resultToken){
+
+                                        if (err){
+                                            return done(err);
+                                        }
+
+                                        expect(resultToken).to.equals(null);
+
+                                        done();
+
+                                    });
+                            });
+
+                    });
             });
 
 

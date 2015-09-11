@@ -223,6 +223,7 @@ module.exports = function (db) {
             })
     }
 
+    function getAllUserbyGeoLocation ()
 
     return {
         createUser: createUser,
