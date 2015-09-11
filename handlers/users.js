@@ -22,9 +22,12 @@ var UserHandler = function (db) {
         
         if (data.pushToken){
             saveData.pushToken = {
-                token: data.pushToken,
-                os: data.os
+                token: data.pushToken
             };
+        }
+
+        if (data.os){
+            saveData.pushToken.os = os;
         }
 
         return saveData;
@@ -59,6 +62,8 @@ var UserHandler = function (db) {
 
                     if (!userModel) {
                         userHelper.createUser(saveData, cb);
+                    } else {
+                        userHelper.updateUser(userModel, saveData, cb);
                     }
                         
                 }
@@ -79,7 +84,7 @@ var UserHandler = function (db) {
 
     
     this.getCurrentUser = function (req, res, next) {
-        var currentUserId = req.session.userId;
+        var currentUserId = req.session.uId;
 
         userHelper.getUserById(currentUserId, function(err, userModel){
             if(err){
