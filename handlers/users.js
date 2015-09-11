@@ -15,7 +15,7 @@ var UserHandler = function (db) {
         var options = req.body;
 
         if (!options || !options.fbId) {
-            return next(badRequests.NotEnParams({required:'fbId'}));
+            return next(badRequests.NotEnParams({required: 'fbId'}));
         }
 
         async.waterfall([
@@ -37,7 +37,7 @@ var UserHandler = function (db) {
                     } else {
                         userHelper.updateUser(userModel, options, cb);
                     }
-                        
+
                 }
 
             ],
@@ -57,8 +57,8 @@ var UserHandler = function (db) {
     this.getUserById = function (req, res, next) {
         var userId = req.params.id || req.session.uId;
 
-        userHelper.getUserById(userId, function(err, userModel){
-            if(err){
+        userHelper.getUserById(userId, function (err, userModel) {
+            if (err) {
                 return next(err);
             }
             res.status(200).send(userModel);
@@ -68,19 +68,40 @@ var UserHandler = function (db) {
     this.deleteUserById = function (req, res, next) {
         var userId = req.params.id;
 
-        userHelper.deleteUserById(userId, function(err){
-            if(err){
+        userHelper.deleteUserById(userId, function (err) {
+            if (err) {
                 return next(err);
             }
 
-            PushTokens.remove({user: ObjectId(userId)}, function(err){
-               if (err){
-                   return next(err);
-               }
+            PushTokens.remove({user: ObjectId(userId)}, function (err) {
+                if (err) {
+                    return next(err);
+                }
 
-               res.status(200).send({success:'User was removed successfully'});
+                res.status(200).send({success: 'User was removed successfully'});
             });
         })
+    };
+
+    this.updateUser = function (req, res, next) {
+        var userId = req.session.uId;
+
+        User
+            .findOne({_id: userId}, function (err, userModel) {
+                if (err) {
+                    return next(err);
+                }
+                if (!userModel) {
+                    return next(badRequests.NotFound());
+                }
+
+                userHelper.updateUser(userModel, options, function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).send('User updated successfully');
+                });
+            });
     };
 
     this.likeUserById = function (req, res, next) {
