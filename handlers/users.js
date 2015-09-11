@@ -16,8 +16,9 @@ var UserHandler = function (db) {
         }
         
         if (data.coordinates) {
-            saveData.loc = {};
-            saveData.loc.coordinates = data.coordinates;
+            saveData.loc = {
+                coordinates : data.coordinates
+            };
         }
         
         if (data.pushToken){
@@ -27,7 +28,7 @@ var UserHandler = function (db) {
         }
 
         if (data.os){
-            saveData.pushToken.os = os;
+            saveData.pushToken.os = data.os;
         }
 
         return saveData;
@@ -41,9 +42,7 @@ var UserHandler = function (db) {
         saveData = prepareSaveData(options);
 
         if (!options || !options.fbId || (Object.keys(saveData) === 0)) {
-            err = new Error('Bad Request');
-            err.status = 400;
-            return next(err);
+            return next(badRequests.NotEnParams({required:'fbId'}));
         }
 
         async.waterfall([
