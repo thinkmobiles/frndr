@@ -78,20 +78,11 @@ describe('Database initialization', function () {
                 if (err) {
                     return done(err);
                 }
-                console.log('>>>Drop database successfull')
+                console.log('>>>Drop database successfully')
                 done();
             });
 
     });
-
-    /*it('Create tables', function (done) {
-     schemas.create(done);
-     });*/
-
-
-    /*it('Create default data', function (done) {
-     defaults.create(done);
-     });*/
 
     /*it('Test handlers', function () {
      //require('./testHandlers/testUsers')(PostGre, defaults);

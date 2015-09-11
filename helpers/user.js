@@ -146,7 +146,7 @@ module.exports = function (db) {
 
     function getUserById(userId, callback) {
         User
-            .findOne({_id: userId}, function (err, userModel) {
+            .findOne({_id: userId}, {fbId: 0, __v: 0}, function (err, userModel) {
                 if (err) {
                     return callback(err);
                 }

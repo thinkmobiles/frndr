@@ -82,20 +82,9 @@ var UserHandler = function (db) {
         session.kill(req, res, next);
     };
 
-    
-    this.getCurrentUser = function (req, res, next) {
-        var currentUserId = req.session.uId;
-
-        userHelper.getUserById(currentUserId, function(err, userModel){
-            if(err){
-                return next(err);
-            }
-            res.status(200).send(userModel);
-        })
-    };
-
     this.getUserById = function (req, res, next) {
-        var userId = req.params.id;
+
+        var userId = req.params.id || req.session.uId;
 
         userHelper.getUserById(userId, function(err, userModel){
             if(err){
