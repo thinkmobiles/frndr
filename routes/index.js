@@ -5,7 +5,6 @@ module.exports = function(app, db){
 
     var userHandler = new UserHandler(db);
     var userRouter = require('./users')(app, db);
-    var likesRouter = require('./likes')(app, db);
 
     app.get('/', function(req, res, next){
         res.status(200).send( 'Express start succeed' );
@@ -15,7 +14,6 @@ module.exports = function(app, db){
     app.get('/signOut', userHandler.signOut);
 
     app.use('/users', userRouter);
-    app.use('/like', likesRouter);
 
     function notFound(req, res, next){
         next();

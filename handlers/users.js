@@ -122,17 +122,6 @@ var UserHandler = function (db) {
         });
 
     };
-
-    this.likeUserById = function (req, res, next) {
-        var userId = req.session.userId;
-        var likeUserId = req.body.likeId;
-
-        if (!likeUserId) {
-            return next(badRequests.NotEnParams({require: 'likeId'}));
-        }
-
-        //res.status(201).send({success:'You like successfull'});
-    };
 };
 
 module.exports = UserHandler;

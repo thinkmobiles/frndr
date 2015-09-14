@@ -9,7 +9,7 @@ var LikesHandler = function (db) {
     var ObjectId = mongoose.Types.ObjectId;
 
     this.likeUserById = function (req, res, next) {
-        var userId = req.session.userId;
+        var userId = req.session.uId;
         var likedUserId = req.params.id;
 
         if (!likedUserId) {
@@ -117,10 +117,55 @@ var LikesHandler = function (db) {
                     return next(err);
                 }
 
-                res.status(200).send('User likes successfully');
+                res.status(200).send({success: 'User likes successfully'});
 
             });
     };
+
+    this.dislikesUserById = function(req, res, next){
+        var uId = req.session.uId;
+        var dislikeId = req.params.id;
+        var likeModel;
+
+        Like
+            .findOne({user: uId})
+            .exec(function(err, resultModel){
+                if (err){
+                    return next(err);
+                }
+
+                if (!resultModel){
+
+                    likeModel = new Like({user: uId, dislikes:[dislikeId]});
+
+                    likeModel
+                        .save(function(err){
+
+                            if (err){
+                                return next(err);
+                            }
+
+                            res.status(200).send({success: 'User dislikes successfully'});
+
+                        });
+
+                } else {
+
+                    resultModel.update({$addToSet: {dislikes: dislikeId}}, function(err){
+
+                        if (err){
+                            return next(err);
+                        }
+
+                        res.status(200).send({success: 'User dislikes successfully'});
+
+                    });
+
+                }
+
+
+            });
+    }
 };
 
 module.exports = LikesHandler;

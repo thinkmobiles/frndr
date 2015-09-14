@@ -335,7 +335,7 @@ module.exports = function (db) {
                             },{
                                 _id: {$ne: userId}
                             }]
-                        }, {_id: 1})
+                        }, {__v: 0})
                     .exec(function(err, resultUsers){
 
                         if (err){
