@@ -32,6 +32,12 @@ module.exports = function (db, defaults) {
 
     var newpushToken = "12345";
     var newCoordinates = [10, 25];
+    var newUserName = 'Gandalf';
+    var newAge = 743;
+    var newSex = 'f';
+    var newJobTitle = 'wizard';
+    var newCoordinates1 = [110, 80];
+
 
     var uId;
 
@@ -215,6 +221,50 @@ module.exports = function (db, defaults) {
 
             });
 
+            it('Update user profile', function(done){
+                var updateobj = {
+                    profile: {
+                        name: newUserName,
+                        age: newAge,
+                        sex: newSex,
+                        jobTitle: newJobTitle
+                    },
+                    coordinates: newCoordinates1
+                };
+
+                var url = '/users';
+
+                userAgent
+                    .put(url)
+                    .send(updateobj)
+                    .expect(200, function(err, res){
+
+                        if (err){
+                            return done(err);
+                        }
+
+                        User
+                            .findOne({_id: uId}, function(err, resultUser){
+
+                                if (err){
+                                    return done(err);
+                                }
+
+                                expect(resultUser).to.instanceOf(Object);
+                                expect(resultUser.profile.name).to.equals(newUserName);
+                                expect(resultUser.profile.age).to.equals(newAge);
+                                expect(resultUser.profile.sex).to.equals(newSex);
+                                expect(resultUser.profile.jobTitle).to.equals(newJobTitle);
+                                expect(resultUser.loc.coordinates[0]).to.equals(newCoordinates1[0]);
+                                expect(resultUser.loc.coordinates[1]).to.equals(newCoordinates1[1]);
+
+                                done();
+                            });
+
+                    });
+
+            });
+
             it('Delete User', function(done){
 
                 var url = '/users/' + uId.toString();
@@ -252,7 +302,6 @@ module.exports = function (db, defaults) {
 
                     });
             });
-
 
         });
     });

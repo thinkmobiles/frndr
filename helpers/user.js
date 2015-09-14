@@ -28,29 +28,41 @@ module.exports = function (db) {
             if (profile.name) {
                 userModel.profile.name = profile.name;
             }
+
             if (profile.age) {
                 userModel.profile.age = profile.age;
             }
+
             if (profile.relStatus) {
                 userModel.profile.relStatus = profile.relStatus;
             }
+
             if (profile.jobTitle) {
                 userModel.profile.jobTitle = profile.jobTitle;
             }
+
             if (profile.smoker) {
                 userModel.profile.smoker = profile.smoker;
             }
+
             if (profile.sexual) {
                 userModel.profile.sexual = profile.sexual;
             }
+
             if (profile.things) {
                 userModel.profile.things = profile.things;
             }
+
             if (profile.bio) {
                 userModel.profile.bio = profile.bio;
             }
+
             if (profile.visible) {
                 userModel.profile.visible = profile.visible;
+            }
+
+            if (profile.sex){
+                userModel.profile.sex = profile.sex;
             }
         }
 
@@ -82,77 +94,86 @@ module.exports = function (db) {
     }
 
     function createUser(profileData, callback) {
-        //var err;
         var userModel;
         var pushTokenModel;
         var uId;
+        var saveObj;
+        var err;
 
         if (profileData.constructor === Object) {
 
             if (!profileData.fbId || !profileData.pushToken || !profileData.os) {
-                return callback(badRequests.NotEnParams({required: 'fbId and pushToken and os'}));
+                return callback(badRequests.NotEnParams({message: 'fbId and pushToken and os'}));
             }
             if (!(profileData.os === 'APPLE' || profileData.os === 'GOOGLE' || profileData.os === 'WINDOWS')) {
                 return callback(badRequests.InvalidValue({name: 'os'}));
             }
 
-            userModel = new User();
-            prepareModelToSave(userModel, profileData, function (err, newUserModel) {
-                if (err) {
+            if (profileData.coordinates && profileData.coordinates.length){
+                err = validateCoordinates(profileData.coordinates);
+
+                if (err){
                     return callback(err);
                 }
+            } else {
+                return callback(badRequests.NotEnParams({message: 'coordinates'}));
+            }
 
-                newUserModel
-                    .save(function (err) {
+            saveObj = {
+                fbId: profileData.fbId,
+                loc: {
+                    type: 'Point',
+                    coordinates: profileData.coordinates
+                }
+            };
+
+            userModel = new User(saveObj);
+
+            userModel
+                .save(function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    PushTokens.findOne({token: profileData.pushToken}, function (err, resultModel) {
                         if (err) {
                             return callback(err);
                         }
 
-                        PushTokens.findOne({token: profileData.pushToken}, function (err, resultModel) {
-                            if (err) {
-                                return callback(err);
-                            }
+                        uId = userModel.get('_id');
 
-                            uId = userModel.get('_id');
+                        if (!resultModel) {
+                            pushTokenModel = new PushTokens({
+                                user: uId,
+                                token: profileData.pushToken,
+                                os: profileData.os
+                            });
 
-                            if (!resultModel) {
-                                pushTokenModel = new PushTokens({
-                                    user: uId,
-                                    token: profileData.pushToken,
-                                    os: profileData.os
-                                });
+                            pushTokenModel.save(function (err) {
+                                if (err) {
+                                    return callback(err);
+                                }
 
-                                pushTokenModel.save(function (err) {
-                                    if (err) {
-                                        return callback(err);
-                                    }
-
-                                    callback(null, uId);
-                                });
-
-                            } else {
                                 callback(null, uId);
-                            }
+                            });
 
-                        });
+                        } else {
+                            callback(null, uId);
+                        }
 
                     });
-            });
+
+                });
 
 
         } else {
-
-           /* err = new Error('Expected profile data as Object');
-            err.status = 400;*/
             return callback(badRequests.InvalidValue({message: 'Expected profile data as Object'}));
-
         }
 
     }
 
     function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
-        var err;
 
         function updateCoordinates(coordinates, cb){
             if (coordinates && coordinates.length) {
@@ -211,7 +232,7 @@ module.exports = function (db) {
         }
 
          async
-             .series([
+             .parallel([
                  async.apply(updateCoordinates, updateData.coordinates),
                  async.apply(updatePushToken, updateData.pushToken, updateData.os)
              ], function(err){
@@ -226,13 +247,16 @@ module.exports = function (db) {
     }
 
     function updateProfile(userModel, updateData, callback) {
-        var uId = userModel.get('_id');
 
         if (Object.keys(updateData).length === 0) {
             return callback(badRequests.NotEnParams({message: 'Nothing to update in Profile'}));
         }
 
         prepareModelToSave(userModel, updateData, function (err, newUserModel) {
+
+            if (err){
+                return callback(err);
+            }
 
             newUserModel
                 .save(function (err) {
