@@ -13,6 +13,6 @@ module.exports = {
         STRAIGHT: 'straight',
         LESBIAN: 'lesbian',
         BISEXUAL: 'bisexual',
-        SEXUAL_REG_EXP: new RegExp(this.STRAIGHT + '|' + this.LESBIAN + '|' + this.BISEXUAL)
+        ANY: 'any'
     }
 };
