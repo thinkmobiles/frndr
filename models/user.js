@@ -1,5 +1,4 @@
-var SEXUAL = require('../constants/sexual');
-var RELSTATUS = require('../constants/relStatus');
+var CONSTANTS = require('../constants/index');
 
 module.exports = function (db) {
     'use strict';
@@ -19,13 +18,13 @@ module.exports = function (db) {
             },
             relStatus: {
                 type: String,
-                default: RELSTATUS.SINGLE
+                default: CONSTANTS.REL_STATUSES.SINGLE
             },
             jobTitle: String,
             smoker: Boolean,
             sexual: {
                 type: String,
-                default: SEXUAL.STRAIGHT
+                default: CONSTANTS.SEXUAL.STRAIGHT
             },
             things: [String],
             bio: String,

@@ -1,4 +1,3 @@
-var SEXUAL = require('../constants/sexual');
 var CONSTANTS = require('../constants/index');
 
 module.exports = function (db) {
@@ -19,18 +18,18 @@ module.exports = function (db) {
         sexual: {
             type: String,
             match: '',
-            default: SEXUAL.STRAIGHT
+            default: CONSTANTS.SEXUAL.STRAIGHT
         },
         ageRange: {
             min: {
                 type: Number,
-                min: CONSTANTS.MIN_AGE,
-                max: CONSTANTS.MAX_AGE
+                min: CONSTANTS.AGE.MIN_AGE,
+                max: CONSTANTS.AGE.MAX_AGE
             },
             max: {
                 type: Number,
-                min: CONSTANTS.MIN_AGE,
-                max: CONSTANTS.MAX_AGE
+                min: CONSTANTS.AGE.MIN_AGE,
+                max: CONSTANTS.AGE.MAX_AGE
             }
         }
     }, {

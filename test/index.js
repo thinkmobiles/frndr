@@ -1,15 +1,13 @@
 ﻿'use strict';
 
-var async = require('async');
-//var server;
 var app;
-//var defaults;
 var db;
 
 process.env.NODE_ENV = 'test';
 
 app = require('../app')();
 db = app.get('db');
+
 var DbHandler = require('./testHandlers/dbHandler');
 var dbHandler = new DbHandler(db);
 
