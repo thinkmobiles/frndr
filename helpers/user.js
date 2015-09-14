@@ -62,7 +62,7 @@ module.exports = function (db) {
                 userModel.profile.visible = profile.visible;
             }
 
-            if (profile.sex){
+            if (profile.sex) {
                 userModel.profile.sex = profile.sex;
             }
         }
@@ -71,13 +71,10 @@ module.exports = function (db) {
     }
 
     function validateCoordinates(coordinates) {
-        //var err;
         var longitude;
         var latitude;
 
         if (!coordinates.length || !coordinates[1]) {
-            /* err = new Error('Expected array coordinates');
-             err.status = 400;*/
             return badRequests.InvalidValue({message: 'Expected array coordinates'});
         }
 
@@ -85,8 +82,6 @@ module.exports = function (db) {
         latitude = coordinates[1];
 
         if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
-            /* err = new Error('Not valid values for coordinate');
-             err.status = 400;*/
             return badRequests.InvalidValue({message: 'Not valid values for coordinate'});
         }
 
@@ -111,10 +106,10 @@ module.exports = function (db) {
                 return callback(badRequests.InvalidValue({name: 'os'}));
             }
 
-            if (profileData.coordinates && profileData.coordinates.length){
+            if (profileData.coordinates && profileData.coordinates.length) {
                 err = validateCoordinates(profileData.coordinates);
 
-                if (err){
+                if (err) {
                     return callback(err);
                 }
             } else {
@@ -194,7 +189,7 @@ module.exports = function (db) {
     function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
 
-        function updateCoordinates(coordinates, cb){
+        function updateCoordinates(coordinates, cb) {
             if (coordinates && coordinates.length) {
                 var validateError = validateCoordinates(coordinates);
 
@@ -223,9 +218,9 @@ module.exports = function (db) {
             }
         }
 
-        function updatePushToken (pushToken, os, cb) {
+        function updatePushToken(pushToken, os, cb) {
             var updateObj;
-            if (pushToken){
+            if (pushToken) {
 
                 if (os) {
                     updateObj = {token: pushToken, os: os};
@@ -235,9 +230,9 @@ module.exports = function (db) {
 
                 PushTokens
                     .findOneAndUpdate({user: uId}, updateObj)
-                    .exec(function(err){
+                    .exec(function (err) {
 
-                        if (err){
+                        if (err) {
                             return cb(err);
                         }
 
@@ -250,19 +245,19 @@ module.exports = function (db) {
 
         }
 
-         async
-             .parallel([
-                 async.apply(updateCoordinates, updateData.coordinates),
-                 async.apply(updatePushToken, updateData.pushToken, updateData.os)
-             ], function(err){
+        async
+            .parallel([
+                async.apply(updateCoordinates, updateData.coordinates),
+                async.apply(updatePushToken, updateData.pushToken, updateData.os)
+            ], function (err) {
 
-                 if (err){
-                     return callback(err);
-                 }
+                if (err) {
+                    return callback(err);
+                }
 
-                 callback(null, uId);
+                callback(null, uId);
 
-             });
+            });
     }
 
     function updateProfile(userModel, updateData, callback) {
@@ -273,7 +268,7 @@ module.exports = function (db) {
 
         prepareModelToSave(userModel, updateData, function (err, newUserModel) {
 
-            if (err){
+            if (err) {
                 return callback(err);
             }
 
@@ -295,7 +290,7 @@ module.exports = function (db) {
                     return callback(err);
                 }
                 if (!userModel) {
-                    return callback(badRequests.NotFound());
+                    return callback(badRequests.NotFound({message: 'User not found'}));
                 }
                 callback(null, userModel);
             })

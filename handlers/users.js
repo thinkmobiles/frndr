@@ -16,7 +16,7 @@ var UserHandler = function (db) {
         var options = req.body;
 
         if (!options || !options.fbId) {
-            return next(badRequests.NotEnParams({required: 'fbId'}));
+            return next(badRequests.NotEnParams({message: 'fbId'}));
         }
 
         async.waterfall([
@@ -42,7 +42,7 @@ var UserHandler = function (db) {
                 }
 
             ],
-            function (err, uId) {0
+            function (err, uId) {
                 if (err) {
                     return next(err);
                 }
@@ -95,7 +95,7 @@ var UserHandler = function (db) {
                     return next(err);
                 }
                 if (!userModel) {
-                    return next(badRequests.NotFound());
+                    return next(badRequests.NotFound({message: 'User not found'}));
                 }
 
                 userHelper.updateProfile(userModel, options, function (err) {
