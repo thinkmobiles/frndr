@@ -83,8 +83,7 @@ var UserHandler = function (db) {
         })
     };
 
-    this.updateUser = function (req, res, next) {
-
+    this.updateProfile = function (req, res, next) {
         var userId = req.session.uId;
         var options = req.body;
 
@@ -97,11 +96,11 @@ var UserHandler = function (db) {
                     return next(badRequests.NotFound());
                 }
 
-                userHelper.updateUser(userModel, options, function (err) {
+                userHelper.updateProfile(userModel, options, function (err) {
                     if (err) {
                         return next(err);
                     }
-                    res.status(200).send({success: 'User updated successfully'});
+                    res.status(200).send({success: 'Profile updated successfully'});
                 });
             });
     };
