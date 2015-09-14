@@ -1,5 +1,7 @@
 var badRequests = require('../helpers/badRequests');
 
+var async = require('async');
+
 module.exports = function (db) {
 
     var User = db.model('User');
@@ -149,8 +151,82 @@ module.exports = function (db) {
 
     }
 
-
     function updateUser(userModel, updateData, callback) {
+        var uId = userModel.get('_id');
+        var err;
+
+        function updateCoordinates(coordinates, cb){
+            if (coordinates && coordinates.length) {
+                var validateError = validateCoordinates(coordinates);
+
+                if (validateError && validateError.constructor === Error) {
+                    return callback(validateError);
+                }
+
+                userModel.loc = {
+                    type: 'Point',
+                    coordinates: coordinates
+                };
+
+                userModel
+                    .save(function (err) {
+
+                        if (err) {
+                            return cb(err);
+                        }
+
+
+                        cb(null);
+
+                    });
+            } else {
+                cb(null);
+            }
+        }
+
+        function updatePushToken (pushToken, os, cb) {
+            var updateObj;
+            if (pushToken){
+
+                if (os) {
+                    updateObj = {token: pushToken, os: os};
+                } else {
+                    updateObj = {token: pushToken}
+                }
+
+                PushTokens
+                    .findOneAndUpdate({user: uId}, updateObj)
+                    .exec(function(err){
+
+                        if (err){
+                            return cb(err);
+                        }
+
+                        cb(null);
+
+                    });
+            } else {
+                cb(null)
+            }
+
+        }
+
+         async
+             .series([
+                 async.apply(updateCoordinates, updateData.coordinates),
+                 async.apply(updatePushToken, updateData.pushToken, updateData.os)
+             ], function(err){
+
+                 if (err){
+                     return callback(err);
+                 }
+
+                 callback(null, uId);
+
+             });
+    }
+
+    function updateProfile(userModel, updateData, callback) {
         var uId = userModel.get('_id');
 
         if (Object.keys(updateData).length === 0) {
@@ -228,8 +304,9 @@ module.exports = function (db) {
     return {
         createUser: createUser,
         updateUser: updateUser,
+        updateProfile: updateProfile,
         getUserById: getUserById,
         deleteUserById: deleteUserById
-    }
+    };
 
 };
