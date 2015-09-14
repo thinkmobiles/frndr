@@ -17,7 +17,7 @@ module.exports = function (db) {
         smoker: Boolean,
         sexual: {
             type: String,
-            match: '',
+            match: CONSTANTS.SEXUAL.SEXUAL_REG_EXP,
             default: CONSTANTS.SEXUAL.STRAIGHT
         },
         ageRange: {
