@@ -27,8 +27,6 @@ module.exports = function (db) {
         if (options.profile) {
             var profile = options.profile;
 
-            userModel.profile = {};
-
             if (profile.name) {
                 userModel.profile.name = profile.name;
             }
@@ -193,6 +191,8 @@ module.exports = function (db) {
                                 callback(null, uId);
 
                             });
+                    } else {
+                        callback(null, uId);
                     }
                 });
         });

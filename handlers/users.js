@@ -84,7 +84,9 @@ var UserHandler = function (db) {
     };
 
     this.updateUser = function (req, res, next) {
+
         var userId = req.session.uId;
+        var options = req.body;
 
         User
             .findOne({_id: userId}, function (err, userModel) {
@@ -99,7 +101,7 @@ var UserHandler = function (db) {
                     if (err) {
                         return next(err);
                     }
-                    res.status(200).send('User updated successfully');
+                    res.status(200).send({success: 'User updated successfully'});
                 });
             });
     };
