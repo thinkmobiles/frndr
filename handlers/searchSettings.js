@@ -54,12 +54,12 @@ var SearchSettingsHandler = function (db) {
         var saveData = prepareSaveData(req.body);
 
         if (saveData && Object.keys(saveData).length === 0) {
-            return res.status(200).send('Nothing to update');
+            return res.status(400).send('Nothing to update');
         }
 
         SearchSettings
-            .findOneAndUpdate({user: ObjectId(userId)}, saveData, function(err){
-                if (err){
+            .findOneAndUpdate({user: ObjectId(userId)}, saveData, function (err) {
+                if (err) {
                     return next(err);
                 }
 
