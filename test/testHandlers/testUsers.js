@@ -8,6 +8,7 @@ var _ = require('lodash');
 module.exports = function (db, defaults) {
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
+    var Like = db.model('Like');
 
     var host = process.env.HOST;
     var userAgent = request.agent(host);
@@ -30,6 +31,13 @@ module.exports = function (db, defaults) {
         coordinates: [88.23, 75.66]
     };
 
+    var user2 = {
+        fbId: 'test2',
+        pushToken: "996633",
+        os: 'APPLE',
+        coordinates: [88, 75]
+    };
+
     var newpushToken = "12345";
     var newCoordinates = [10, 25];
     var newUserName = 'Gandalf';
@@ -39,8 +47,8 @@ module.exports = function (db, defaults) {
     var newCoordinates1 = [110, 80];
 
 
-    var uId;
-
+    var uId1;
+    var uId2;
 
     describe('Test users', function () {
 
@@ -84,7 +92,7 @@ module.exports = function (db, defaults) {
                     });
             });
 
-            it('SignUp user', function (done) {
+            it('SignUp user1', function (done) {
                 var url = '/signIn';
 
                 userAgent
@@ -109,15 +117,58 @@ module.exports = function (db, defaults) {
                                 expect(user.loc.coordinates[0]).to.equals(user1.coordinates[0]);
                                 expect(user.loc.coordinates[1]).to.equals(user1.coordinates[1]);
 
-                                uId = user._id;
+                                uId1 = user._id;
 
                                 PushTokens
-                                    .findOne({user: uId}, function (err, resToken) {
+                                    .findOne({user: uId1}, function (err, resToken) {
                                         if (err) {
                                             return done(err);
                                         }
 
                                         expect(resToken.token).to.equals(user1.pushToken);
+
+                                        done();
+                                    });
+                            });
+
+                        expect(res.status).to.equals(200);
+                    });
+            });
+
+            it('SignUp user2', function (done) {
+                var url = '/signIn';
+
+                userAgent
+                    .post(url)
+                    .send(user2)
+                    .end(function (err, res) {
+
+                        if (err) {
+                            return done(err);
+                        }
+
+                        User
+                            .findOne({fbId: user2.fbId})
+                            .exec(function (err, resultUser) {
+                                var user = resultUser.toJSON();
+
+                                if (err) {
+                                    return done(err);
+                                }
+
+                                expect(user).to.instanceOf(Object);
+                                expect(user.loc.coordinates[0]).to.equals(user2.coordinates[0]);
+                                expect(user.loc.coordinates[1]).to.equals(user2.coordinates[1]);
+
+                                uId2 = user._id;
+
+                                PushTokens
+                                    .findOne({user: uId2}, function (err, resToken) {
+                                        if (err) {
+                                            return done(err);
+                                        }
+
+                                        expect(resToken.token).to.equals(user2.pushToken);
 
                                         done();
                                     });
@@ -145,7 +196,7 @@ module.exports = function (db, defaults) {
                     });
             });
 
-            it('signIn', function (done) {
+            it('signIn User1', function (done) {
 
                 var url = '/signIn';
 
@@ -175,12 +226,12 @@ module.exports = function (db, defaults) {
                                 expect(user.loc.coordinates[0]).to.equals(newCoordinates[0]);
                                 expect(user.loc.coordinates[1]).to.equals(newCoordinates[1]);
 
-                                uId = user._id;
+                                uId1 = user._id;
 
                                 expect(res.status).to.equals(200);
 
                                 PushTokens
-                                    .findOne({user: uId}, function (err, resToken) {
+                                    .findOne({user: uId1}, function (err, resToken) {
                                         if (err) {
                                             return done(err);
                                         }
@@ -197,7 +248,7 @@ module.exports = function (db, defaults) {
 
             it('Get current user', function (done) {
 
-                var url = '/users/' + uId.toString();
+                var url = '/users/' + uId1.toString();
 
                 userAgent
                     .get(url)
@@ -211,7 +262,7 @@ module.exports = function (db, defaults) {
 
 
                         expect(user).to.instanceOf(Object);
-                        expect(user._id.toString()).to.equals(uId.toString());
+                        expect(user._id.toString()).to.equals(uId1.toString());
                         expect(user.loc.coordinates[0]).to.equals(newCoordinates[0]);
                         expect(user.loc.coordinates[1]).to.equals(newCoordinates[1]);
 
@@ -244,7 +295,7 @@ module.exports = function (db, defaults) {
                         }
 
                         User
-                            .findOne({_id: uId}, function(err, resultUser){
+                            .findOne({_id: uId1}, function(err, resultUser){
 
                                 if (err){
                                     return done(err);
@@ -265,9 +316,148 @@ module.exports = function (db, defaults) {
 
             });
 
+            it('User1 likes User2', function(done){
+                var model;
+                var url = '/users/like/' + uId2.toString();
+
+                userAgent
+                    .get(url)
+                    .expect(200, function(err){
+
+                        if (err){
+                            return done(err);
+                        }
+
+                        Like.findOne({user: uId1}, function(err, resultModel1){
+
+                            if (err){
+                                return done(err);
+                            }
+
+                            model = resultModel1.toJSON();
+
+                            expect(model).to.instanceOf(Object);
+                            expect(model.likes).to.instanceOf(Array);
+                            expect(model.likes.length).to.equals(1);
+                            expect(model.likes[0]).to.equals(uId2.toString());
+
+                           done(null);
+
+                        });
+
+                    });
+            });
+
+            it('signIn User2', function (done) {
+
+                var url = '/signIn';
+
+                user2.pushToken = newpushToken;
+                user2.coordinates[0] = newCoordinates[0];
+                user2.coordinates[1] = newCoordinates[1];
+
+                userAgent
+                    .post(url)
+                    .send(user2)
+                    .end(function (err, res) {
+
+                        if (err) {
+                            return done(err);
+                        }
+
+                        User
+                            .findOne({fbId: user2.fbId})
+                            .exec(function (err, resultUser) {
+                                var user = resultUser.toJSON();
+
+                                if (err) {
+                                    return done(err);
+                                }
+
+                                expect(user).to.instanceOf(Object);
+                                expect(user.loc.coordinates[0]).to.equals(newCoordinates[0]);
+                                expect(user.loc.coordinates[1]).to.equals(newCoordinates[1]);
+
+                                uId2 = user._id;
+
+                                expect(res.status).to.equals(200);
+
+                                PushTokens
+                                    .findOne({user: uId2}, function (err, resToken) {
+                                        if (err) {
+                                            return done(err);
+                                        }
+
+                                        expect(resToken.token).to.equals(newpushToken);
+
+                                        done();
+                                    });
+                            });
+
+
+                    });
+            });
+
+            it('User2 likes User1', function(done){
+                var model;
+                var url = '/users/like/' + uId1.toString();
+
+                userAgent
+                    .get(url)
+                    .expect(200, function(err){
+
+                        if (err){
+                            return done(err);
+                        }
+
+                        Like.findOne({user: uId2}, function(err, resultModel){
+
+                            if (err){
+                                return done(err);
+                            }
+
+                            model = resultModel.toJSON();
+
+                            expect(model).to.instanceOf(Object);
+                            expect(model.likes).to.instanceOf(Array);
+                            expect(model.likes.length).to.equals(1);
+                            expect(model.likes[0]).to.equals(uId1.toString());
+
+                            User
+                                .findOne({_id: uId1}, function(err, resultUser1){
+                                    if (err){
+                                        return done(err);
+                                    }
+
+                                    expect(resultUser1).to.instanceOf(Object);
+                                    expect(resultUser1.friends).to.instanceOf(Array);
+                                    expect(resultUser1.friends.length).to.equals(1);
+                                    expect(resultUser1.friends[0]).to.equals(uId2.toString());
+
+
+                                    User
+                                        .findOne({_id: uId2}, function(err, resultUser2) {
+                                            if (err) {
+                                                return done(err);
+                                            }
+
+                                            expect(resultUser2).to.instanceOf(Object);
+                                            expect(resultUser2.friends).to.instanceOf(Array);
+                                            expect(resultUser2.friends.length).to.equals(1);
+                                            expect(resultUser2.friends[0]).to.equals(uId1.toString());
+
+                                            done(null);
+                                        });
+                                });
+
+                        });
+
+                    });
+            });
+
             it('Delete User', function(done){
 
-                var url = '/users/' + uId.toString();
+                var url = '/users/' + uId1.toString();
 
                 userAgent
                     .delete(url)
@@ -278,7 +468,7 @@ module.exports = function (db, defaults) {
                         }
 
                         User
-                            .findOne({_id: uId}, function(err, resultUser){
+                            .findOne({_id: uId1}, function(err, resultUser){
 
                                 if (err){
                                     return done(err);
@@ -287,7 +477,7 @@ module.exports = function (db, defaults) {
                                 expect(resultUser).to.equals(null);
 
                                 PushTokens
-                                    .findOne({user: uId}, function(err, resultToken){
+                                    .findOne({user: uId1}, function(err, resultToken){
 
                                         if (err){
                                             return done(err);

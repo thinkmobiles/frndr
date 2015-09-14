@@ -12,6 +12,7 @@ var UserHandler = function (db) {
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
+    var searchSettingsModel;
 
     this.signInClient = function (req, res, next) {
         var options = req.body;
@@ -47,6 +48,7 @@ var UserHandler = function (db) {
                 if (err) {
                     return next(err);
                 }
+
                 return session.register(req, res, uId.toString());
             });
 
@@ -141,6 +143,22 @@ var UserHandler = function (db) {
                     res.status(200).send({success: 'Profile updated successfully'});
                 });
             });
+    };
+
+    this.findNearestUsers = function(req, res, next){
+        var distance = req.params.d;
+        var uId = req.session.uId;
+
+        userHelper.getAllUserByGeoLocation(uId, distance, function(err, resultUser){
+
+            if (err){
+                return next(err);
+            }
+
+            res.status(200).send(resultUser);
+
+        });
+
     };
 };
 
