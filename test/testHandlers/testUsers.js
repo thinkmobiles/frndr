@@ -46,6 +46,13 @@ module.exports = function (db, defaults) {
     var newJobTitle = 'wizard';
     var newCoordinates1 = [110, 80];
 
+    var newSearchDistance = 40;
+    var newRelationShip = ['couple', 'family'];
+    var newAgeRange = {
+        min: 28,
+        max: 32
+    };
+
 
     var uId1;
     var uId2;
@@ -395,6 +402,30 @@ module.exports = function (db, defaults) {
                             });
 
 
+                    });
+            });
+
+            it('User2 get search settings', function(done){
+                var url = '/users/searchSettings/';
+
+                userAgent
+                    .get(url)
+                    .expect(200, function(err, res){
+
+                        if (err){
+                            done(err);
+                        }
+
+                        var settings = res.body;
+
+                        expect(settings).to.instanceOf(Object);
+                        expect(settings.distance).to.equals(20);
+                        expect(settings.sexual).to.equals('any');
+                        expect(settings.ageRange).to.instanceOf(Object);
+                        expect(settings.ageRange.min).to.equals(25);
+                        expect(settings.ageRange.max).to.equals(40);
+
+                        done(null);
                     });
             });
 
