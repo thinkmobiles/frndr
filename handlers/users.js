@@ -7,6 +7,8 @@ var mongoose = require('mongoose');
 var UserHandler = function (db) {
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
+    var SearchSettings = db.model('SearchSettings');
+    var Like = db.model('Like');
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
@@ -73,13 +75,49 @@ var UserHandler = function (db) {
                 return next(err);
             }
 
-            PushTokens.remove({user: ObjectId(userId)}, function (err) {
-                if (err) {
-                    return next(err);
-                }
+            async.parallel([
 
-                res.status(200).send({success: 'User was removed successfully'});
-            });
+                    //remove PushToken model
+                    function (cb) {
+                        PushTokens.remove({user: ObjectId(userId)}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                    },
+
+                    //remove SearchSettings model
+                    function (cb) {
+                        SearchSettings.remove({user: ObjectId(userId)}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                    },
+
+                    //remove Like model
+                    function (cb) {
+                        Like.remove({user: ObjectId(userId)}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                    }
+                ],
+
+                function (err, results) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    res.status(200).send({success: 'User was removed successfully'});
+                });
         })
     };
 
