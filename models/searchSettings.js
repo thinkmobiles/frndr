@@ -13,24 +13,25 @@ module.exports = function (db) {
             type: ObjectId,
             ref: 'User'
         },
-        distance: Number,
+        distance: {type: Number, default: 20},
         relationship: [String],
-        smoker: Boolean,
+        smoker: {type: Boolean, default: false},
         sexual: {
             type: String,
-            match: '',
-            default: SEXUAL.STRAIGHT
+            default: SEXUAL.ANY
         },
         ageRange: {
             min: {
                 type: Number,
                 min: CONSTANTS.MIN_AGE,
-                max: CONSTANTS.MAX_AGE
+                max: CONSTANTS.MAX_AGE,
+                default: 25
             },
             max: {
                 type: Number,
                 min: CONSTANTS.MIN_AGE,
-                max: CONSTANTS.MAX_AGE
+                max: CONSTANTS.MAX_AGE,
+                default: 40
             }
         }
     }, {

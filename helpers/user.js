@@ -6,6 +6,7 @@ module.exports = function (db) {
 
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
+    var SearchSettings = db.model('SearchSettings');
 
     function prepareModelToSave(userModel, options, callback) {
 
@@ -99,6 +100,7 @@ module.exports = function (db) {
         var uId;
         var saveObj;
         var err;
+        var searchSettingModel;
 
         if (profileData.constructor === Object) {
 
@@ -142,6 +144,8 @@ module.exports = function (db) {
 
                         uId = userModel.get('_id');
 
+                        searchSettingModel = new SearchSettings({user: uId});
+
                         if (!resultModel) {
                             pushTokenModel = new PushTokens({
                                 user: uId,
@@ -154,11 +158,26 @@ module.exports = function (db) {
                                     return callback(err);
                                 }
 
-                                callback(null, uId);
+
+                                searchSettingModel.save(function(err){
+                                    if (err){
+                                        return callback(err);
+                                    }
+
+                                    callback(null, uId);
+                                });
                             });
 
                         } else {
-                            callback(null, uId);
+
+                            searchSettingModel.save(function(err){
+                                if (err){
+                                    return callback(err);
+                                }
+
+                                callback(null, uId);
+                            });
+
                         }
 
                     });
@@ -288,18 +307,60 @@ module.exports = function (db) {
                 if (err) {
                     return callback(err);
                 }
-                callback();
-            })
+
+                callback(null);
+            });
     }
 
-    /*function getAllUserbyGeoLocation ()*/
+    function getAllUserByGeoLocation (userId, distance, callback){
+
+        var userCoordinates;
+
+        User.findOne({_id: userId})
+            .exec(function(err, resultUser){
+
+                if (err){
+                    return callback(err);
+                }
+
+                if (!resultUser){
+                    badRequests.NotFound({message: 'User not found'});
+                }
+
+                userCoordinates = resultUser.loc.coordinates;
+
+                User
+                    .find({$and:
+                            [{
+                                loc: {
+                                    $geoWithin: {
+                                        $centerSphere: [userCoordinates, distance / 3963.2]
+                                    }
+                                }
+                            },{
+                                _id: {$ne: userId}
+                            }]
+                        }, {_id: 1})
+                    .exec(function(err, resultUsers){
+
+                        if (err){
+                            return callback(err);
+                        }
+
+                        callback(null, resultUsers);
+
+                    });
+
+            });
+    };
 
     return {
-        createUser: createUser,
-        updateUser: updateUser,
-        updateProfile: updateProfile,
-        getUserById: getUserById,
-        deleteUserById: deleteUserById
+        createUser               : createUser,
+        updateUser               : updateUser,
+        updateProfile            : updateProfile,
+        getUserById              : getUserById,
+        deleteUserById           : deleteUserById,
+        getAllUserByGeoLocation  : getAllUserByGeoLocation
     };
 
 };

@@ -1,5 +1,6 @@
 module.exports = {
     STRAIGHT: 'straight',
     LESBIAN: 'lesbian',
-    BISEXUAL: 'bisexual'
+    BISEXUAL: 'bisexual',
+    ANY: 'any'
 };
