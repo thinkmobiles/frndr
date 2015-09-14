@@ -1,4 +1,3 @@
-var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
 
@@ -66,43 +65,6 @@ var SearchSettingsHandler = function (db) {
 
                 res.status(200).send('Search settings updated successfully');
             });
-
-        /*SearchSettings
-            .findOne({user: ObjectId(userId)}, function (err, searchSettingsModel) {
-                if (err) {
-                    return next(err);
-                }
-
-                if (!searchSettingsModel) {
-                    return next(badRequests.NotFound({message: 'Search settings not found'}));
-                }
-
-                async.waterfall([
-
-                        //prepare model to save
-                        function (cb) {
-                            prepareModelToSave(searchSettingsModel, options, cb);
-                        },
-
-                        //save model
-                        function (searchSettingsModel, cb) {
-                            searchSettingsModel
-                                .save(function (err) {
-                                    if (err) {
-                                        return cb(err);
-                                    }
-                                    cb();
-                                })
-                        }
-                    ],
-                    function (err, result) {
-                        if (err) {
-                            return next(err);
-                        }
-
-                        res.status(200).send('Search settings updated successfully');
-                    })
-            })*/
     };
 };
 
