@@ -6,7 +6,7 @@ module.exports = function(app, db){
     var userHandler = new UserHandler(db);
 
     router.get('/:id?', userHandler.getUserById);
-    router.put('/', userHandler.updateUser);
+    router.put('/', userHandler.updateProfile);
     router.delete('/:id', userHandler.deleteUserById);
 
     return router;

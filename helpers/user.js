@@ -7,10 +7,6 @@ module.exports = function (db) {
 
     function prepareModelToSave(userModel, options, callback) {
 
-        if (options.fbId) {
-            userModel.fbId = options.fbId;
-        }
-
         if (options.coordinates && options.coordinates.length) {
             var validateError = validateCoordinates(options.coordinates);
 
@@ -45,9 +41,9 @@ module.exports = function (db) {
             if (profile.sexual) {
                 userModel.profile.sexual = profile.sexual;
             }
-            /*if (profile.things) {
-             userModel.profile.things = profile.things;
-             }*/
+            if (profile.things) {
+                userModel.profile.things = profile.things;
+            }
             if (profile.bio) {
                 userModel.profile.bio = profile.bio;
             }
@@ -60,23 +56,23 @@ module.exports = function (db) {
     }
 
     function validateCoordinates(coordinates) {
-        var err;
+        //var err;
         var longitude;
         var latitude;
 
         if (!coordinates.length || !coordinates[1]) {
-            err = new Error('Expected array coordinates');
-            err.status = 400;
-            return err;
+            /* err = new Error('Expected array coordinates');
+             err.status = 400;*/
+            return badRequests.InvalidValue({message: 'Expected array coordinates'});
         }
 
         longitude = coordinates[0];
         latitude = coordinates[1];
 
         if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
-            err = new Error('Not valid values for coordinate');
-            err.status = 400;
-            return err;
+            /* err = new Error('Not valid values for coordinate');
+             err.status = 400;*/
+            return badRequests.InvalidValue({message: 'Not valid values for coordinate'});
         }
 
         return;
@@ -84,7 +80,7 @@ module.exports = function (db) {
     }
 
     function createUser(profileData, callback) {
-        var err;
+        //var err;
         var userModel;
         var pushTokenModel;
         var uId;
@@ -100,6 +96,9 @@ module.exports = function (db) {
 
             userModel = new User();
             prepareModelToSave(userModel, profileData, function (err, newUserModel) {
+                if (err) {
+                    return callback(err);
+                }
 
                 newUserModel
                     .save(function (err) {
@@ -141,63 +140,32 @@ module.exports = function (db) {
 
         } else {
 
-            err = new Error('Expected profile data as Object');
-            err.status = 400;
-            return callback(err);
+           /* err = new Error('Expected profile data as Object');
+            err.status = 400;*/
+            return callback(badRequests.InvalidValue({message: 'Expected profile data as Object'}));
 
         }
 
     }
 
 
-    function updateUser(userModel, updateData, callback) {
-        var uId = userModel.get('_id');
+    function updateProfile(userModel, updateData, callback) {
 
         if (Object.keys(updateData).length === 0) {
-            return callback(badRequests.NotEnParams());
+            return callback(badRequests.NotEnParams({message: 'Nothing to update in Profile'}));
         }
 
         prepareModelToSave(userModel, updateData, function (err, newUserModel) {
 
             newUserModel
                 .save(function (err) {
-                    var tokenObj;
                     if (err) {
                         return callback(err);
                     }
 
-                    if (updateData.pushToken && updateData.os) {
-                        if (!(updateData.os === 'APPLE' || updateData.os === 'GOOGLE' || updateData.os === 'WINDOWS')) {
-                            return callback(badRequests.InvalidValue({name: 'os'}));
-                        }
-
-                        tokenObj = {
-                            token: updateData.pushToken,
-                            os: updateData.os
-
-                        };
-
-                        PushTokens
-                            .findOneAndUpdate({user: uId}, {
-                                $set: {
-                                    token: tokenObj.token,
-                                    os: tokenObj.os
-                                }
-                            }, function (err) {
-                                if (err) {
-                                    return callback(err);
-                                }
-
-                                callback(null, uId);
-
-                            });
-                    } else {
-                        callback(null, uId);
-                    }
+                    callback();
                 });
         });
-
-
     }
 
     function getUserById(userId, callback) {
@@ -227,7 +195,7 @@ module.exports = function (db) {
 
     return {
         createUser: createUser,
-        updateUser: updateUser,
+        updateProfile: updateProfile,
         getUserById: getUserById,
         deleteUserById: deleteUserById
     }
