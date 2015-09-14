@@ -17,7 +17,7 @@ var SearchSettingsHandler = function (db) {
             saveData.relationship = options.relationship;
         }
 
-        if (options.smoker || options.smoker === false) {
+        if (options.smoker || (options.smoker === false)) {
             saveData.smoker = options.smoker;
         }
 
