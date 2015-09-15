@@ -30,11 +30,19 @@ var imageHandler = function(db){
         return new ObjectId();
     }
 
-    this.uploadAvatar = function(imageString, callback){
+    this.uploadAvatar = function(req, res, next){
+
+        var imageString = req.body.image;
 
         var imageName = createImageName();
 
-        imageUploader.uploadImage(imageString, imageName, 'avatar', callback);
+        imageUploader.uploadImage(imageString, imageName, 'avatar', function(err){
+            if (err){
+                return next(err);
+            }
+
+            res.status(200).send({success: 'Image upload successfully'});
+        });
     };
 
 };
