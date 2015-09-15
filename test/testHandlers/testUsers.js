@@ -9,6 +9,7 @@ module.exports = function (db, defaults) {
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
     var Like = db.model('Like');
+    var SearchSettings = db.model('SearchSettings');
 
     var host = process.env.HOST;
     var userAgent = request.agent(host);
@@ -46,13 +47,18 @@ module.exports = function (db, defaults) {
     var newJobTitle = 'wizard';
     var newCoordinates1 = [110, 80];
 
+    var newSearchDistance = 40;
+    var newRelationShip = ['couple', 'family'];
+    var newAgeRange = {
+        min: 28,
+        max: 32
+    };
+
 
     var uId1;
     var uId2;
 
     describe('Test users', function () {
-
-        describe('Test session', function () {
 
             it('SignUp Bad parameters', function (done) {
 
@@ -398,6 +404,74 @@ module.exports = function (db, defaults) {
                     });
             });
 
+            it('User2 get search settings', function(done){
+                var url = '/users/searchSettings/';
+
+                userAgent
+                    .get(url)
+                    .expect(200, function(err, res){
+
+                        if (err){
+                            done(err);
+                        }
+
+                        var settings = res.body;
+
+                        expect(settings).to.instanceOf(Object);
+                        expect(settings.distance).to.equals(20);
+                        expect(settings.sexual).to.equals('any');
+                        expect(settings.ageRange).to.instanceOf(Object);
+                        expect(settings.ageRange.min).to.equals(25);
+                        expect(settings.ageRange.max).to.equals(40);
+
+                        done(null);
+                    });
+            });
+
+            it('User2 change search settings', function(done){
+
+                var url = '/users/searchSettings/';
+                var updateObj = {
+                    distance: newSearchDistance,
+                    relationship: newRelationShip,
+                    ageRange: newAgeRange
+                };
+
+                userAgent
+                    .put(url)
+                    .send(updateObj)
+                    .expect(200, function(err){
+
+                        if (err){
+                            done(err);
+                        }
+
+                        SearchSettings
+                            .findOne({user: uId2}, function(err, resultSettings){
+
+                                if (err){
+                                    done(err);
+                                }
+
+                                expect(resultSettings).to.instanceOf(Object);
+                                expect(resultSettings.distance).to.equals(newSearchDistance);
+                                expect(resultSettings.relationship).to.instanceOf(Array);
+                                expect(resultSettings.relationship.length).to.equals(2);
+                                expect(resultSettings.relationship[0]).to.equals(newRelationShip[0]);
+                                expect(resultSettings.relationship[1]).to.equals(newRelationShip[1]);
+                                expect(resultSettings.ageRange).to.instanceOf(Object);
+                                expect(resultSettings.ageRange.min).to.equals(newAgeRange.min);
+                                expect(resultSettings.ageRange.max).to.equals(newAgeRange.max);
+
+                                done(null);
+
+                            });
+
+
+                    });
+
+            });
+
             it('User2 likes User1', function(done){
                 var model;
                 var url = '/users/like/' + uId1.toString();
@@ -492,7 +566,5 @@ module.exports = function (db, defaults) {
 
                     });
             });
-
-        });
     });
 };

@@ -36,7 +36,7 @@ var SearchSettingsHandler = function (db) {
         var userId = req.session.uId;
 
         SearchSettings
-            .findOne({user: ObjectId(userId)}, {__v: 0}, function (err, searchSettingsModel) {
+            .findOne({user: ObjectId(userId)}, {__v: 0, _id: 0}, function (err, searchSettingsModel) {
                 if (err) {
                     return next(err);
                 }
