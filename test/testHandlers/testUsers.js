@@ -531,7 +531,7 @@ module.exports = function (db, defaults) {
 
             it('Delete User', function(done){
 
-                var url = '/users/' + uId1.toString();
+                var url = '/users/';
 
                 userAgent
                     .delete(url)

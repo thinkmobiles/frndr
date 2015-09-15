@@ -149,6 +149,67 @@ var imageHandler = function (db) {
         });
     };
 
+    this.uploadPhotoToGallery = function (req, res, next) {
+
+        var uId = req.session.uId;
+        var imageModel;
+        var imageName = createImageName();
+
+        Image.findOne({user: uId}, function (err, resultModel) {
+
+            if (err) {
+                return next(err);
+            }
+
+            if (!resultModel) {
+
+                imageModel = new Image({user: uId, gallery: [imageName]});
+                imageModel
+                    .save(function (err) {
+
+                        if (err) {
+                            return next(err);
+                        }
+
+                        imageUploader.uploadImage(imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
+
+                            if (err) {
+                                return next(err);
+                            }
+
+                            res.status(200).send({success: 'Gallery image upload successfully'});
+
+                        });
+
+                    });
+
+            } else {
+
+                resultModel
+                    .update({$addToSet: {gallery: imageName}}, function(err){
+
+                        if (err){
+                            return next(err);
+                        }
+
+                        imageUploader.uploadImage(imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
+
+                            if (err) {
+                                return next(err);
+                            }
+
+                            res.status(200).send({success: 'Gallery image upload successfully'});
+
+                        });
+
+                    });
+
+            }
+
+        });
+
+    };
+
     this.removeImageFromGallery = function (req, res, next) {
         var userId = req.session.uId;
         var options = req.body;
@@ -223,7 +284,7 @@ var imageHandler = function (db) {
                 return res.status(200).send({'urls': []});
             }
 
-            for (var i, length = len; i < length; i++) {
+            for (var i = 0; i < len; i++) {
                 urls.push(imageUploader.getImageUrl(photoNames[i], CONSTANTS.BUCKETS.GALLERY) + '.png');
             }
 
