@@ -15,7 +15,6 @@ var UserHandler = function (db) {
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
     var imageHandler = new ImageHandler(db);
-    var searchSettingsModel;
 
     this.signInClient = function (req, res, next) {
         var options = req.body;
