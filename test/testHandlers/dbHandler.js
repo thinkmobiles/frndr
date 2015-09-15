@@ -3,6 +3,7 @@ var async = require('async');
 var DbHandler = function (db) {
     var User = db.model('User');
     var Like = db.model('Like');
+    var Image = db.model('Image');
     var Message = db.model('Message');
     var SearchSettings = db.model('SearchSettings');
     var PushTokens = db.model('PushTokens');
@@ -48,6 +49,15 @@ var DbHandler = function (db) {
 
                 function (cb) {
                     PushTokens.remove({}, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+                        cb();
+                    })
+                },
+
+                function (cb) {
+                    Image.remove({}, function (err) {
                         if (err) {
                             return cb(err);
                         }
