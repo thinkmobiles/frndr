@@ -4,6 +4,7 @@ module.exports = function(db){
 
     require('./user')(db);
     require('./like')(db);
+    require('./image')(db);
     require('./message')(db);
     require('./searchSettings')(db);
     require('./pushTokens')(db);
