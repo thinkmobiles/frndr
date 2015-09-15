@@ -11,7 +11,10 @@ module.exports = function(app, db){
     var image = new ImageHandler(db);
 
     router.post('/avatar', image.uploadAvatar);
+    router.delete('/avatar', image.removeAvatar);
     router.get('/avatar', image.getAvatarUrl);
+    router.delete('/photo', image.removeImageFromGallery);
+    router.get('/photo', image.getPhotoUrls);
 
     return router;
 };

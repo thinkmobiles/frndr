@@ -3,8 +3,10 @@
  */
 var SessionHandler = require('./sessions');
 var async = require('async');
+var CONSTANTS = require('../constants/index');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+var badRequests = require('../helpers/badRequests');
 
 var uploaderConfig;
 var amazonS3conf;
@@ -24,18 +26,18 @@ if (process.env.UPLOADER_TYPE === 'AmazonS3') {
 
 var imageUploader = require('../helpers/imageUploader/imageUploader')(uploaderConfig);
 
-var imageHandler = function(db){
-
+var imageHandler = function (db) {
     var Image = db.model('Image');
+    var self = this;
 
-    function createImageName (){
+    function createImageName() {
         return new ObjectId();
     }
 
-    this.removeImageFile = function(fileName, folderName, callback){
+    this.removeImageFile = function (fileName, folderName, callback) {
         imageUploader.removeImage(fileName, folderName, callback);
     };
-    
+
     this.uploadAvatar = function (req, res, next) {
         var uId = req.session.uId;
         var imageString = req.body.image;
@@ -51,7 +53,7 @@ var imageHandler = function(db){
             if (!resultUser) {
                 imageName = createImageName();
                 imageModel = new Image({user: uId, avatar: imageName});
-                imageUploader.uploadImage(imageString, imageName, 'avatar', function (err) {
+                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
 
                     if (err) {
                         return next(err);
@@ -77,7 +79,8 @@ var imageHandler = function(db){
                     imageName = createImageName();
                 }
 
-                imageUploader.uploadImage(imageString, imageName, 'avatar', function (err) {
+               
+                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
 
                     if (err) {
                         return next(err);
@@ -107,15 +110,123 @@ var imageHandler = function(db){
                 avatarName = resultModel.get('avatar');
             }
 
-            url = imageUploader.getImageUrl(avatarName, 'avatar') + '.png';
+            url = imageUploader.getImageUrl(avatarName, CONSTANTS.BUCKETS.AVATAR) + '.png';
 
             res.status(200).send({'url': url});
 
         });
-
-
     };
 
+    this.removeAvatar = function (req, res, next) {
+        var userId = req.session.uId;
+        var avatarName;
+
+        Image.findOne({user: userId}, function (err, imageModel) {
+            if (err) {
+                return next(err);
+            }
+
+            avatarName = imageModel.get('avatar');
+
+            if (!avatarName.length) {
+                return res.status(200).send('There is no user avatar');
+            }
+
+            self.removeImageFile(avatarName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+                if (err) {
+                    return next(err);
+                }
+
+                imageModel.avatar = ''; //add default imageName maybe
+
+                imageModel.save(function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).send({success: 'Avatar removed successfully'});
+                });
+            });
+        });
+    };
+
+    this.removeImageFromGallery = function (req, res, next) {
+        var userId = req.session.uId;
+        var options = req.body;
+        var photoNames;
+        var imageName;
+
+        if (!options || !options.image) {
+            return next(badRequests.NotEnParams({message: 'image required'}));
+        }
+
+        imageName = options.image;
+
+        Image.findOne({user: userId}, function (err, imageModel) {
+            if (err) {
+                return next(err);
+            }
+
+            if (!imageModel) {
+                return next(badRequests.NotFound({message: 'There is no gallery for current user'}));
+            }
+
+            photoNames = imageModel.get('gallery');
+
+            if (!photoNames.length) {
+                return res.status(200).send('There is no photo in user gallery');
+            }
+
+            self.removeImageFile(imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {
+                var index = photoNames.indexOf(imageName);
+
+                if (err) {
+                    return next(err);
+                }
+
+                photoNames.splice(index, 1);
+                imageModel.gallery = photoNames;
+
+                imageModel.save(function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).send({success: 'Image from gallery removed successfully'});
+                });
+            });
+        });
+    };
+
+    this.getPhotoUrls = function (req, res, next) {
+        var uId = req.session.uId;
+        var photoNames;
+        var urls = [];
+
+        Image.findOne({user: uId}, function (err, imageModel) {
+            var len;
+
+            if (err) {
+                return next(err);
+            }
+
+            if (!imageModel) {
+                return res.status(200).send({'urls': []});
+            }
+
+            photoNames = imageModel.get('gallery');
+            len = photoNames.length;
+
+            if (!len){
+                return res.status(200).send({'urls': []});
+            }
+
+            for (var i, length = len; i < length; i++) {
+                urls.push(imageUploader.getImageUrl(photoNames[i], CONSTANTS.BUCKETS.GALLERY) + '.png');
+            }
+
+            res.status(200).send({'urls': urls});
+
+        });
+    };
 
 
 };
