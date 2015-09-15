@@ -24,5 +24,6 @@ module.exports = function(app, db){
     // test
 
     router.post('/avatar', image.uploadAvatar);
+    router.get('')
     return router;
 };

@@ -5,6 +5,7 @@ module.exports = function(app, db){
 
     var userHandler = new UserHandler(db);
     var userRouter = require('./users')(app, db);
+    var imageRouter = require('./image')(app, db);
 
     app.get('/', function(req, res, next){
         res.status(200).send( 'Express start succeed' );
@@ -14,6 +15,7 @@ module.exports = function(app, db){
     app.get('/signOut', userHandler.signOut);
 
     app.use('/users', userRouter);
+    app.use('/image', imageRouter);
 
     function notFound(req, res, next){
         next();
