@@ -93,7 +93,6 @@ var imageHandler = function(db){
                 return next(err);
             }
 
-
             avatarName = resultModel.get('avatar');
 
             url = imageUploader.getImageUrl(avatarName, 'avatar') + '.png';
