@@ -39,22 +39,24 @@ var imageHandler = function (db) {
     this.uploadAvatar = function (req, res, next) {
         var uId = req.session.uId;
         var imageString = req.body.image;
-        var imageName = createImageName();
         var imageModel;
+        var imageName;
 
-        imageUploader.uploadImage(imageString, imageName, 'avatar', function (err) {
+        Image.findOne({user: uId}, function (err, resultUser) {
+
             if (err) {
                 return next(err);
             }
 
-            Image.findOne({user: uId}, function (err, resultUser) {
+            if (!resultUser) {
+                imageName = createImageName();
+                imageModel = new Image({user: uId, avatar: imageName});
+                imageUploader.uploadImage(imageString, imageName, 'avatar', function (err) {
 
-                if (err) {
-                    return next(err);
-                }
+                    if (err) {
+                        return next(err);
+                    }
 
-                if (!resultUser) {
-                    imageModel = new Image({user: uId, avatar: imageName});
                     imageModel
                         .save(function (err) {
                             if (err) {
@@ -64,20 +66,23 @@ var imageHandler = function (db) {
                             res.status(200).send({success: 'Image upload successfully'});
 
                         });
-                } else {
 
-                    resultUser.update({$set: {avatar: imageName}}, function (err) {
-                        if (err) {
-                            return next(err);
-                        }
+                });
 
-                        res.status(200).send({success: 'Image upload successfully'});
+            } else {
 
-                    });
+                imageName = resultUser.get('avatar');
 
-                }
-            });
+                imageUploader.uploadImage(imageString, imageName, 'avatar', function (err) {
 
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).send({success: 'Image upload successfully'});
+
+                });
+
+            }
         });
     };
 
@@ -92,13 +97,11 @@ var imageHandler = function (db) {
                 return next(err);
             }
 
-
             avatarName = resultModel.get('avatar');
 
-            url = imageUploader.getImageUrl(avatarName, 'avatar');
+            url = imageUploader.getImageUrl(avatarName, 'avatar') + '.png';
 
             res.status(200).send({'url': url});
-
 
         });
     };
@@ -130,6 +133,8 @@ var imageHandler = function (db) {
             });
         });
     };
+
+
 
 };
 
