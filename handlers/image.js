@@ -75,6 +75,11 @@ var imageHandler = function (db) {
 
                 imageName = resultUser.get('avatar');
 
+                if (!imageName){
+                    imageName = createImageName();
+                }
+
+               
                 imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
 
                     if (err) {
@@ -99,7 +104,11 @@ var imageHandler = function (db) {
                 return next(err);
             }
 
-            avatarName = resultModel.get('avatar');
+            if (!resultModel){
+                avatarName = '';
+            } else {
+                avatarName = resultModel.get('avatar');
+            }
 
             url = imageUploader.getImageUrl(avatarName, CONSTANTS.BUCKETS.AVATAR) + '.png';
 

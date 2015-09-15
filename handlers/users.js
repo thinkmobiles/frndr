@@ -16,7 +16,6 @@ var UserHandler = function (db) {
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
     var imageHandler = new ImageHandler(db);
-    var searchSettingsModel;
 
     function removeAvatar(avatarName, callback) {
 
