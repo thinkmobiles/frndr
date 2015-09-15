@@ -9,6 +9,7 @@ var UserHandler = function (db) {
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');
     var Like = db.model('Like');
+    var Image = db.model('Image');
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
@@ -69,8 +70,8 @@ var UserHandler = function (db) {
         })
     };
 
-    this.deleteUserById = function (req, res, next) {
-        var userId = req.params.id;
+    this.deleteCurrentUser = function (req, res, next) {
+        var userId = req.session.uId;
 
         userHelper.deleteUserById(userId, function (err) {
             if (err) {
@@ -104,6 +105,60 @@ var UserHandler = function (db) {
                     //remove Like model
                     function (cb) {
                         Like.remove({user: ObjectId(userId)}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                    },
+
+                    //try to delete all user images from Filesystem
+                    function (cb){
+                        Image
+                            .findOne({user: ObjectId(userId)}, function(err, imageModel){
+                                var galleryArrayNames;
+
+                                if (err){
+                                    return cb(err);
+                                }
+
+                                if (!imageModel){
+                                    return cb();
+                                }
+
+                                galleryArrayNames = imageModel.get('gallery');
+
+                                if (galleryArrayNames.length === 0) {
+                                    return cb();
+                                }
+
+                                async.each(galleryArrayNames,
+
+                                    function(asyncCb){
+
+
+                                    },
+
+                                    function(err){
+                                        if (err){
+                                            return cb(err);
+                                        }
+                                        cb (null, imageModel);
+                                    });
+
+                            })
+                    },
+
+                    //remove Image model
+                    function (imageModel, cb) {
+
+                        if (!imageModel){
+                            return cb();
+                        }
+
+                        imageModel
+                            .remove(function (err) {
                             if (err) {
                                 return cb(err);
                             }

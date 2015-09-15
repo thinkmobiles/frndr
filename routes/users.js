@@ -16,7 +16,7 @@ module.exports = function(app, db){
     router.get('/dislike/:id', like.dislikesUserById);
     router.get('/:id?', userHandler.getUserById);
     router.put('/', userHandler.updateProfile);
-    router.delete('/:id', userHandler.deleteUserById);
+    router.delete('/', userHandler.deleteCurrentUser);
 
     return router;
 };
