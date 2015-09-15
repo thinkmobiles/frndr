@@ -79,16 +79,22 @@ var imageHandler = function (db) {
                     imageName = createImageName();
                 }
 
-               
-                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+                resultUser.update({$set: {avatar: imageName}}, function(err){
 
-                    if (err) {
-                        return next(err);
+                    if (err){
+
+                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+
+                            if (err) {
+                                return next(err);
+                            }
+                            res.status(200).send({success: 'Image upload successfully'});
+
+                        });
+
                     }
-                    res.status(200).send({success: 'Image upload successfully'});
 
                 });
-
             }
         });
     };

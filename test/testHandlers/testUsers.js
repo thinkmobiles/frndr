@@ -542,7 +542,7 @@ module.exports = function (db, defaults) {
                         }
 
                         User
-                            .findOne({_id: uId1}, function(err, resultUser){
+                            .findOne({_id: uId2}, function(err, resultUser){
 
                                 if (err){
                                     return done(err);
@@ -551,7 +551,7 @@ module.exports = function (db, defaults) {
                                 expect(resultUser).to.equals(null);
 
                                 PushTokens
-                                    .findOne({user: uId1}, function(err, resultToken){
+                                    .findOne({user: uId2}, function(err, resultToken){
 
                                         if (err){
                                             return done(err);
