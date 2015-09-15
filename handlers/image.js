@@ -82,17 +82,17 @@ var imageHandler = function (db) {
                 resultUser.update({$set: {avatar: imageName}}, function(err){
 
                     if (err){
-
-                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
-
-                            if (err) {
-                                return next(err);
-                            }
-                            res.status(200).send({success: 'Image upload successfully'});
-
-                        });
-
+                        return next(err);
                     }
+
+                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+
+                        if (err) {
+                            return next(err);
+                        }
+                        res.status(200).send({success: 'Image upload successfully'});
+
+                    });
 
                 });
             }
