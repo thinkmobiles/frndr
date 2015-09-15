@@ -230,6 +230,8 @@ var imageHandler = function (db) {
         imageName = options.image;
 
         Image.findOne({user: userId}, function (err, imageModel) {
+            var index;
+
             if (err) {
                 return next(err);
             }
@@ -239,20 +241,19 @@ var imageHandler = function (db) {
             }
 
             photoNames = imageModel.get('gallery');
+            index = photoNames.indexOf(imageName);
+
+            if (index === -1){
+                return res.status(200).send('User havent photo with such name');
+            }
 
             if (!photoNames.length) {
                 return res.status(200).send('There is no photo in user gallery');
             }
 
             self.removeImageFile(imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {
-                var index = photoNames.indexOf(imageName);
-
                 if (err) {
                     return next(err);
-                }
-
-                if (index === -1){
-                    return res.status(200).send('User havent photo with such name');
                 }
 
                 photoNames.splice(index, 1);
