@@ -158,6 +158,7 @@ var imageHandler = function (db) {
     this.uploadPhotoToGallery = function (req, res, next) {
 
         var uId = req.session.uId;
+        var imageString = req.body.image;
         var imageModel;
         var imageName = createImageName();
 
@@ -177,7 +178,7 @@ var imageHandler = function (db) {
                             return next(err);
                         }
 
-                        imageUploader.uploadImage(imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
+                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
 
                             if (err) {
                                 return next(err);
@@ -198,7 +199,7 @@ var imageHandler = function (db) {
                             return next(err);
                         }
 
-                        imageUploader.uploadImage(imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
+                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
 
                             if (err) {
                                 return next(err);

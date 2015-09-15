@@ -13,6 +13,7 @@ module.exports = function(app, db){
     router.post('/avatar', image.uploadAvatar);
     router.delete('/avatar', image.removeAvatar);
     router.get('/avatar', image.getAvatarUrl);
+    router.post('/photo', image.uploadPhotoToGallery);
     router.delete('/photo', image.removeImageFromGallery);
     router.get('/photo', image.getPhotoUrls);
 
