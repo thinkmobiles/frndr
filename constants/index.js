@@ -14,5 +14,9 @@ module.exports = {
         LESBIAN: 'lesbian',
         BISEXUAL: 'bisexual',
         ANY: 'any'
+    },
+    BUCKETS:{
+        AVATAR:'avatar',
+        GALLERY:'gallery'
     }
 };
