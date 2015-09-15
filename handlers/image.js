@@ -174,6 +174,10 @@ var imageHandler = function (db) {
                     return next(err);
                 }
 
+                if (index === -1){
+                    return res.status(200).send('User havent photo with such name');
+                }
+
                 photoNames.splice(index, 1);
                 imageModel.gallery = photoNames;
 
