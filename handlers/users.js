@@ -2,6 +2,7 @@ var SessionHandler = require('./sessions');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
+var ImageHandler = require('./image');
 
 
 var UserHandler = function (db) {
@@ -13,6 +14,7 @@ var UserHandler = function (db) {
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
+    var imageHandler = new ImageHandler(db);
     var searchSettingsModel;
 
     this.signInClient = function (req, res, next) {
@@ -118,6 +120,7 @@ var UserHandler = function (db) {
                         Image
                             .findOne({user: ObjectId(userId)}, function(err, imageModel){
                                 var galleryArrayNames;
+                                var avatarName;
 
                                 if (err){
                                     return cb(err);
@@ -126,26 +129,58 @@ var UserHandler = function (db) {
                                 if (!imageModel){
                                     return cb();
                                 }
-
+                                avatarName = imageModel.get('avatar');
                                 galleryArrayNames = imageModel.get('gallery');
 
-                                if (galleryArrayNames.length === 0) {
+                                if (!avatarName.length && !galleryArrayNames.length){
                                     return cb();
                                 }
 
-                                async.each(galleryArrayNames,
+                                async.waterfall([
 
-                                    function(asyncCb){
+                                    function(waterfallCb){
 
+                                        if (!avatarName.length){
+                                            return waterfallCb();
+                                        }
 
+                                        imageHandler.removeImageFile(avatarName, 'avatar', function(err){
+                                            if (err){
+                                                return waterfallCb(err);
+                                            }
+                                        });
                                     },
 
-                                    function(err){
-                                        if (err){
-                                            return cb(err);
+                                    function(waterfallCb){
+
+                                        if (!galleryArrayNames.length){
+                                            return waterfallCb();
                                         }
-                                        cb (null, imageModel);
-                                    });
+
+                                        async.each(galleryArrayNames,
+
+                                            function(galleryName, eachCb){
+                                                imageHandler.removeImageFile(galleryName, 'gallery', eachCb);
+                                            },
+
+                                            function(err){
+                                                if (err){
+                                                    return waterfallCb(err);
+                                                }
+                                                waterfallCb ();
+                                            });
+                                    }
+
+
+                                ],
+
+                                function(err){
+                                    if (err){
+                                        return cb(err);
+                                    }
+
+                                    cb(null, imageModel);
+                                });
 
                             })
                     },

@@ -32,6 +32,10 @@ var imageHandler = function(db){
         return new ObjectId();
     }
 
+    this.removeImageFile = function(fileName, folderName, callback){
+        imageUploader.removeImage(fileName, folderName, callback);
+    };
+
     this.uploadAvatar = function(req, res, next){
         var uId = req.session.uId;
         var imageString = req.body.image;
