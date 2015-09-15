@@ -60,8 +60,6 @@ module.exports = function (db, defaults) {
 
     describe('Test users', function () {
 
-        describe('Test session', function () {
-
             it('SignUp Bad parameters', function (done) {
 
                 var url = '/signIn';
@@ -568,7 +566,5 @@ module.exports = function (db, defaults) {
 
                     });
             });
-
-        });
     });
 };
