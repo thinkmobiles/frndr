@@ -11,6 +11,6 @@ process.env.REDIS_PORT = '6379';
 process.env.REDIS_DB_KEY = '9';*/
 
 process.env.UPLOADER_TYPE = 'FileSystem';
-process.env.FILESYSTEM_BUCKET = 'uploads/' + process.env.NODE_ENV.toLowerCase();
+process.env.FILESYSTEM_BUCKET = 'public/uploads/' + process.env.NODE_ENV.toLowerCase();
 
 

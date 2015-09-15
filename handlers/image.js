@@ -91,7 +91,7 @@ var imageHandler = function(db){
 
             avatarName = resultModel.get('avatar');
 
-            url = imageUploader.getImageUrl(avatarName, 'avatar');
+            url = imageUploader.getImageUrl(avatarName, 'avatar') + '.png';
 
             res.status(200).send({'url': url});
 

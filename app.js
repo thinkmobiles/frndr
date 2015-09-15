@@ -48,7 +48,8 @@ module.exports = function () {
     app.set('io', io);
 
     //=========================================
-
+    app.use(express.static(__dirname + '/public'));
+    console.log(__dirname);
     app.use(logger('dev'));
     app.use(bodyParser.json({strict: false, limit: 1024 * 1024 * 200}));
     app.use(bodyParser.urlencoded({extended: false}));
