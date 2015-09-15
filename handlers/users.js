@@ -2,6 +2,7 @@ var SessionHandler = require('./sessions');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
+var ImageHandler = require('./image');
 
 
 var UserHandler = function (db) {
@@ -9,9 +10,11 @@ var UserHandler = function (db) {
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');
     var Like = db.model('Like');
+    var Image = db.model('Image');
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
+    var imageHandler = new ImageHandler(db);
     var searchSettingsModel;
 
     this.signInClient = function (req, res, next) {
@@ -69,8 +72,8 @@ var UserHandler = function (db) {
         })
     };
 
-    this.deleteUserById = function (req, res, next) {
-        var userId = req.params.id;
+    this.deleteCurrentUser = function (req, res, next) {
+        var userId = req.session.uId;
 
         userHelper.deleteUserById(userId, function (err) {
             if (err) {
@@ -104,6 +107,93 @@ var UserHandler = function (db) {
                     //remove Like model
                     function (cb) {
                         Like.remove({user: ObjectId(userId)}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                    },
+
+                    //try to delete all user images from Filesystem
+                    function (cb){
+                        Image
+                            .findOne({user: ObjectId(userId)}, function(err, imageModel){
+                                var galleryArrayNames;
+                                var avatarName;
+
+                                if (err){
+                                    return cb(err);
+                                }
+
+                                if (!imageModel){
+                                    return cb();
+                                }
+                                avatarName = imageModel.get('avatar');
+                                galleryArrayNames = imageModel.get('gallery');
+
+                                if (!avatarName.length && !galleryArrayNames.length){
+                                    return cb();
+                                }
+
+                                async.waterfall([
+
+                                    function(waterfallCb){
+
+                                        if (!avatarName.length){
+                                            return waterfallCb();
+                                        }
+
+                                        imageHandler.removeImageFile(avatarName, 'avatar', function(err){
+                                            if (err){
+                                                return waterfallCb(err);
+                                            }
+                                        });
+                                    },
+
+                                    function(waterfallCb){
+
+                                        if (!galleryArrayNames.length){
+                                            return waterfallCb();
+                                        }
+
+                                        async.each(galleryArrayNames,
+
+                                            function(galleryName, eachCb){
+                                                imageHandler.removeImageFile(galleryName, 'gallery', eachCb);
+                                            },
+
+                                            function(err){
+                                                if (err){
+                                                    return waterfallCb(err);
+                                                }
+                                                waterfallCb ();
+                                            });
+                                    }
+
+
+                                ],
+
+                                function(err){
+                                    if (err){
+                                        return cb(err);
+                                    }
+
+                                    cb(null, imageModel);
+                                });
+
+                            })
+                    },
+
+                    //remove Image model
+                    function (imageModel, cb) {
+
+                        if (!imageModel){
+                            return cb();
+                        }
+
+                        imageModel
+                            .remove(function (err) {
                             if (err) {
                                 return cb(err);
                             }
