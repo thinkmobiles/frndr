@@ -1,4 +1,5 @@
 var SessionHandler = require('./sessions');
+var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
@@ -16,6 +17,41 @@ var UserHandler = function (db) {
     var ObjectId = mongoose.Types.ObjectId;
     var imageHandler = new ImageHandler(db);
     var searchSettingsModel;
+
+    function removeAvatar(avatarName, callback) {
+
+        if (!avatarName.length) {
+            return callback();
+        }
+
+        imageHandler.removeImageFile(avatarName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+            if (err) {
+                return callback(err);
+            }
+
+            callback();
+        });
+    }
+
+    function removeGalleryPhotoes(galleryArrayNames, callback) {
+
+        if (!galleryArrayNames.length) {
+            return callback();
+        }
+
+        async.each(galleryArrayNames,
+
+            function (galleryName, cb) {
+                imageHandler.removeImageFile(galleryName, CONSTANTS.BUCKETS.GALLERY, cb);
+            },
+
+            function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                callback();
+            });
+    }
 
     this.signInClient = function (req, res, next) {
         var options = req.body;
@@ -116,90 +152,47 @@ var UserHandler = function (db) {
                     },
 
                     //try to delete all user images from Filesystem
-                    function (cb){
+                    function (cb) {
                         Image
-                            .findOne({user: ObjectId(userId)}, function(err, imageModel){
+                            .findOne({user: ObjectId(userId)}, function (err, imageModel) {
                                 var galleryArrayNames;
                                 var avatarName;
 
-                                if (err){
+                                if (err) {
                                     return cb(err);
                                 }
 
-                                if (!imageModel){
+                                if (!imageModel) {
                                     return cb();
                                 }
                                 avatarName = imageModel.get('avatar');
                                 galleryArrayNames = imageModel.get('gallery');
 
-                                if (!avatarName.length && !galleryArrayNames.length){
-                                    return cb();
-                                }
+                                async.parallel([
+                                        async.apply(removeAvatar, avatarName),
+                                        async.apply(removeGalleryPhotoes, galleryArrayNames),
+                                        function(callback){
+                                            //remove Image model
+                                            imageModel
+                                                .remove(function (err) {
+                                                    if (err) {
+                                                        return callback(err);
+                                                    }
 
-                                async.waterfall([
-
-                                    function(waterfallCb){
-
-                                        if (!avatarName.length){
-                                            return waterfallCb();
+                                                    callback();
+                                                });
                                         }
+                                    ],
 
-                                        imageHandler.removeImageFile(avatarName, 'avatar', function(err){
-                                            if (err){
-                                                return waterfallCb(err);
-                                            }
-                                        });
-                                    },
-
-                                    function(waterfallCb){
-
-                                        if (!galleryArrayNames.length){
-                                            return waterfallCb();
+                                    function (err) {
+                                        if (err) {
+                                            return cb(err);
                                         }
+                                        cb();
+                                    });
 
-                                        async.each(galleryArrayNames,
-
-                                            function(galleryName, eachCb){
-                                                imageHandler.removeImageFile(galleryName, 'gallery', eachCb);
-                                            },
-
-                                            function(err){
-                                                if (err){
-                                                    return waterfallCb(err);
-                                                }
-                                                waterfallCb ();
-                                            });
-                                    }
-
-
-                                ],
-
-                                function(err){
-                                    if (err){
-                                        return cb(err);
-                                    }
-
-                                    cb(null, imageModel);
-                                });
 
                             })
-                    },
-
-                    //remove Image model
-                    function (imageModel, cb) {
-
-                        if (!imageModel){
-                            return cb();
-                        }
-
-                        imageModel
-                            .remove(function (err) {
-                            if (err) {
-                                return cb(err);
-                            }
-
-                            cb();
-                        });
                     }
                 ],
 
@@ -235,13 +228,13 @@ var UserHandler = function (db) {
             });
     };
 
-    this.findNearestUsers = function(req, res, next){
+    this.findNearestUsers = function (req, res, next) {
         var distance = req.params.d;
         var uId = req.session.uId;
 
-        userHelper.getAllUserByGeoLocation(uId, distance, function(err, resultUser){
+        userHelper.getAllUserByGeoLocation(uId, distance, function (err, resultUser) {
 
-            if (err){
+            if (err) {
                 return next(err);
             }
 
