@@ -24,40 +24,40 @@ if (process.env.UPLOADER_TYPE === 'AmazonS3') {
 
 var imageUploader = require('../helpers/imageUploader/imageUploader')(uploaderConfig);
 
-var imageHandler = function(db){
-
+var imageHandler = function (db) {
     var Image = db.model('Image');
+    var self = this;
 
-    function createImageName (){
+    function createImageName() {
         return new ObjectId();
     }
 
-    this.removeImageFile = function(fileName, folderName, callback){
+    this.removeImageFile = function (fileName, folderName, callback) {
         imageUploader.removeImage(fileName, folderName, callback);
     };
 
-    this.uploadAvatar = function(req, res, next){
+    this.uploadAvatar = function (req, res, next) {
         var uId = req.session.uId;
         var imageString = req.body.image;
         var imageName = createImageName();
         var imageModel;
 
-        imageUploader.uploadImage(imageString, imageName, 'avatar', function(err){
-            if (err){
+        imageUploader.uploadImage(imageString, imageName, 'avatar', function (err) {
+            if (err) {
                 return next(err);
             }
 
-            Image.findOne({user: uId}, function(err, resultUser){
+            Image.findOne({user: uId}, function (err, resultUser) {
 
-                if (err){
+                if (err) {
                     return next(err);
                 }
 
-                if (!resultUser){
+                if (!resultUser) {
                     imageModel = new Image({user: uId, avatar: imageName});
                     imageModel
-                        .save(function(err){
-                            if (err){
+                        .save(function (err) {
+                            if (err) {
                                 return next(err);
                             }
 
@@ -66,10 +66,10 @@ var imageHandler = function(db){
                         });
                 } else {
 
-                    resultUser.update({$set: {avatar: imageName}}, function(err){
-                       if (err){
-                           return next(err);
-                       }
+                    resultUser.update({$set: {avatar: imageName}}, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
 
                         res.status(200).send({success: 'Image upload successfully'});
 
@@ -101,8 +101,34 @@ var imageHandler = function(db){
 
 
         });
+    };
 
+    this.removeAvatar = function (req, res, next) {
+        var userId = req.session.uId;
+        var avatarName;
 
+        Image.findOne({user: userId}, function (err, imageModel) {
+            if (err) {
+                return next(err);
+            }
+
+            avatarName = imageModel.get('avatar');
+
+            self.removeImageFile(avatarName, 'avatar', function (err) {
+                if (err) {
+                    return next(err);
+                }
+
+                imageModel.setAttribute('avatar', '');
+
+                imageModel.save(function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).send({success: 'Avatar removed successfully'});
+                });
+            });
+        });
     };
 
 };

@@ -11,6 +11,7 @@ module.exports = function(app, db){
     var image = new ImageHandler(db);
 
     router.post('/avatar', image.uploadAvatar);
+    router.delete('/avatar', image.removeAvatar);
     router.get('/avatar', image.getAvatarUrl);
 
     return router;
