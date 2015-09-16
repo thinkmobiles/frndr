@@ -21,6 +21,7 @@ module.exports = function(app, db){
     router.get('/like/:id',sessionHandler.authenticatedUser,  like.likeUserById);
     router.get('/dislike/:id', sessionHandler.authenticatedUser, like.dislikesUserById);
     router.get('/:id?', sessionHandler.authenticatedUser, userHandler.getUserById);
+    router.put('/notifications', sessionHandler.authenticatedUser, userHandler.updateNotifications);
     router.put('/', sessionHandler.authenticatedUser, userHandler.updateProfile);
     router.delete('/', sessionHandler.authenticatedUser, userHandler.deleteCurrentUser);
 
