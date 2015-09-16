@@ -1,4 +1,3 @@
-
 /**
  * @description Image management module
  * @module imageHandler

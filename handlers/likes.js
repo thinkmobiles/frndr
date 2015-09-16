@@ -1,14 +1,40 @@
+/**
+ * @description Like/Dislike module
+ * @module likeHandler
+ *
+ */
+
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
 
 
 var LikesHandler = function (db) {
+
     var Like = db.model('Like');
     var User = db.model('User');
     var ObjectId = mongoose.Types.ObjectId;
 
     this.likeUserById = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/users/like/:id`__
+         *
+         * This __method__ allows _User_ like some people
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/users/like/55f6ad4bb70b86d02a0d1751
+         *
+         * @method likeUserById
+         * @instance
+         */
+
         var userId = req.session.uId;
         var likedUserId = req.params.id;
 
@@ -123,6 +149,25 @@ var LikesHandler = function (db) {
     };
 
     this.dislikesUserById = function(req, res, next){
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/users/dislike/:id`__
+         *
+         * This __method__ allows _User_ dislike some people
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/users/dislike/55f6ad4bb70b86d02a0d1751
+         *
+         * @method dislikesUserById
+         * @instance
+         */
+
         var uId = req.session.uId;
         var dislikeId = req.params.id;
         var likeModel;
