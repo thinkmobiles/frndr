@@ -366,7 +366,7 @@ module.exports = function (db) {
             }
 
             friendList = userModel.get('friends');
-            index = friendList(blockedId);
+            index = friendList.indexOf(blockedId);
 
             if (index !== -1){
                 friendList.splice(index, 1);
