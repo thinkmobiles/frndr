@@ -24,11 +24,13 @@ if (process.env.UPLOADER_TYPE === 'AmazonS3') {
     };
 }
 
-var imageUploader = require('../helpers/imageUploader/imageUploader')(uploaderConfig);
+
 
 var imageHandler = function (db) {
     var Image = db.model('Image');
     var self = this;
+
+    var imageUploader = require('../helpers/imageUploader/imageUploader')(uploaderConfig);
 
     function createImageName() {
         return new ObjectId();
@@ -116,8 +118,10 @@ var imageHandler = function (db) {
                 avatarName = resultModel.get('avatar');
             }
 
+            if (!avatarName){
+                return res.status(404).send('Avatar not found');
+            }
             url = imageUploader.getImageUrl(avatarName, CONSTANTS.BUCKETS.AVATAR) + '.png';
-
             res.status(200).send({'url': url});
 
         });
