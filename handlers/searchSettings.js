@@ -1,3 +1,11 @@
+
+/**
+ * @description searchSettings module
+ * @module searchSettingsHandler
+ *
+ */
+
+
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
 
@@ -33,6 +41,36 @@ var SearchSettingsHandler = function (db) {
     }
 
     this.getSearchSettings = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/users/searchSettings`__
+         *
+         * This __method__ allows get _User_ searchSettings
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/users/searchSettings
+         *
+         * @example Response example:
+         * {
+         *  "ageRange": {
+         *      "max": 40,
+         *      "min": 25
+         *   },
+         *   "sexual": "any",
+         *   "smoker": false,
+         *   "relationship": [],
+         *   "distance": 20
+         * }
+         * @method getSearchSettings
+         * @instance
+         */
+
         var userId = req.session.uId;
 
         SearchSettings
@@ -50,6 +88,36 @@ var SearchSettingsHandler = function (db) {
     };
 
     this.updateSearchSettings = function (req, res, next) {
+
+        /**
+         * __Type__ __`PUT`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/users/searchSettings`__
+         *
+         * This __method__ allows update _User_ searchSettings
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/users/searchSettings
+         *
+         * @example Body example:
+         * {
+         *  "ageRange": {
+         *      "max": 40,
+         *      "min": 25
+         *   },
+         *   "sexual": "any",
+         *   "smoker": false,
+         *   "relationship": [],
+         *   "distance": 20
+         * }
+         * @method updateSearchSettings
+         * @instance
+         */
+
         var userId = req.session.uId;
         var saveData = prepareSaveData(req.body);
 

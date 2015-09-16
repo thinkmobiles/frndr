@@ -1,4 +1,3 @@
-
 /**
  * @description Image management module
  * @module imageHandler
@@ -66,7 +65,7 @@ var imageHandler = function (db) {
          *      "image":"data:image/png;base64, /9j/4AAQSkZ..."
          * }
          *
-         * @param {string} image - FaceBook Id for signing user (__`base64`__)
+         * @param {string} image - String image (__`base64`__)
          *
          * @method uploadAvatar
          * @instance
@@ -242,7 +241,31 @@ var imageHandler = function (db) {
 
     this.uploadPhotoToGallery = function (req, res, next) {
 
-
+        /**
+         * __Type__ __`POST`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/image/photo`__
+         *
+         * This __method__ allows upload _User_ photo to gallery
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/image/photo
+         *
+         *  @example Body example:
+         *
+         * {
+         *      "image":"data:image/png;base64, /9j/4AAQSkZ..."
+         * }
+         *
+         * @param {string} image - String image (__`base64`__)
+         *
+         * @method uploadPhotoToGallery
+         * @instance
+         */
 
         var uId = req.session.uId;
         var imageString = req.body.image;
@@ -305,6 +328,33 @@ var imageHandler = function (db) {
     };
 
     this.removeImageFromGallery = function (req, res, next) {
+
+        /**
+         * __Type__ __`DELETE`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/image/photo`__
+         *
+         * This __method__ allows delete _User_ photo from gallery
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/image/photo
+         *
+         * @example Body example:
+         *
+         *  {
+         *      "image":"55f8301713f2901e421b026b"
+         *  }
+         *
+         * @param {string} image - Image name
+         *
+         * @method removeImageFromGallery
+         * @instance
+         */
+
         var userId = req.session.uId;
         var options = req.body;
         var photoNames;
@@ -357,6 +407,33 @@ var imageHandler = function (db) {
     };
 
     this.getPhotoUrls = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/image/photo`__
+         *
+         * This __method__ allows get _User_ photo from gallery
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/image/photo
+         *
+         * @example Response example:
+         *
+         *   {
+         *       "urls": [
+         *                  "http://localhost:8859/uploads/development/gallery/55f8300013f2901e421b026a.png"
+         *               ]
+         *   }
+         *
+         * @method getPhotoUrls
+         * @instance
+         */
+
         var uId = req.session.uId;
         var photoNames;
         var urls = [];
