@@ -1,4 +1,10 @@
 
+/**
+ * @description Image management module
+ * @module imageHandler
+ *
+ */
+
 var SessionHandler = require('./sessions');
 var async = require('async');
 var CONSTANTS = require('../constants/index');
@@ -39,6 +45,33 @@ var imageHandler = function (db) {
     };
 
     this.uploadAvatar = function (req, res, next) {
+
+        /**
+         * __Type__ __`POST`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/image/avatar`__
+         *
+         * This __method__ allows upload _User_ avatar
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/image/avatar
+         *
+         * @example Body example:
+         *
+         * {
+         *      "image":"data:image/png;base64, /9j/4AAQSkZ..."
+         * }
+         *
+         * @param {string} image - FaceBook Id for signing user (__`base64`__)
+         *
+         * @method uploadAvatar
+         * @instance
+         */
+
         var uId = req.session.uId;
         var imageString = req.body.image;
         var imageModel;
@@ -100,6 +133,31 @@ var imageHandler = function (db) {
     };
 
     this.getAvatarUrl = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/image/avatar`__
+         *
+         * This __method__ allows get _User_ avatar
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/image/avatar
+         *
+         * @example Response example:
+         *
+         *   {
+         *     "url": "http://localhost:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
+         *   }
+         *
+         * @method getAvatarUrl
+         * @instance
+         */
+
         var uId = req.params.id || req.session.uId;
         var avatarName;
         var url = '';
@@ -127,6 +185,26 @@ var imageHandler = function (db) {
     };
 
     this.removeAvatar = function (req, res, next) {
+
+        /**
+         * __Type__ __`DELETE`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/image/avatar`__
+         *
+         * This __method__ allows delete _User_ avatar
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/image/avatar
+         *
+         *
+         * @method removeAvatar
+         * @instance
+         */
+
         var userId = req.session.uId;
         var avatarName;
 
@@ -159,6 +237,9 @@ var imageHandler = function (db) {
     };
 
     this.uploadPhotoToGallery = function (req, res, next) {
+
+
+
         var uId = req.session.uId;
         var imageString = req.body.image;
         var imageModel;
