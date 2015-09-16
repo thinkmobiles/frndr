@@ -223,6 +223,44 @@ var UserHandler = function (db) {
         });
     };
 
+    this.updateNotifications = function (req, res, next) {
+        var userId = req.session.uId;
+        var options = req.body;
+
+        if (!options || (!(options.newFriends || (options.newFriends === false)) &&
+            !(options.newMessages || (options.newMessages === false)))) {
+            return next(badRequests.NotEnParams({message: 'newFriends or newMessages required'}));
+        }
+
+        userHelper.getUserById(userId, function (err, userModel) {
+            var notification;
+
+            if (err) {
+                return next(err);
+            }
+
+            notification = userModel.get('notification');
+
+            if (options.newFriends || (options.newFriends === false)) {
+                notification.newFriends = options.newFriends;
+            }
+
+            if (options.newMessages || (options.newMessages === false)) {
+                notification.newMessages = options.newMessages;
+            }
+
+            userModel.notification = notification;
+            userModel
+                .save(function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    res.status(200).send('Notifications updated successfully');
+                });
+        });
+    };
+
     this.findNearestUsers = function (req, res, next) {
         var distance = req.params.d;
         var uId = req.session.uId;
