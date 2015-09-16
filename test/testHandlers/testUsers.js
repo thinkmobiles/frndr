@@ -537,6 +537,68 @@ module.exports = function (db, defaults) {
                 });
         });
 
+        it('User2 have one friend user1', function(done){
+            var url = '/users/friendList';
+
+            userAgent
+                .get(url)
+                .expect(200, function(err, res){
+                    if (err){
+                        return done(err);
+                    }
+                    expect(res.body).instanceOf(Array);
+                    expect(res.body[0]).to.equals(uId1.toString());
+                    done();
+                })
+        });
+
+        it('User2 block friend user1', function(done){
+            var url = '/users/blockFriend/' + uId1.toString();
+
+            userAgent
+                .get(url)
+                .expect(200, function(err, res){
+                    if (err){
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id:uId2}, function(err, user2Model){
+                            var friendList;
+                            var blockList;
+
+                            if (err){
+                                return done(err);
+                            }
+
+                            friendList = user2Model.get('friends');
+                            blockList = user2Model.get('blockList');
+
+                            expect(friendList.indexOf(uId1.toString())).to.equals(-1);
+                            expect(blockList.indexOf(uId1.toString())).not.to.equals(-1);
+
+                            User
+                                .findOne({_id:uId1}, function(err, user1Model){
+                                    var friendList;
+                                    var blockList;
+
+                                    if (err){
+                                        return done(err);
+                                    }
+
+                                    friendList = user1Model.get('friends');
+                                    blockList = user1Model.get('blockList');
+
+                                    expect(friendList.indexOf(uId2.toString())).to.equals(-1);
+                                    expect(blockList.indexOf(uId2.toString())).not.to.equals(-1);
+
+
+                                    done();
+                                })
+                        })
+                })
+        });
+
         it('Delete User', function (done) {
 
             var url = '/users/';

@@ -212,6 +212,10 @@ var imageHandler = function (db) {
                 return next(err);
             }
 
+            if (!imageModel) {
+                return next(badRequests.NotFound({message: 'Nothing to remove'}));
+            }
+
             avatarName = imageModel.get('avatar');
 
             if (!avatarName.length) {
