@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 
 var ImageHandler = require('../handlers/image');
-var SessionHandler = require('../handlers/session');
+var SessionHandler = require('../handlers/sessions');
 
 module.exports = function(app, db){
     var sessionHandler = new SessionHandler();
