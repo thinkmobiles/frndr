@@ -176,7 +176,7 @@ module.exports = function(db){
 
                     body = res.body;
 
-                    expect(res.status).to.equals(404);
+                    expect(res.status).to.equals(400);
 
                     done(null);
 
