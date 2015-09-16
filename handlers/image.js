@@ -100,7 +100,7 @@ var imageHandler = function (db) {
     };
 
     this.getAvatarUrl = function (req, res, next) {
-        var uId = req.session.uId;
+        var uId = req.params.id || req.session.uId;
         var avatarName;
         var url = '';
 
@@ -156,7 +156,6 @@ var imageHandler = function (db) {
     };
 
     this.uploadPhotoToGallery = function (req, res, next) {
-
         var uId = req.session.uId;
         var imageString = req.body.image;
         var imageModel;
@@ -244,11 +243,11 @@ var imageHandler = function (db) {
             index = photoNames.indexOf(imageName);
 
             if (index === -1){
-                return res.status(200).send('User havent photo with such name');
+                return next(badRequests.NotFound({message: 'User havent photo with such file name'}));
             }
 
             if (!photoNames.length) {
-                return res.status(200).send('There is no photo in user gallery');
+                return next(badRequests.NotFound({message: 'There is no photo in user gallery'}));
             }
 
             self.removeImageFile(imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {

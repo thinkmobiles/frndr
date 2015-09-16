@@ -170,7 +170,7 @@ var UserHandler = function (db) {
                                 async.parallel([
                                         async.apply(removeAvatar, avatarName),
                                         async.apply(removeGalleryPhotoes, galleryArrayNames),
-                                        function(callback){
+                                        function (callback) {
                                             //remove Image model
                                             imageModel
                                                 .remove(function (err) {
@@ -209,22 +209,18 @@ var UserHandler = function (db) {
         var userId = req.session.uId;
         var options = req.body;
 
-        User
-            .findOne({_id: userId}, function (err, userModel) {
+        userHelper.getUserById(userId, function (err, userModel) {
+            if (err) {
+                return next(err);
+            }
+
+            userHelper.updateProfile(userModel, options, function (err) {
                 if (err) {
                     return next(err);
                 }
-                if (!userModel) {
-                    return next(badRequests.NotFound({message: 'User not found'}));
-                }
-
-                userHelper.updateProfile(userModel, options, function (err) {
-                    if (err) {
-                        return next(err);
-                    }
-                    res.status(200).send({success: 'Profile updated successfully'});
-                });
+                res.status(200).send({success: 'Profile updated successfully'});
             });
+        });
     };
 
     this.findNearestUsers = function (req, res, next) {
@@ -241,6 +237,42 @@ var UserHandler = function (db) {
 
         });
 
+    };
+
+    this.getFriendList = function (req, res, next) {
+        var userId = req.session.uId;
+
+        userHelper.getUserById(userId, function (err, userModel) {
+            var friends;
+
+            if (err) {
+                return next(err);
+            }
+
+            friends = userModel.get('friends');
+
+            res.status(200).send(friends);
+        });
+    };
+
+    this.blockFriend = function (req, res, next) {
+        var userId = req.session.uId;
+        var blockedId = req.params.id;
+
+        async.parallel([
+
+                async.apply(userHelper.addToBlockListById, userId, blockedId),
+                async.apply(userHelper.addToBlockListById, blockedId, userId)
+
+            ],
+
+            function (err, result) {
+                if (err) {
+                    return next(err);
+                }
+
+                res.status(200).send({success: 'User blocked successfully'});
+            })
     };
 };
 

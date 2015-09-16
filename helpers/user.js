@@ -247,8 +247,10 @@ module.exports = function (db) {
 
         async
             .parallel([
+
                 async.apply(updateCoordinates, updateData.coordinates),
                 async.apply(updatePushToken, updateData.pushToken, updateData.os)
+
             ], function (err) {
 
                 if (err) {
@@ -349,13 +351,47 @@ module.exports = function (db) {
             });
     };
 
+    function addToBlockListById (userId, blockedId, callback){
+
+        getUserById(userId, function (err, userModel) {
+            var index;
+            var friendList;
+
+            if (err) {
+                return callback(err);
+            }
+
+            if (userModel.blockList.indexOf(blockedId) === -1) {
+                userModel.blockList.push(blockedId);
+            }
+
+            friendList = userModel.get('friends');
+            index = friendList(blockedId);
+
+            if (index !== -1){
+                friendList.splice(index, 1);
+                userModel.friends = friendList;
+            }
+
+            userModel
+                .save(function(err){
+                    if (err){
+                        return callback(err);
+                    }
+
+                    callback(null, userModel);
+                });
+        })
+    };
+
     return {
         createUser               : createUser,
         updateUser               : updateUser,
         updateProfile            : updateProfile,
         getUserById              : getUserById,
         deleteUserById           : deleteUserById,
-        getAllUserByGeoLocation  : getAllUserByGeoLocation
+        getAllUserByGeoLocation  : getAllUserByGeoLocation,
+        addToBlockListById       : addToBlockListById
     };
 
 };

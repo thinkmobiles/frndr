@@ -11,6 +11,8 @@ module.exports = function(app, db){
     var searchSettingsHandler = new SearchSettingsHandler(db);
     var image = new ImageHandler(db);
 
+    router.get('/friendList', userHandler.getFriendList);
+    router.get('/blockFriend/:id', userHandler.blockFriend);
     router.get('/searchSettings', searchSettingsHandler.getSearchSettings);
     router.put('/searchSettings', searchSettingsHandler.updateSearchSettings);
     router.get('/geo/:d', userHandler.findNearestUsers);
