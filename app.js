@@ -66,6 +66,7 @@ module.exports = function () {
 
 
     mainDb = mongoose.createConnection(process.env.DB_HOST, process.env.DB_NAME, process.env.DB_PORT, connectOptions);
+
     require('./models/index')(mainDb);
     app.set('db', mainDb);
 
