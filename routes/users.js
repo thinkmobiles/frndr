@@ -25,10 +25,5 @@ module.exports = function(app, db){
     router.put('/', sessionHandler.authenticatedUser, userHandler.updateProfile);
     router.delete('/', sessionHandler.authenticatedUser, userHandler.deleteCurrentUser);
 
-
-    // test
-
-    router.post('/avatar', image.uploadAvatar);
-    router.get('')
     return router;
 };
