@@ -290,11 +290,7 @@ module.exports = function (db) {
             .findOne({_id: userId},
             {
                 fbId: 0,
-                __v: 0,
-                friends: 0,
-                blockList: 0,
-                notification: 0,
-                loc: 0
+                __v: 0
             },
             function (err, userModel) {
                 if (err) {

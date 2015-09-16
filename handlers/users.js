@@ -99,12 +99,25 @@ var UserHandler = function (db) {
     this.getUserById = function (req, res, next) {
         var userId = req.params.id || req.session.uId;
 
-        userHelper.getUserById(userId, function (err, userModel) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(userModel);
-        })
+        User
+            .findOne({_id: userId},
+            {
+                fbId: 0,
+                __v: 0,
+                friends: 0,
+                blockList: 0,
+                notification: 0,
+                loc: 0
+            },
+            function (err, userModel) {
+                if (err) {
+                    return next(err);
+                }
+                if (!userModel) {
+                    return next(badRequests.NotFound({message: 'User not found'}));
+                }
+                res.status(200).send(userModel);
+            });
     };
 
     this.deleteCurrentUser = function (req, res, next) {
