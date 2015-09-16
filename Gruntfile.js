@@ -1,6 +1,4 @@
-/**
- * Created by migal on 16.09.15.
- */
+
 module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({

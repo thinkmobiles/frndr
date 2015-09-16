@@ -1,6 +1,4 @@
-/**
- * Created by migal on 15.09.15.
- */
+
 var SessionHandler = require('./sessions');
 var async = require('async');
 var CONSTANTS = require('../constants/index');
