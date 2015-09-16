@@ -119,8 +119,9 @@ var imageHandler = function (db) {
             }
 
             if (!avatarName){
-                return res.status(404).send('Avatar not found');
+                return next(badRequests.NotFound({message: 'Avatar not found'}));
             }
+
             url = imageUploader.getImageUrl(avatarName, CONSTANTS.BUCKETS.AVATAR) + '.png';
             res.status(200).send({'url': url});
 
