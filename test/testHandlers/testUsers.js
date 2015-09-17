@@ -594,7 +594,7 @@ module.exports = function (db, defaults) {
 
 
                                     done();
-                                })
+                                });
                         })
                 })
         });

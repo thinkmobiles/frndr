@@ -5,6 +5,7 @@ module.exports = function (db) {
 
     var mongoose = require('mongoose');
     var Schema = mongoose.Schema;
+    var ObjectId = mongoose.Schema.Types.ObjectId;
 
     var User = new Schema({
         fbId: String,

@@ -58,10 +58,7 @@ module.exports = function () {
         db: {native_parser: false},
         server: {poolSize: 5},
         user: process.env.DB_USER,
-        pass: process.env.DB_PASS,
-        w: 1,
-        j: true,
-        mongos: true
+        pass: process.env.DB_PASS
     };
 
 
@@ -88,7 +85,6 @@ module.exports = function () {
         }));
 
         require('./routes')(app, mainDb);
-
 
         server.listen(app.get('port'), function () {
             console.log("Express server listening on port " + app.get('port'));

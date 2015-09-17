@@ -18,5 +18,13 @@ module.exports = {
     BUCKETS:{
         AVATAR:'avatar',
         GALLERY:'gallery'
+    },
+    SEARCH_REL_STATUSES: {
+        SINGLE_FEMALE: 'single female',
+        SINGLE_MALE: 'single male',
+        COUPLE: 'couple',
+        FAMILY: 'family',
+        MALE_WITH_BABY: 'male with baby',
+        FEMALE_WITH_BABY: 'female with baby'
     }
 };

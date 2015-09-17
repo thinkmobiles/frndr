@@ -452,13 +452,13 @@ var UserHandler = function (db) {
         var distance = req.params.d;
         var uId = req.session.uId;
 
-        userHelper.getAllUserByGeoLocation(uId, distance, function (err, resultUser) {
+        userHelper.getAllUserbySearchSettings(uId, function(err, user){
 
-            if (err) {
+            if (err){
                 return next(err);
             }
 
-            res.status(200).send(resultUser);
+            res.status(200).send(user);
 
         });
 
@@ -541,6 +541,9 @@ var UserHandler = function (db) {
                 res.status(200).send({success: 'User blocked successfully'});
             })
     };
+
+
+
 };
 
 module.exports = UserHandler;

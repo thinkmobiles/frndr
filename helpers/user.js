@@ -1,6 +1,8 @@
 var badRequests = require('../helpers/badRequests');
+var CONSTANTS = require('../constants');
 
 var async = require('async');
+var _ = require('lodash');
 
 module.exports = function (db) {
 
@@ -244,7 +246,7 @@ module.exports = function (db) {
             }
 
         }
-
+        // TODO remove apply
         async
             .parallel([
 
@@ -314,43 +316,110 @@ module.exports = function (db) {
             });
     }
 
-    function getAllUserByGeoLocation (userId, distance, callback){
+    function getAllUserbySearchSettings (userId, callback){
 
         var userCoordinates;
+        var relStatusArray = [];
+        var relStatusObj;
+        var ageObj;
+        var geoObj;
+        var sexualObj;
+        var relationship;
+        var smokerObj;
 
-        User.findOne({_id: userId})
+        SearchSettings.findOne({user: userId}, {_id: 0, __v: 0})
+            .populate('user', 'loc')
             .exec(function(err, resultUser){
 
                 if (err){
                     return callback(err);
                 }
 
-                if (!resultUser){
+                if (!resultUser || !resultUser.user || !resultUser.user.loc){
                     badRequests.NotFound({message: 'User not found'});
                 }
 
-                userCoordinates = resultUser.loc.coordinates;
+                userCoordinates = resultUser.user.loc.coordinates;
+
+                geoObj = {
+                    loc: {
+                        $geoWithin: {
+                            $centerSphere: [userCoordinates, resultUser.distance / 3963.2]
+                        }
+                    }
+                };
+
+                ageObj = {
+                    $and: [
+                        {'profile.age': {$lte: resultUser.ageRange.max}},
+                        {'profile.age': {$gte: resultUser.ageRange.min}}
+                    ]
+                };
+
+                sexualObj = {
+                    'profile.sexual': resultUser.sexual
+                };
+
+                smokerObj = {
+                    'profile.smoker': resultUser.smoker
+                };
+
+                if (!resultUser.relationship.length){
+                    relStatusArray = [];
+                } else {
+
+                    relationship = _.clone(resultUser.relationship);
+
+                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE) !== -1){
+                        relStatusArray.push({'profile.sex': 'M', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                    }
+
+                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE) !== -1){
+                        relStatusArray.push({'profile.sex': 'F', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                    }
+
+                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.COUPLE) !== -1){
+                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.COUPLE});
+                    }
+
+                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FAMILY) !== -1){
+                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.FAMILY});
+                    }
+
+                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY) !== -1){
+                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'M'});
+                    }
+
+                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY) !== -1){
+                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'F'});
+                    }
+
+                }
+
+                relStatusObj = {
+                    $or: relStatusArray
+                };
 
                 User
-                    .find({$and:
-                            [{
-                                loc: {
-                                    $geoWithin: {
-                                        $centerSphere: [userCoordinates, distance / 3963.2]
-                                    }
-                                }
-                            },{
-                                _id: {$ne: userId}
-                            }]
-                        }, {__v: 0})
+                    .aggregate([
+                        {
+                            $match: {
+                                $and: [
+                                    geoObj,
+                                    sexualObj,
+                                    ageObj,
+                                    smokerObj,
+                                    relStatusObj
+                                ]
+                            }
+                        }
+                    ])
                     .exec(function(err, resultUsers){
-
                         if (err){
                             return callback(err);
                         }
 
                         callback(null, resultUsers);
-
                     });
 
             });
@@ -390,13 +459,13 @@ module.exports = function (db) {
     };
 
     return {
-        createUser               : createUser,
-        updateUser               : updateUser,
-        updateProfile            : updateProfile,
-        getUserById              : getUserById,
-        deleteUserById           : deleteUserById,
-        getAllUserByGeoLocation  : getAllUserByGeoLocation,
-        addToBlockListById       : addToBlockListById
+        createUser: createUser,
+        updateUser: updateUser,
+        updateProfile: updateProfile,
+        getUserById: getUserById,
+        deleteUserById: deleteUserById,
+        getAllUserbySearchSettings: getAllUserbySearchSettings,
+        addToBlockListById: addToBlockListById
     };
 
 };
