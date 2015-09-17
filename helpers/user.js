@@ -318,6 +318,8 @@ module.exports = function (db) {
 
     function getAllUserbySearchSettings (userId, callback){
 
+        // TODO add filter by blocked user and visible + refactor
+
         var userCoordinates;
         var relStatusArray = [];
         var relStatusObj;
@@ -406,10 +408,10 @@ module.exports = function (db) {
                             $match: {
                                 $and: [
                                     geoObj,
-                                    sexualObj,
+                                    relStatusObj,
                                     ageObj,
-                                    smokerObj,
-                                    relStatusObj
+                                    sexualObj,
+                                    smokerObj
                                 ]
                             }
                         }
