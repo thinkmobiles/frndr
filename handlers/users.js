@@ -297,10 +297,19 @@ var UserHandler = function (db) {
                                 galleryArrayNames = imageModel.get('gallery');
 
                                 async.parallel([
-                                        async.apply(removeAvatar, avatarName),
-                                        async.apply(removeGalleryPhotoes, galleryArrayNames),
+
+                                        //remove avat from filesystem
                                         function (callback) {
-                                            //remove Image model
+                                            removeAvatar(avatarName, callback);
+                                        },
+
+                                        //remove gallery photoes from filesystem
+                                        function (callback) {
+                                            removeGalleryPhotoes(galleryArrayNames, callback);
+                                        },
+
+                                        //remove Image model
+                                        function (callback) {
                                             imageModel
                                                 .remove(function (err) {
                                                     if (err) {
@@ -353,7 +362,6 @@ var UserHandler = function (db) {
          * @example Body example:
          *
          * {
-         *  "_id": "55f7dae6e0c966b023c6e831",
          *  "profile": {
          *      "visible": true,
          *      "things": [],
@@ -414,8 +422,7 @@ var UserHandler = function (db) {
         var userId = req.session.uId;
         var options = req.body;
 
-        if (!options || (!(options.newFriends || (options.newFriends === false)) &&
-            !(options.newMessages || (options.newMessages === false)))) {
+        if (!options || (!(options.newFriends || (options.newFriends === false)) && !(options.newMessages || (options.newMessages === false)))) {
             return next(badRequests.NotEnParams({message: 'newFriends or newMessages required'}));
         }
 

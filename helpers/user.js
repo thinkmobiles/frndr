@@ -44,7 +44,7 @@ module.exports = function (db) {
                 userModel.profile.jobTitle = profile.jobTitle;
             }
 
-            if (profile.smoker) {
+            if (profile.smoker || (profile.smoker === false)) {
                 userModel.profile.smoker = profile.smoker;
             }
 
