@@ -398,9 +398,13 @@ module.exports = function (db) {
 
                 }
 
-                relStatusObj = {
-                    $or: relStatusArray
-                };
+                if (!relStatusArray.length){
+                    relStatusObj = {};
+                } else {
+                    relStatusObj = {
+                        $or: relStatusArray
+                    };
+                }
 
                 User
                     .aggregate([
