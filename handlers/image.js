@@ -31,6 +31,7 @@ if (process.env.UPLOADER_TYPE === 'AmazonS3') {
 
 var imageHandler = function (db) {
     var Image = db.model('Image');
+    var User = db.model('User');
     var self = this;
 
     var imageUploader = require('../helpers/imageUploader/imageUploader')(uploaderConfig);
@@ -73,62 +74,60 @@ var imageHandler = function (db) {
 
         var uId = req.session.uId;
         var imageString = req.body.image;
-        var imageModel;
         var imageName;
 
-        Image.findOne({user: uId}, function (err, resultUser) {
+        var imageId;
 
-            if (err) {
-                return next(err);
-            }
+        User
+            .findOne({_id: uId}, function(err, resUser){
 
-            if (!resultUser) {
-                imageName = createImageName();
-                imageModel = new Image({user: uId, avatar: imageName});
-                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+                if (err){
+                    return callback(err);
+                }
 
-                    if (err) {
-                        return next(err);
-                    }
+                if (!resUser || !resUser.images){
 
-                    imageModel
-                        .save(function (err) {
-                            if (err) {
+                    err = new Error('Database error');
+                    err.status = 400;
+                    return callback(err);
+
+                }
+
+                imageId = resUser.images;
+
+                Image
+                    .findOne({_id: imageId}, function(err, imageModel){
+
+                        if (err){
+                            return callback(err);
+                        }
+
+                        if (!imageModel.avatar) {
+                            imageName = createImageName();
+                        } else {
+                            imageName = imageModel.get('avatar');
+                        }
+
+                        imageModel.update({$set: {avatar: imageName, user: ObjectId(uId)}}, function(err){
+
+                            if (err){
                                 return next(err);
                             }
 
-                            res.status(200).send({success: 'Image upload successfully'});
+                            imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+
+                                if (err) {
+                                    return next(err);
+                                }
+                                res.status(200).send({success: 'Image upload successfully'});
+
+                            });
 
                         });
 
-                });
-
-            } else {
-
-                imageName = resultUser.get('avatar');
-
-                if (!imageName){
-                    imageName = createImageName();
-                }
-
-                resultUser.update({$set: {avatar: imageName}}, function(err){
-
-                    if (err){
-                        return next(err);
-                    }
-
-                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
-
-                        if (err) {
-                            return next(err);
-                        }
-                        res.status(200).send({success: 'Image upload successfully'});
-
                     });
 
-                });
-            }
-        });
+            });
     };
 
     this.getAvatarUrl = function (req, res, next) {
@@ -269,61 +268,55 @@ var imageHandler = function (db) {
 
         var uId = req.session.uId;
         var imageString = req.body.image;
-        var imageModel;
         var imageName = createImageName();
+        var imageId;
 
-        Image.findOne({user: uId}, function (err, resultModel) {
+        User
+            .findOne({_id: uId}, function(err, resUser){
 
-            if (err) {
-                return next(err);
-            }
+                if (err){
+                    return callback(err);
+                }
 
-            if (!resultModel) {
+                if (!resUser || !resUser.images){
 
-                imageModel = new Image({user: uId, gallery: [imageName]});
-                imageModel
-                    .save(function (err) {
+                    err = new Error('Database error');
+                    err.status = 400;
+                    return callback(err);
 
-                        if (err) {
-                            return next(err);
-                        }
+                }
 
-                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
+                imageId = resUser.images;
 
-                            if (err) {
-                                return next(err);
-                            }
-
-                            res.status(200).send({success: 'Gallery image upload successfully'});
-
-                        });
-
-                    });
-
-            } else {
-
-                resultModel
-                    .update({$addToSet: {gallery: imageName}}, function(err){
+                Image
+                    .findOne({_id: imageId}, function(err, imageModel){
 
                         if (err){
-                            return next(err);
+                            return callback(err);
                         }
 
-                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
+                        imageModel
+                            .update({$addToSet: {gallery: imageName}, $set: {user: ObjectId(uId)}}, function(err){
 
-                            if (err) {
-                                return next(err);
-                            }
+                                if (err){
+                                    return next(err);
+                                }
 
-                            res.status(200).send({success: 'Gallery image upload successfully'});
+                                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
 
-                        });
+                                    if (err) {
+                                        return next(err);
+                                    }
+
+                                    res.status(200).send({success: 'Gallery image upload successfully'});
+
+                                });
+
+                            });
 
                     });
 
-            }
-
-        });
+            });
 
     };
 

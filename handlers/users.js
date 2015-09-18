@@ -456,10 +456,9 @@ var UserHandler = function (db) {
     };
 
     this.findNearestUsers = function (req, res, next) {
-        var distance = req.params.d;
         var uId = req.session.uId;
 
-        userHelper.getAllUserbySearchSettings(uId, function(err, user){
+        userHelper.getAllUseBySearchSettings(uId, function(err, user){
 
             if (err){
                 return next(err);

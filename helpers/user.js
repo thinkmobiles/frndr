@@ -1,14 +1,17 @@
 var badRequests = require('../helpers/badRequests');
 var CONSTANTS = require('../constants');
+var mongoose = require('mongoose');
 
 var async = require('async');
 var _ = require('lodash');
+var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = function (db) {
 
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');
+    var Image = db.model('Image');
 
     function prepareModelToSave(userModel, options, callback) {
 
@@ -60,7 +63,7 @@ module.exports = function (db) {
                 userModel.profile.bio = profile.bio;
             }
 
-            if (profile.visible) {
+            if (profile.visible || (profile.visible === false)) {
                 userModel.profile.visible = profile.visible;
             }
 
@@ -98,6 +101,7 @@ module.exports = function (db) {
         var saveObj;
         var err;
         var searchSettingModel;
+        var imageModel;
 
         if (profileData.constructor === Object) {
 
@@ -118,69 +122,80 @@ module.exports = function (db) {
                 return callback(badRequests.NotEnParams({message: 'coordinates'}));
             }
 
-            saveObj = {
-                fbId: profileData.fbId,
-                loc: {
-                    type: 'Point',
-                    coordinates: profileData.coordinates
-                }
-            };
+            imageModel = new Image();
 
-            userModel = new User(saveObj);
-
-            userModel
-                .save(function (err) {
-                    if (err) {
+            imageModel
+                .save(function(err){
+                    if (err){
                         return callback(err);
                     }
 
-                    PushTokens.findOne({token: profileData.pushToken}, function (err, resultModel) {
-                        if (err) {
-                            return callback(err);
-                        }
+                    saveObj = {
+                        fbId: profileData.fbId,
+                        loc: {
+                            type: 'Point',
+                            coordinates: profileData.coordinates
+                        },
+                        images: imageModel._id
+                    };
 
-                        uId = userModel.get('_id');
+                    userModel = new User(saveObj);
 
-                        searchSettingModel = new SearchSettings({user: uId});
+                    userModel
+                        .save(function (err) {
+                            if (err) {
+                                return callback(err);
+                            }
 
-                        if (!resultModel) {
-                            pushTokenModel = new PushTokens({
-                                user: uId,
-                                token: profileData.pushToken,
-                                os: profileData.os
-                            });
-
-                            pushTokenModel.save(function (err) {
+                            PushTokens.findOne({token: profileData.pushToken}, function (err, resultModel) {
                                 if (err) {
                                     return callback(err);
                                 }
 
+                                uId = userModel.get('_id');
 
-                                searchSettingModel.save(function(err){
-                                    if (err){
-                                        return callback(err);
-                                    }
+                                searchSettingModel = new SearchSettings({user: uId});
 
-                                    callback(null, uId);
-                                });
-                            });
+                                if (!resultModel) {
+                                    pushTokenModel = new PushTokens({
+                                        user: uId,
+                                        token: profileData.pushToken,
+                                        os: profileData.os
+                                    });
 
-                        } else {
+                                    pushTokenModel.save(function (err) {
+                                        if (err) {
+                                            return callback(err);
+                                        }
 
-                            searchSettingModel.save(function(err){
-                                if (err){
-                                    return callback(err);
+
+                                        searchSettingModel.save(function(err){
+                                            if (err){
+                                                return callback(err);
+                                            }
+
+                                            callback(null, uId);
+                                        });
+                                    });
+
+                                } else {
+
+                                    searchSettingModel.save(function(err){
+                                        if (err){
+                                            return callback(err);
+                                        }
+
+                                        callback(null, uId);
+                                    });
+
                                 }
 
-                                callback(null, uId);
                             });
 
-                        }
+                        });
 
-                    });
 
                 });
-
 
         } else {
             return callback(badRequests.InvalidValue({message: 'Expected profile data as Object'}));
@@ -316,9 +331,7 @@ module.exports = function (db) {
             });
     }
 
-    function getAllUserbySearchSettings (userId, callback){
-
-        // TODO add filter by blocked user and visible + refactor
+    function getAllUseBySearchSettings (userId, callback){
 
         var userCoordinates;
         var relStatusArray = [];
@@ -328,20 +341,47 @@ module.exports = function (db) {
         var sexualObj;
         var relationship;
         var smokerObj;
+        var visibleObj;
+        var friendObj;
+        var blockedObj;
+        var blockList;
+        var friendList;
+        var findObj;
+        var projectionObj;
 
         SearchSettings.findOne({user: userId}, {_id: 0, __v: 0})
-            .populate('user', 'loc')
+            .populate({path: 'user', select: 'loc friends blockList'})
             .exec(function(err, resultUser){
 
                 if (err){
                     return callback(err);
                 }
 
-                if (!resultUser || !resultUser.user || !resultUser.user.loc){
+                if (!resultUser || !resultUser.user || !resultUser.user.loc || !resultUser.friends || !resultUser.blockList){
                     badRequests.NotFound({message: 'User not found'});
                 }
 
                 userCoordinates = resultUser.user.loc.coordinates;
+
+                blockList = _.map(resultUser.blockList, function(b){
+                    return new ObjectId(b);
+                });
+
+                friendList = _.map(resultUser.friends, function(f){
+                    return new ObjectId(f);
+                });
+
+                friendObj = {
+                    _id: {$nin: friendList}
+                };
+
+                blockedObj = {
+                    _id: {$nin: blockList}
+                };
+
+                visibleObj = {
+                    'profile.visible': true
+                };
 
                 geoObj = {
                     loc: {
@@ -406,30 +446,44 @@ module.exports = function (db) {
                     };
                 }
 
+                findObj = {
+                    $and: [
+                        visibleObj,
+                        geoObj,
+                        relStatusObj,
+                        ageObj,
+                        sexualObj,
+                        smokerObj,
+                        blockedObj,
+                        friendObj
+                    ]
+                };
+
+                projectionObj = {
+                    'fbId': 0,
+                    'images._id': 0,
+                    '__v': 0,
+                    'loc': 0,
+                    'notification': 0
+                };
+
                 User
-                    .aggregate([
-                        {
-                            $match: {
-                                $and: [
-                                    geoObj,
-                                    relStatusObj,
-                                    ageObj,
-                                    sexualObj,
-                                    smokerObj
-                                ]
-                            }
-                        }
-                    ])
+                    .find(
+                        findObj,
+                        projectionObj
+                    )
+                    .populate({path: 'images', select: '-_id avatar gallery'})
                     .exec(function(err, resultUsers){
                         if (err){
                             return callback(err);
                         }
 
                         callback(null, resultUsers);
+
                     });
 
             });
-    };
+    }
 
     function addToBlockListById (userId, blockedId, callback){
 
@@ -470,7 +524,7 @@ module.exports = function (db) {
         updateProfile: updateProfile,
         getUserById: getUserById,
         deleteUserById: deleteUserById,
-        getAllUserbySearchSettings: getAllUserbySearchSettings,
+        getAllUseBySearchSettings: getAllUseBySearchSettings,
         addToBlockListById: addToBlockListById
     };
 

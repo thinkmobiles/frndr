@@ -53,6 +53,10 @@ module.exports = function (db) {
                 default: 'Point'
             },
             coordinates: [Number]
+        },
+        images: {
+            type: ObjectId,
+            ref: 'Image'
         }
     }, {
         collection: 'Users'
