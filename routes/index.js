@@ -5,6 +5,7 @@ module.exports = function(app, db){
 
     var userHandler = new UserHandler(db);
     var userRouter = require('./users')(app, db);
+    var messageRouter = require('./messages')(app, db);
     var imageRouter = require('./image')(app, db);
 
     app.get('/', function(req, res, next){
@@ -16,6 +17,7 @@ module.exports = function(app, db){
 
     app.use('/users', userRouter);
     app.use('/image', imageRouter);
+    app.use('/messages', messageRouter);
 
     function notFound(req, res, next){
         next();
