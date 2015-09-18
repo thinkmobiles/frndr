@@ -456,16 +456,15 @@ var UserHandler = function (db) {
     };
 
     this.findNearestUsers = function (req, res, next) {
-        var distance = req.params.d;
         var uId = req.session.uId;
 
-        userHelper.getAllUserByGeoLocation(uId, distance, function (err, resultUser) {
+        userHelper.getAllUseBySearchSettings(uId, function(err, user){
 
-            if (err) {
+            if (err){
                 return next(err);
             }
 
-            res.status(200).send(resultUser);
+            res.status(200).send(user);
 
         });
 
@@ -548,6 +547,9 @@ var UserHandler = function (db) {
                 res.status(200).send({success: 'User blocked successfully'});
             })
     };
+
+
+
 };
 
 module.exports = UserHandler;
