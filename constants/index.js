@@ -26,5 +26,8 @@ module.exports = {
         FAMILY: 'family',
         MALE_WITH_BABY: 'male with baby',
         FEMALE_WITH_BABY: 'female with baby'
+    },
+    MESSAGES:{
+        LIMIT:5
     }
 };
