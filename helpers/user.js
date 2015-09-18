@@ -348,6 +348,7 @@ module.exports = function (db) {
         var friendList;
         var findObj;
         var projectionObj;
+        var notIObj;
 
         SearchSettings.findOne({user: userId}, {_id: 0, __v: 0})
             .populate({path: 'user', select: 'loc friends blockList'})
@@ -396,6 +397,10 @@ module.exports = function (db) {
                         {'profile.age': {$lte: resultUser.ageRange.max}},
                         {'profile.age': {$gte: resultUser.ageRange.min}}
                     ]
+                };
+
+                notIObj = {
+                  '_id': {$ne: userId}
                 };
 
                 sexualObj = {
@@ -455,13 +460,13 @@ module.exports = function (db) {
                         sexualObj,
                         smokerObj,
                         blockedObj,
-                        friendObj
+                        friendObj,
+                        notIObj
                     ]
                 };
 
                 projectionObj = {
                     'fbId': 0,
-                    'images._id': 0,
                     '__v': 0,
                     'loc': 0,
                     'notification': 0
