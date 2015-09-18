@@ -549,6 +549,45 @@ var UserHandler = function (db) {
     };
 
 
+    // TODO  TEST (remove in production)
+
+    this.testUser = function(req, res, next){
+
+        var userModel;
+
+        var userObj = {
+            'loc.coordinates': [1, 2],
+            "pushToken": "ssss",
+            "os": "APPLE",
+            profile: {
+                sex: 'M',
+                age: 33,
+                relStatus: 'singleWithBaby',
+                smoker: false,
+                sexual: 'any'
+            }
+        }
+
+        for(var i = 0; i < 1000; i++){
+            userObj['fbId'] = 'age' + i;
+
+            userModel = new User(userObj);
+
+            userModel
+                .save(function(err){
+
+                    if (err){
+                        return next(err);
+                    }
+
+                });
+        }
+
+        res.status(200).send({success: 'Users created successfully'});
+
+    };
+
+
 
 };
 

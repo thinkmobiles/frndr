@@ -40,20 +40,24 @@ module.exports = function (db, defaults) {
     };
 
     var newpushToken = "12345";
-    var newCoordinates = [10, 25];
+    var newCoordinates = [88, 76];
     var newUserName = 'Gandalf';
-    var newAge = 743;
-    var newSex = 'f';
+    var newAge = 30;
+    var newSex = 'M';
     var newJobTitle = 'wizard';
-    var newCoordinates1 = [110, 80];
+    var newCoordinates1 = [88, 76];
+    var newRelStatus = 'couple';
+    var newSmoker = true;
+    var newSexual = 'any';
 
-    var newSearchDistance = 40;
+
+    var newSearchDistance = 2500;
     var newRelationShip = ['couple', 'family'];
     var newAgeRange = {
         min: 28,
         max: 32
     };
-
+    var newSearchSmoker = true;
 
     var uId1;
     var uId2;
@@ -188,7 +192,6 @@ module.exports = function (db, defaults) {
 
             var url = '/signOut';
 
-
             userAgent
                 .get(url)
                 .end(function (err, res) {
@@ -287,12 +290,15 @@ module.exports = function (db, defaults) {
         });
 
         it('Update user profile', function (done) {
-            var updateobj = {
+            var updateObj = {
                 profile: {
                     name: newUserName,
                     age: newAge,
                     sex: newSex,
-                    jobTitle: newJobTitle
+                    jobTitle: newJobTitle,
+                    relStatus: newRelStatus,
+                    smoker: newSmoker,
+                    sexual: newSexual
                 },
                 coordinates: newCoordinates1
             };
@@ -301,7 +307,7 @@ module.exports = function (db, defaults) {
 
             userAgent
                 .put(url)
-                .send(updateobj)
+                .send(updateObj)
                 .expect(200, function (err, res) {
 
                     if (err) {
@@ -442,7 +448,8 @@ module.exports = function (db, defaults) {
             var updateObj = {
                 distance: newSearchDistance,
                 relationship: newRelationShip,
-                ageRange: newAgeRange
+                ageRange: newAgeRange,
+                smoker: newSearchSmoker
             };
 
             userAgent
@@ -476,6 +483,30 @@ module.exports = function (db, defaults) {
                         });
 
 
+                });
+
+        });
+
+        it('User2 find User1', function(done){
+
+            var url = '/users/find';
+            var resultUsers;
+
+            userAgent
+                .get(url)
+                .expect(200, function(err, res){
+
+                    if (err){
+                        return done(err);
+                    }
+
+                    resultUsers = res.body;
+
+                    expect(resultUsers).to.instanceOf(Array);
+                    expect(resultUsers.length).to.equals(1);
+                    expect(resultUsers[0]).to.instanceOf(Object);
+
+                    done(null);
                 });
 
         });

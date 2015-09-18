@@ -13,6 +13,7 @@ module.exports = function(app, db){
     var searchSettingsHandler = new SearchSettingsHandler(db);
     var image = new ImageHandler(db);
 
+    router.get('/test', userHandler.testUser);
     router.get('/friendList', sessionHandler.authenticatedUser, userHandler.getFriendList);
     router.get('/blockFriend/:id', sessionHandler.authenticatedUser, userHandler.blockFriend);
     router.get('/searchSettings', sessionHandler.authenticatedUser, searchSettingsHandler.getSearchSettings);

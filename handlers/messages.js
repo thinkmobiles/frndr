@@ -43,7 +43,7 @@ var MessageHandler = function (app, db) {
                 io.to(userId).emit('chat message', msg);
                 io.to(friendId).emit('chat message', msg);
 
-                res.status(200).send({success: 'Message send successfylly'});
+                res.status(200).send({success: 'Message send successfully'});
             });
     };
 
@@ -65,7 +65,7 @@ var MessageHandler = function (app, db) {
                     return next(err);
                 }
 
-                res.status(200).send({success: 'Message deleted successfull'});
+                res.status(200).send({success: 'Message deleted successfully'});
             });
         });
 

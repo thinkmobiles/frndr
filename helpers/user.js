@@ -453,8 +453,8 @@ module.exports = function (db) {
 
                 findObj = {
                     $and: [
-                        visibleObj,
                         geoObj,
+                        visibleObj,
                         relStatusObj,
                         ageObj,
                         sexualObj,
