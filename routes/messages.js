@@ -7,8 +7,10 @@ module.exports = function(app, db){
     var sessionHandler = new SessionHandler();
     var messageHandler = new MessageHandler(app, db);
 
-    router.post('/sendMessage', sessionHandler.authenticatedUser, messageHandler.sendMessage);
     router.delete('/:id', sessionHandler.authenticatedUser, messageHandler.clearMessage);
+    router.get('/:id/:pageCount', sessionHandler.authenticatedUser, messageHandler.getChatHistory);
+    router.post('/', sessionHandler.authenticatedUser, messageHandler.sendMessage);
+    router.delete('/', sessionHandler.authenticatedUser, messageHandler.clearHistoty);
 
 
     return router;

@@ -1,3 +1,5 @@
+var CONSTANTS = require('../constants/index');
+
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
@@ -47,27 +49,125 @@ var MessageHandler = function (app, db) {
             });
     };
 
-    this.clearMessage = function(req, res, next){
+    this.clearMessage = function (req, res, next) {
         var userId = req.session.uId;
         var messageId = req.params.id;
 
-        Message.findOne({_id:messageId}, function(err, messageModel){
-            if (err){
+        Message.findOne({_id: messageId}, function (err, messageModel) {
+            var showArray;
+
+            if (err) {
                 return next(err);
             }
 
-            if (!messageModel){
+            if (!messageModel) {
                 return next(badRequests.NotFound({message: 'Message not found'}));
             }
 
-            messageModel.update({$pull:{show: userId.toString()}}, function(err){
-                if (err){
+            showArray = messageModel.get('show');
+
+            if ((showArray.length === 1) && (showArray.indexOf(userId.toString()) !== -1)) {
+
+                messageModel.remove(function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    return res.status(200).send({success: 'Message deleted successfull'});
+                });
+
+            } else {
+
+                messageModel.update({$pull: {show: userId.toString()}}, function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    return res.status(200).send({success: 'Message deleted successfull'});
+                });
+
+            }
+        });
+
+    };
+
+    this.clearHistoty = function (req, res, next) {
+        var userId = req.session.uId;
+        var options = req.body;
+        var chatId;
+        var friendId;
+
+        if (!options || !options.friendId) {
+            return next(badRequests.NotEnParams({message: 'friendId is required'}));
+        }
+
+        friendId = options.friendId;
+
+        if (userId < friendId) {
+            chatId = userId + ':' + friendId;
+        } else {
+            chatId = friendId + ':' + userId;
+        }
+
+        Message
+            .find({chatId: chatId}, {}, {sort: {date: -1}, limit: CONSTANTS.MESSAGES.LIMIT}, function (err, models) {
+                if (err) {
                     return next(err);
                 }
 
-                res.status(200).send({success: 'Message deleted successfully'});
+                async.each(models,
+
+                    function (messageModel, cb) {
+                        messageModel.update({$pull: {show: userId.toString()}}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                    },
+
+                    function (err, result) {
+                        if (err) {
+                            return next(err);
+                        }
+                        res.status(200).send({success: 'History cleared successfully'});
+                    });
             });
-        });
+    };
+
+    this.getChatHistory = function (req, res, next) {
+        var userId = req.session.uId;
+        var pageCount = req.params.pageCount * CONSTANTS.MESSAGES.LIMIT;
+        var friendId = req.params.id;
+        var chatId;
+
+        if (isNaN(pageCount)) {
+            return next(badRequests.InvalidValue({message: 'Invalid value page count'}));
+        }
+
+        if (userId < friendId) {
+            chatId = userId + ':' + friendId;
+        } else {
+            chatId = friendId + ':' + userId;
+        }
+
+        Message
+            .find({chatId: chatId, show: {$in: [userId]}}, {__v: 0, chatId: 0}, {
+                sort: {
+                    date: -1
+                },
+                skip: pageCount,
+                limit: CONSTANTS.MESSAGES.LIMIT
+            },
+
+            function (err, models) {
+                if (err) {
+                    return next(err);
+                }
+
+                res.status(200).send(models);
+            });
 
     };
 

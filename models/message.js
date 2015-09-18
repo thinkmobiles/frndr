@@ -9,7 +9,7 @@ module.exports = function (db) {
         text: String,
         date: {
             type: Date,
-            default: new Date()
+            default: Date.now
         },
         show: [String]
     }, {
