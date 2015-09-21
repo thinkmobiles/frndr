@@ -142,7 +142,7 @@ var imageHandler = function (db) {
          * @example Response example:
          *
          *   {
-         *     "url": "http://localhost:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
+         *     "url": "http://192.168.88.250:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
          *   }
          *
          * @method getAvatarUrl
@@ -403,7 +403,7 @@ var imageHandler = function (db) {
          *
          *   {
          *       "urls": [
-         *                  "http://localhost:8859/uploads/development/gallery/55f8300013f2901e421b026a.png"
+         *                  "http://192.168.88.250:8859/uploads/development/gallery/55f8300013f2901e421b026a.png"
          *               ]
          *   }
          *
