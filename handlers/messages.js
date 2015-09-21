@@ -9,6 +9,14 @@ var MessageHandler = function (app, db) {
     var io = app.get('io');
     var Message = db.model('Message');
 
+    function computeChatId (userId, friendId){
+        if (userId < friendId) {
+            return userId + ':' + friendId;
+        } else {
+            return friendId + ':' + userId;
+        }
+    }
+
     this.sendMessage = function (req, res, next) {
         var userId = req.session.uId;
         var options = req.body;
@@ -23,12 +31,7 @@ var MessageHandler = function (app, db) {
 
         msg = options.message;
         friendId = options.friendId;
-
-        if (userId < friendId) {
-            chatId = userId + ':' + friendId;
-        } else {
-            chatId = friendId + ':' + userId;
-        }
+        chatId = computeChatId(userId, friendId);
 
         messageModel = new Message({
             chatId: chatId,
@@ -102,15 +105,10 @@ var MessageHandler = function (app, db) {
         }
 
         friendId = options.friendId;
-
-        if (userId < friendId) {
-            chatId = userId + ':' + friendId;
-        } else {
-            chatId = friendId + ':' + userId;
-        }
+        chatId = computeChatId(userId, friendId);
 
         Message
-            .find({chatId: chatId}, {}, {sort: {date: -1}, limit: CONSTANTS.MESSAGES.LIMIT}, function (err, models) {
+            .find({chatId: chatId}, function (err, models) {
                 if (err) {
                     return next(err);
                 }
@@ -146,11 +144,7 @@ var MessageHandler = function (app, db) {
             return next(badRequests.InvalidValue({message: 'Invalid value page count'}));
         }
 
-        if (userId < friendId) {
-            chatId = userId + ':' + friendId;
-        } else {
-            chatId = friendId + ':' + userId;
-        }
+        chatId = computeChatId(userId, friendId);
 
         Message
             .find({chatId: chatId, show: {$in: [userId]}}, {__v: 0, chatId: 0}, {
@@ -169,6 +163,19 @@ var MessageHandler = function (app, db) {
                 res.status(200).send(models);
             });
 
+    };
+
+    this.clearAllMessages = function (req, res, next) {
+        var userId = req.session.uId;
+
+        Message
+            .update({show: {$in: [userId.toString()]}}, {$pull: {show: userId.toString()}}, {multi: true}, function (err) {
+                if (err) {
+                    return next(err);
+                }
+
+                res.status(200).send({success: 'All history cleared successfully'});
+            });
     };
 
 };
