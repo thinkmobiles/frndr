@@ -165,6 +165,19 @@ var MessageHandler = function (app, db) {
 
     };
 
+    this.clearAllMessages = function (req, res, next) {
+        var userId = req.session.uId;
+
+        Message
+            .update({show: {$in: [userId.toString()]}}, {$pull: {show: userId.toString()}}, {multi: true}, function (err) {
+                if (err) {
+                    return next(err);
+                }
+
+                res.status(200).send({success: 'All history cleared successfully'});
+            });
+    };
+
 };
 
 module.exports = MessageHandler;

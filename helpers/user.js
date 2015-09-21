@@ -261,12 +261,17 @@ module.exports = function (db) {
             }
 
         }
-        // TODO remove apply
+
         async
             .parallel([
 
-                async.apply(updateCoordinates, updateData.coordinates),
-                async.apply(updatePushToken, updateData.pushToken, updateData.os)
+                function(parallelCb){
+                    updateCoordinates(updateData.coordinates, parallelCb);
+                },
+
+                function(parallelCb){
+                    updatePushToken(updateData.pushToken, updateData.os, parallelCb);
+                }
 
             ], function (err) {
 
