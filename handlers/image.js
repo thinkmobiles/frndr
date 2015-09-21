@@ -28,7 +28,6 @@ if (process.env.UPLOADER_TYPE === 'AmazonS3') {
 }
 
 
-
 var imageHandler = function (db) {
     var Image = db.model('Image');
     var User = db.model('User');
@@ -79,13 +78,13 @@ var imageHandler = function (db) {
         var imageId;
 
         User
-            .findOne({_id: uId}, function(err, resUser){
+            .findOne({_id: uId}, function (err, resUser) {
 
-                if (err){
+                if (err) {
                     return next(err);
                 }
 
-                if (!resUser || !resUser.images){
+                if (!resUser || !resUser.images) {
 
                     err = new Error('Database error');
                     err.status = 400;
@@ -96,9 +95,9 @@ var imageHandler = function (db) {
                 imageId = resUser.images;
 
                 Image
-                    .findOne({_id: imageId}, function(err, imageModel){
+                    .findOne({_id: imageId}, function (err, imageModel) {
 
-                        if (err){
+                        if (err) {
                             return callback(err);
                         }
 
@@ -108,9 +107,9 @@ var imageHandler = function (db) {
                             imageName = imageModel.get('avatar');
                         }
 
-                        imageModel.update({$set: {avatar: imageName, user: ObjectId(uId)}}, function(err){
+                        imageModel.update({$set: {avatar: imageName, user: ObjectId(uId)}}, function (err) {
 
-                            if (err){
+                            if (err) {
                                 return next(err);
                             }
 
@@ -166,13 +165,13 @@ var imageHandler = function (db) {
                 return next(err);
             }
 
-            if (!resultModel){
+            if (!resultModel) {
                 avatarName = '';
             } else {
                 avatarName = resultModel.get('avatar');
             }
 
-            if (!avatarName){
+            if (!avatarName) {
                 return next(badRequests.NotFound({message: 'Avatar not found'}));
             }
 
@@ -272,37 +271,33 @@ var imageHandler = function (db) {
         var imageId;
 
         User
-            .findOne({_id: uId}, function(err, resUser){
+            .findOne({_id: uId}, function (err, resUser) {
 
-                if (err){
+                if (err) {
                     return next(err);
                 }
 
-                if (!resUser || !resUser.images){
-
-                    err = new Error('Database error');
-                    err.status = 400;
-                    return next(err);
-
+                if (!resUser || !resUser.images) {
+                    return next(badRequests.DatabaseError());
                 }
 
                 imageId = resUser.images;
 
                 Image
-                    .findOne({_id: imageId}, function(err, imageModel){
+                    .findOne({_id: imageId}, function (err, imageModel) {
 
-                        if (err){
+                        if (err) {
                             return next(err);
                         }
 
                         imageModel
-                            .update({$addToSet: {gallery: imageName}, $set: {user: ObjectId(uId)}}, function(err){
+                            .update({$addToSet: {gallery: imageName}, $set: {user: ObjectId(uId)}}, function (err) {
 
-                                if (err){
+                                if (err) {
                                     return next(err);
                                 }
 
-                                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err){
+                                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {
 
                                     if (err) {
                                         return next(err);
@@ -373,7 +368,7 @@ var imageHandler = function (db) {
             photoNames = imageModel.get('gallery');
             index = photoNames.indexOf(imageName);
 
-            if (index === -1){
+            if (index === -1) {
                 return next(badRequests.NotFound({message: 'User havent photo with such file name'}));
             }
 
@@ -445,7 +440,7 @@ var imageHandler = function (db) {
             photoNames = imageModel.get('gallery');
             len = photoNames.length;
 
-            if (!len){
+            if (!len) {
                 return res.status(200).send({'urls': []});
             }
 

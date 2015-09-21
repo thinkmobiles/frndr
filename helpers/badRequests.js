@@ -191,6 +191,28 @@ var BadRequestModule = function () {
         return new Errors(errOptions);
     };
 
+    this.DatabaseError = function(options) {
+        var errOptions;
+        var errMessage;
+
+        if (options) {
+            errOptions = options;
+        } else {
+            errOptions = {};
+        }
+
+        if (!errOptions.name) {
+            errOptions.name = 'DatabaseError';
+        }
+        if (!errOptions.message) {
+            errMessage = "Database error";
+
+            errOptions.message = errMessage;
+        }
+
+        return new Errors(errOptions);
+    };
+
     this.UnconfirmedEmail = function(options) {
         var errOptions;
 
