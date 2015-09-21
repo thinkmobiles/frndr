@@ -476,7 +476,7 @@ var UserHandler = function (db) {
          */
 
         var uId = req.session.uId;
-        var limit = req.params.page;
+        var page = req.params.page;
 
         userHelper.getAllUseBySearchSettings(uId, page, function(err, user){
 
