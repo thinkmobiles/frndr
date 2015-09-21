@@ -308,7 +308,7 @@ module.exports = function (db, defaults) {
             userAgent
                 .put(url)
                 .send(updateObj)
-                .expect(200, function (err, res) {
+                .expect(200, function (err) {
 
                     if (err) {
                         return done(err);
@@ -544,7 +544,6 @@ module.exports = function (db, defaults) {
                                 expect(resultUser1.friends.length).to.equals(1);
                                 expect(resultUser1.friends[0]).to.equals(uId2.toString());
 
-
                                 User
                                     .findOne({_id: uId2}, function (err, resultUser2) {
                                         if (err) {
@@ -585,7 +584,7 @@ module.exports = function (db, defaults) {
 
             userAgent
                 .get(url)
-                .expect(200, function(err, res){
+                .expect(200, function(err){
                     if (err){
                         return done(err);
                     }
@@ -632,7 +631,7 @@ module.exports = function (db, defaults) {
 
             userAgent
                 .delete(url)
-                .expect(200, function (err, res) {
+                .expect(200, function (err) {
 
                     if (err) {
                         return done(err);
