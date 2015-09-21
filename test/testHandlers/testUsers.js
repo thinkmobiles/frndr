@@ -364,7 +364,6 @@ module.exports = function (db, defaults) {
                         done(null);
 
                     });
-
                 });
         });
 
@@ -413,8 +412,6 @@ module.exports = function (db, defaults) {
                                     done();
                                 });
                         });
-
-
                 });
         });
 
@@ -489,7 +486,7 @@ module.exports = function (db, defaults) {
 
         it('User2 find User1', function(done){
 
-            var url = '/users/find';
+            var url = '/users/find/10';
             var resultUsers;
 
             userAgent
@@ -622,7 +619,6 @@ module.exports = function (db, defaults) {
 
                                     expect(friendList.indexOf(uId2.toString())).to.equals(-1);
                                     expect(blockList.indexOf(uId2.toString())).not.to.equals(-1);
-
 
                                     done();
                                 });

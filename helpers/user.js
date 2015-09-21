@@ -118,6 +118,7 @@ module.exports = function (db) {
                 if (err) {
                     return callback(err);
                 }
+
             } else {
                 return callback(badRequests.NotEnParams({message: 'coordinates'}));
             }
@@ -336,7 +337,7 @@ module.exports = function (db) {
             });
     }
 
-    function getAllUseBySearchSettings (userId, callback){
+    function getAllUseBySearchSettings (userId, limit, callback){
 
         var userCoordinates;
         var relStatusArray = [];
@@ -483,6 +484,7 @@ module.exports = function (db) {
                         projectionObj
                     )
                     .populate({path: 'images', select: '-_id avatar gallery'})
+                    .limit(limit)
                     .exec(function(err, resultUsers){
                         if (err){
                             return callback(err);
@@ -526,7 +528,7 @@ module.exports = function (db) {
                     callback(null, userModel);
                 });
         })
-    };
+    }
 
     return {
         createUser: createUser,
