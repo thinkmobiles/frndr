@@ -82,14 +82,14 @@ var imageHandler = function (db) {
             .findOne({_id: uId}, function(err, resUser){
 
                 if (err){
-                    return callback(err);
+                    return next(err);
                 }
 
                 if (!resUser || !resUser.images){
 
                     err = new Error('Database error');
                     err.status = 400;
-                    return callback(err);
+                    return next(err);
 
                 }
 
@@ -275,14 +275,14 @@ var imageHandler = function (db) {
             .findOne({_id: uId}, function(err, resUser){
 
                 if (err){
-                    return callback(err);
+                    return next(err);
                 }
 
                 if (!resUser || !resUser.images){
 
                     err = new Error('Database error');
                     err.status = 400;
-                    return callback(err);
+                    return next(err);
 
                 }
 
@@ -292,7 +292,7 @@ var imageHandler = function (db) {
                     .findOne({_id: imageId}, function(err, imageModel){
 
                         if (err){
-                            return callback(err);
+                            return next(err);
                         }
 
                         imageModel
