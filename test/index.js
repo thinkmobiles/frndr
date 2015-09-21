@@ -12,7 +12,7 @@ var DbHandler = require('./testHandlers/dbHandler');
 var dbHandler = new DbHandler(db);
 
 describe('Database initialization', function () {
-    this.timeout(5000);
+    this.timeout(1);
 
     it('Drop the collections', function (done) {
 
