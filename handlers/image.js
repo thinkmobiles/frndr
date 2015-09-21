@@ -278,34 +278,29 @@ var imageHandler = function (db) {
                 imageId = resUser.images;
 
                 Image
-                    .findOne({_id: imageId}, function (err, imageModel) {
+                    .findOneAndUpdate({_id: imageId}, {
+                        $addToSet: {gallery: imageName},
+                        $set: {user: ObjectId(uId)}
+                    }, function (err) {
 
                         if (err) {
                             return next(err);
                         }
 
-                        imageModel
-                            .update({$addToSet: {gallery: imageName}, $set: {user: ObjectId(uId)}}, function (err) {
+                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {
 
-                                if (err) {
-                                    return next(err);
-                                }
+                            if (err) {
+                                return next(err);
+                            }
 
-                                imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {
+                            res.status(200).send({success: 'Gallery image upload successfully'});
 
-                                    if (err) {
-                                        return next(err);
-                                    }
-
-                                    res.status(200).send({success: 'Gallery image upload successfully'});
-
-                                });
-
-                            });
+                        });
 
                     });
 
             });
+
 
     };
 

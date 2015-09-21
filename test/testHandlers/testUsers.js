@@ -486,7 +486,7 @@ module.exports = function (db, defaults) {
 
         it('User2 find User1', function(done){
 
-            var url = '/users/find';
+            var url = '/users/find/10';
             var resultUsers;
 
             userAgent

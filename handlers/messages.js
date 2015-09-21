@@ -1,3 +1,9 @@
+/**
+ * @description Message management module
+ * @module messageHandler
+ *
+ */
+
 var CONSTANTS = require('../constants/index');
 
 var async = require('async');
@@ -18,6 +24,34 @@ var MessageHandler = function (app, db) {
     }
 
     this.sendMessage = function (req, res, next) {
+
+        /**
+         * __Type__ __`POST`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/messages`__
+         *
+         * This __method__ allows send  _Message_
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/messages
+         *
+         * @example Body example:
+         *
+         * {
+         *      "friendId":"55fbcb7cc06791dc1dad4645",
+         *      "message":"testing1234ffffff5"
+         *  }
+         *
+         * @param {string} friendId - friend's id
+         * @param {string} message - message text
+         * @method sendMessage
+         * @instance
+         */
+
         var userId = req.session.uId;
         var options = req.body;
         var messageModel;
@@ -53,6 +87,27 @@ var MessageHandler = function (app, db) {
     };
 
     this.clearMessage = function (req, res, next) {
+
+        /**
+         * __Type__ __`DELETE`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/messages/:id`__
+         *
+         * This __method__ allows delete _Message_ with id
+         *
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/messages/55fbcffaf60866ec1fe95ff6
+         *
+         *
+         * @method clearMessage
+         * @instance
+         */
+
         var userId = req.session.uId;
         var messageId = req.params.id;
 
@@ -94,7 +149,34 @@ var MessageHandler = function (app, db) {
 
     };
 
-    this.clearHistoty = function (req, res, next) {
+    this.clearHistory = function (req, res, next) {
+
+        /**
+         * __Type__ __`DELETE`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/messages/`__
+         *
+         * This __method__ allows delete _Chat_ history
+         *
+         *  @example Body example:
+         *
+         * {
+         *      "friendId":"55fbcb7cc06791dc1dad4645"
+         *  }
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/messages/
+         *
+         * @param {string} friendId - friend's id from delete chat history
+         *
+         * @method clearHistory
+         * @instance
+         */
+
         var userId = req.session.uId;
         var options = req.body;
         var chatId;
@@ -135,6 +217,39 @@ var MessageHandler = function (app, db) {
     };
 
     this.getChatHistory = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/messages/:id/:page`__
+         *
+         * This __method__ allows to get chat __`Messages`__
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/55fbcb7cc06791dc1dad4645/0
+         *
+         *
+         * @example Response example:
+         *    [
+         *      {
+         *          "_id": "5600127b670ed1ac1b3d60b0",
+         *          "text": "testing12gffd34ffffff5",
+         *          "date": "2015-09-21T14:21:47.134Z"
+         *      },
+         *      {
+         *          "_id": "56001273670ed1ac1b3d60af",
+         *          "text": "testing1234ffffff5",
+         *          "date": "2015-09-21T14:21:39.383Z"
+         *      }
+         *    ]
+         * @method getChatHistory
+         * @instance
+         */
+
         var userId = req.session.uId;
         var pageCount = req.params.pageCount * CONSTANTS.MESSAGES.LIMIT;
         var friendId = req.params.id;
@@ -166,6 +281,25 @@ var MessageHandler = function (app, db) {
     };
 
     this.clearAllMessages = function (req, res, next) {
+
+        /**
+         * __Type__ __`DELETE`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/messages/all/`__
+         *
+         * This __method__ allows delete _Chat_ history
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/messages/all/
+         *
+         * @method clearHistory
+         * @instance
+         */
+
         var userId = req.session.uId;
 
         Message
