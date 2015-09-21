@@ -456,6 +456,25 @@ var UserHandler = function (db) {
     };
 
     this.findNearestUsers = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `users/find`__
+         *
+         * This __method__ allows find nearest `FRNDR` user's to current _User_
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/users/find
+         *
+         * @method findNearestUsers
+         * @instance
+         */
+
         var uId = req.session.uId;
 
         userHelper.getAllUseBySearchSettings(uId, function(err, user){
@@ -481,7 +500,7 @@ var UserHandler = function (db) {
          *
          * __URL: `/users/friendList`__
          *
-         * This __method__ allows update _User_ notification settings
+         * This __method__ allows to get _User's_ friends list
          *
          * @example Request example:
          *         http://192.168.88.250:8859/users/friendList
@@ -520,7 +539,7 @@ var UserHandler = function (db) {
          *
          * __URL: `/users/blockFriend/:id`__
          *
-         * This __method__ allows update _User_ notification settings
+         * This __method__ allows block _User_
          *
          * @example Request example:
          *         http://192.168.88.250:8859/users/blockFriend/55f938010bc036b01945f1e7
@@ -533,10 +552,8 @@ var UserHandler = function (db) {
         var blockedId = req.params.id;
 
         async.parallel([
-
                 async.apply(userHelper.addToBlockListById, userId, blockedId),
                 async.apply(userHelper.addToBlockListById, blockedId, userId)
-
             ],
 
             function (err, result) {
@@ -566,7 +583,7 @@ var UserHandler = function (db) {
                 smoker: false,
                 sexual: 'any'
             }
-        }
+        };
 
         for(var i = 0; i < 1000; i++){
             userObj['fbId'] = 'age' + i;

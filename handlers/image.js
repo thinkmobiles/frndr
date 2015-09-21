@@ -4,7 +4,6 @@
  *
  */
 
-var SessionHandler = require('./sessions');
 var async = require('async');
 var CONSTANTS = require('../constants/index');
 var mongoose = require('mongoose');
@@ -253,7 +252,7 @@ var imageHandler = function (db) {
          * @example Request example:
          *         http://192.168.88.250:8859/image/photo
          *
-         *  @example Body example:
+         * @example Body example:
          *
          * {
          *      "image":"data:image/png;base64, /9j/4AAQSkZ..."
@@ -405,7 +404,7 @@ var imageHandler = function (db) {
          *
          * __URL: `/image/photo`__
          *
-         * This __method__ allows get _User_ photo from gallery
+         * This __method__ allows get _User's_ photos from gallery
          *
          * @example Request example:
          *         http://192.168.88.250:8859/image/photo

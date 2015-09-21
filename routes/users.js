@@ -11,7 +11,6 @@ module.exports = function(app, db){
     var sessionHandler = new SessionHandler();
     var like = new LikeHandler(db);
     var searchSettingsHandler = new SearchSettingsHandler(db);
-    var image = new ImageHandler(db);
 
     router.get('/test', userHandler.testUser);
     router.get('/friendList', sessionHandler.authenticatedUser, userHandler.getFriendList);
