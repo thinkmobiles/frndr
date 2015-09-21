@@ -26,8 +26,6 @@ if (process.env.UPLOADER_TYPE === 'AmazonS3') {
     };
 }
 
-
-
 var imageHandler = function (db) {
     var Image = db.model('Image');
     var User = db.model('User');
@@ -426,7 +424,7 @@ var imageHandler = function (db) {
          * @instance
          */
 
-        var uId = req.session.uId;
+        var uId = req.params.id || req.session.uId;
         var photoNames;
         var urls = [];
 

@@ -14,7 +14,7 @@ module.exports = function(app, db){
     router.get('/avatar/:id?', sessionHandler.authenticatedUser, image.getAvatarUrl);
     router.post('/photo', sessionHandler.authenticatedUser, image.uploadPhotoToGallery);
     router.delete('/photo', sessionHandler.authenticatedUser, image.removeImageFromGallery);
-    router.get('/photo', sessionHandler.authenticatedUser, image.getPhotoUrls);
+    router.get('/photo/:id?', sessionHandler.authenticatedUser, image.getPhotoUrls);
 
     return router;
 };
