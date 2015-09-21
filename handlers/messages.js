@@ -9,7 +9,7 @@ var MessageHandler = function (app, db) {
     var io = app.get('io');
     var Message = db.model('Message');
 
-    function computeChatId (userId, friendId){
+    function computeChatId(userId, friendId) {
         if (userId < friendId) {
             return userId + ':' + friendId;
         } else {
@@ -147,7 +147,7 @@ var MessageHandler = function (app, db) {
         chatId = computeChatId(userId, friendId);
 
         Message
-            .find({chatId: chatId, show: {$in: [userId]}}, {__v: 0, chatId: 0}, {
+            .find({chatId: chatId, show: {$in: [userId]}}, {__v: 0, chatId: 0, show: 0}, {
                 sort: {
                     date: -1
                 },
@@ -169,12 +169,50 @@ var MessageHandler = function (app, db) {
         var userId = req.session.uId;
 
         Message
-            .update({show: {$in: [userId.toString()]}}, {$pull: {show: userId.toString()}}, {multi: true}, function (err) {
+            .find({show: {$in: [userId.toString()]}}, function (err, messageModels) {
                 if (err) {
                     return next(err);
                 }
 
-                res.status(200).send({success: 'All history cleared successfully'});
+                if (!messageModels) {
+                    return next(badRequests.NotFound({message: 'Messages not found'}));
+                }
+
+                async.each(messageModels,
+
+                    function (messageModel, cb) {
+                        var showArray = messageModel.get('show');
+
+                        if ((showArray.length === 1) && (showArray.indexOf(userId.toString()) !== -1)) {
+
+                            messageModel.remove(function (err) {
+                                if (err) {
+                                    return cb(err);
+                                }
+
+                                return cb();
+                            });
+
+                        } else {
+
+                            messageModel.update({$pull: {show: userId.toString()}}, function (err) {
+                                if (err) {
+                                    return cb(err);
+                                }
+
+                                return cb();
+                            });
+
+                        }
+                    },
+
+                    function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        res.status(200).send({success: 'All history cleared successfully'});
+                    });
             });
     };
 
