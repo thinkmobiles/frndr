@@ -84,11 +84,7 @@ var imageHandler = function (db) {
                 }
 
                 if (!resUser || !resUser.images) {
-
-                    err = new Error('Database error');
-                    err.status = 400;
-                    return next(err);
-
+                    return next(badRequests.DatabaseError());
                 }
 
                 imageId = resUser.images;
