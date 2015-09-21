@@ -337,7 +337,7 @@ module.exports = function (db) {
             });
     }
 
-    function getAllUseBySearchSettings (userId, limit, callback){
+    function getAllUseBySearchSettings (userId, page, callback){
 
         var userCoordinates;
         var relStatusArray = [];
@@ -355,6 +355,7 @@ module.exports = function (db) {
         var findObj;
         var projectionObj;
         var notIObj;
+        var limit = 10;
 
         SearchSettings.findOne({user: userId}, {_id: 0, __v: 0})
             .populate({path: 'user', select: 'loc friends blockList'})
@@ -484,6 +485,7 @@ module.exports = function (db) {
                         projectionObj
                     )
                     .populate({path: 'images', select: '-_id avatar gallery'})
+                    .skip(limit * (page - 1))
                     .limit(limit)
                     .exec(function(err, resultUsers){
                         if (err){
