@@ -409,12 +409,18 @@ var UserHandler = function (db) {
          * @example Body example:
          *
          * {
-         *  "profile": {
-         *      "visible": true,
-         *      "things": [],
-         *      "sexual": "straight",
-         *      "relStatus": "single",
-         *      "sex": "M"
+         *      "coordinates": [15, 25],
+         *      "profile": {
+         *          "name": "Petrovich",
+         *          "age":"25",
+         *          "relStatus":"single",
+         *          "jobTitle":"Doctor",
+         *          "smoker":"true",
+         *          "sexual":"straight",
+         *          "things":["tennis", "box", "cars"],
+         *          "bio": "Some biography",
+         *          "visible":"true",
+         *          "sex": "M"
          *      }
          * }
          *
