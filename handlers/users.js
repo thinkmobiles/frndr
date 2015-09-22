@@ -456,6 +456,7 @@ var UserHandler = function (db) {
     };
 
     this.findNearestUsers = function (req, res, next) {
+
         /**
          * __Type__ __`GET`__
          *
