@@ -24,8 +24,8 @@ module.exports = {
         SINGLE_MALE: 'Single Male',
         COUPLE: 'Couple',
         FAMILY: 'Family',
-        MALE_WITH_BABY: 'Single Mother',
-        FEMALE_WITH_BABY: 'Single Father'
+        MALE_WITH_BABY: 'Single Father',
+        FEMALE_WITH_BABY: 'Single Mother'
     },
     MESSAGES:{
         LIMIT:5
