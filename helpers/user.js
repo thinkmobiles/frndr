@@ -96,7 +96,6 @@ module.exports = function (db) {
 
     function createUser(profileData, callback) {
         var userModel;
-        var pushTokenModel;
         var uId;
         var saveObj;
         var err;
@@ -105,11 +104,8 @@ module.exports = function (db) {
 
         if (profileData.constructor === Object) {
 
-            if (!profileData.fbId || !profileData.pushToken || !profileData.os) {
-                return callback(badRequests.NotEnParams({message: 'fbId and pushToken and os'}));
-            }
-            if (!(profileData.os === 'APPLE' || profileData.os === 'GOOGLE' || profileData.os === 'WINDOWS')) {
-                return callback(badRequests.InvalidValue({name: 'os'}));
+            if (!profileData.fbId) {
+                return callback(badRequests.NotEnParams({message: 'fbId pushToken os'}));
             }
 
             if (profileData.coordinates && profileData.coordinates.length) {
@@ -120,14 +116,14 @@ module.exports = function (db) {
                 }
 
             } else {
-                return callback(badRequests.NotEnParams({message: 'coordinates'}));
+                return callback(badRequests.NotEnParams({message: 'Not enough coordinates'}));
             }
 
             imageModel = new Image();
 
             imageModel
-                .save(function(err){
-                    if (err){
+                .save(function (err) {
+                    if (err) {
                         return callback(err);
                     }
 
@@ -148,50 +144,20 @@ module.exports = function (db) {
                                 return callback(err);
                             }
 
-                            PushTokens.findOne({token: profileData.pushToken}, function (err, resultModel) {
+
+                            uId = userModel.get('_id');
+
+                            searchSettingModel = new SearchSettings({user: uId});
+
+
+                            searchSettingModel.save(function (err) {
                                 if (err) {
                                     return callback(err);
                                 }
 
-                                uId = userModel.get('_id');
-
-                                searchSettingModel = new SearchSettings({user: uId});
-
-                                if (!resultModel) {
-                                    pushTokenModel = new PushTokens({
-                                        user: uId,
-                                        token: profileData.pushToken,
-                                        os: profileData.os
-                                    });
-
-                                    pushTokenModel.save(function (err) {
-                                        if (err) {
-                                            return callback(err);
-                                        }
-
-
-                                        searchSettingModel.save(function(err){
-                                            if (err){
-                                                return callback(err);
-                                            }
-
-                                            callback(null, uId);
-                                        });
-                                    });
-
-                                } else {
-
-                                    searchSettingModel.save(function(err){
-                                        if (err){
-                                            return callback(err);
-                                        }
-
-                                        callback(null, uId);
-                                    });
-
-                                }
-
+                                callback(null, uId);
                             });
+
 
                         });
 
@@ -203,6 +169,54 @@ module.exports = function (db) {
         }
 
     }
+
+    function addPushToken(userId, pushToken, os, callback){
+
+        var pushTokenModel;
+
+        PushTokens
+            .findOne({user: userId}, function(err, resultModel){
+
+                if (err){
+                    return callback(err);
+                }
+
+                if (!resultModel){
+
+                    pushTokenModel = new PushTokens({user: userId, token: pushToken, os: os});
+
+                    pushTokenModel
+                        .save(function(err){
+
+                            if (err){
+                                return callback(err);
+                            }
+
+                            callback(null);
+
+                        });
+
+                } else {
+
+                    if (!(os === 'APPLE' || os === 'GOOGLE' || os === 'WINDOWS')) {
+                        return callback(badRequests.InvalidValue({value: os, param: 'os'}));
+                    }
+
+                    resultModel.update({$set: {token: pushToken, os: os}}, function(err){
+
+                        if (err){
+                            return callback(err);
+                        }
+
+                        callback(null);
+
+                    });
+
+                }
+
+            });
+
+    };
 
     function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
@@ -539,7 +553,8 @@ module.exports = function (db) {
         getUserById: getUserById,
         deleteUserById: deleteUserById,
         getAllUseBySearchSettings: getAllUseBySearchSettings,
-        addToBlockListById: addToBlockListById
+        addToBlockListById: addToBlockListById,
+        addPushToken: addPushToken
     };
 
 };
