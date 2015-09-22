@@ -29,5 +29,9 @@ module.exports = {
     },
     MESSAGES:{
         LIMIT:5
+    },
+    FRIENDS:{
+        LIMIT:8
     }
+
 };

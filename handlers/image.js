@@ -442,6 +442,11 @@ var imageHandler = function (db) {
         });
     };
 
+    this.getAvatarUrl = function(avatarName){
+        var url = imageUploader.getImageUrl(avatarName, CONSTANTS.BUCKETS.AVATAR) + '.png';
+        return url;
+    }
+
 
 };
 

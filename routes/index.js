@@ -1,6 +1,6 @@
 var UserHandler = require('../handlers/users');
 
-module.exports = function(app, db){
+module.exports = function (app, db) {
     var logWriter = require('../modules/logWriter')();
 
     var userHandler = new UserHandler(db);
@@ -8,8 +8,8 @@ module.exports = function(app, db){
     var messageRouter = require('./messages')(app, db);
     var imageRouter = require('./image')(app, db);
 
-    app.get('/', function(req, res, next){
-        res.status(200).send( 'Express start succeed' );
+    app.get('/', function (req, res, next) {
+        res.status(200).send('Express start succeed');
     });
 
     app.post('/signIn', userHandler.signInClient);
@@ -19,32 +19,33 @@ module.exports = function(app, db){
     app.use('/image', imageRouter);
     app.use('/messages', messageRouter);
 
-    function notFound(req, res, next){
+    function notFound(req, res, next) {
         next();
     }
 
-    function errorHandler( err, req, res, next ) {
+    function errorHandler(err, req, res, next) {
         var status = err.status || 500;
 
-        if( process.env.NODE_ENV === 'production' ) {
-            if(status === 404 || status === 401){
-                logWriter.log( '', err.message + '\n' + err.stack );
+        if (process.env.NODE_ENV === 'production') {
+            if (status === 404 || status === 401) {
+                logWriter.log('', err.message + '\n' + err.stack);
             }
-            res.status( status );
+            res.status(status);
         } else {
-            if(status !== 401) {
-                logWriter.log( '', err.message + '\n' + err.stack );
+            if (status !== 401) {
+                logWriter.log('', err.message + '\n' + err.stack);
             }
-            res.status( status ).send( err.message + '\n' + err.stack );
+            res.status(status).send({message: err.message, stack: err.stack});
         }
 
-        if(status === 401){
-            console.warn( err.message );
+        if (status === 401) {
+            console.warn(err.message);
         } else {
             console.error(err.message);
             console.error(err.stack);
         }
     }
-    app.use( notFound );
-    app.use( errorHandler );
+
+    app.use(notFound);
+    app.use(errorHandler);
 };
