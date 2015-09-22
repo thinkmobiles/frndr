@@ -646,7 +646,7 @@ var UserHandler = function (db) {
 
                                 if (imageModel){
                                     avatarName = imageModel.get('avatar');
-                                    avatarUrl = ImageHandler.getAvatarUrl(avatarName);
+                                    avatarUrl = ImageHandler.computeAvatarUrl(avatarName);
                                     resultObj.avatar = avatarUrl;
                                 }
 
