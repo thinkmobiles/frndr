@@ -4,7 +4,6 @@ var UserHandler = require('../handlers/users');
 var SessionHandler = require('../handlers/sessions');
 var SearchSettingsHandler = require('../handlers/searchSettings');
 var LikeHandler = require('../handlers/likes');
-var ImageHandler = require('../handlers/image');
 
 module.exports = function(app, db){
     var userHandler = new UserHandler(db);
