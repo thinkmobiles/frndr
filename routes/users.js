@@ -13,7 +13,7 @@ module.exports = function(app, db){
 
     router.get('/test', userHandler.testUser);
     router.post('/pushToken', sessionHandler.authenticatedUser, userHandler.addPushToken);
-    router.get('/friendList', sessionHandler.authenticatedUser, userHandler.getFriendList);
+    router.get('/friendList/:page', sessionHandler.authenticatedUser, userHandler.getFriendList);
     router.get('/blockFriend/:id', sessionHandler.authenticatedUser, userHandler.blockFriend);
     router.get('/searchSettings', sessionHandler.authenticatedUser, searchSettingsHandler.getSearchSettings);
     router.put('/searchSettings', searchSettingsHandler.updateSearchSettings);

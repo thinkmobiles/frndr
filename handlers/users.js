@@ -19,6 +19,7 @@ var UserHandler = function (db) {
     var SearchSettings = db.model('SearchSettings');
     var Like = db.model('Like');
     var Image = db.model('Image');
+    var Message = db.model('Message');
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
@@ -524,13 +525,13 @@ var UserHandler = function (db) {
         var uId = req.session.uId;
         var page = req.params.page;
 
-        if (page < 1){
+        if (page < 1) {
             return next(badRequests.InvalidValue({message: 'Page can not be less then 1'}));
         }
 
-        userHelper.getAllUseBySearchSettings(uId, page, function(err, user){
+        userHelper.getAllUseBySearchSettings(uId, page, function (err, user) {
 
-            if (err){
+            if (err) {
                 return next(err);
             }
 
@@ -549,7 +550,7 @@ var UserHandler = function (db) {
          *
          * __HOST: `http://192.168.88.250:8859`__
          *
-         * __URL: `/users/friendList`__
+         * __URL: `/users/friendList/:page`__
          *
          * This __method__ allows to get _User's_ friends list
          *
@@ -558,24 +559,116 @@ var UserHandler = function (db) {
          *
          * @example Response example:
          *
-         * ["55f938010bc036b01945f1e7", "55f938110bc036b01945d1r5"]
+         * [
+         *   {
+         *      "friendId": "55ffc48dcc6f0ec80b4c0522",
+         *      "message": "123456789",
+         *      "avatar": "http://192.168.88.250:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
+         *   },
+         *   {
+         *      "friendId": "55ffc48dcc6f0ec80b4c0521",
+         *      "message": "New friend. Say Hello."
+         *   }
+         * ]
          *
          * @method getFriendList
          * @instance
          */
 
         var userId = req.session.uId;
+        var pageCount = req.params.page;
+        var resultArray = [];
+
+        if (isNaN(pageCount) || pageCount < 1) {
+            return next(badRequests.InvalidValue({message: 'Invalid value page'}));
+        }
 
         userHelper.getUserById(userId, function (err, userModel) {
             var friends;
+            var indexFrom = 0;
+            var indexTo;
 
             if (err) {
                 return next(err);
             }
 
+
             friends = userModel.get('friends');
 
-            res.status(200).send(friends);
+            if (friends.length > CONSTANTS.FRIENDS.LIMIT * pageCount) {
+                indexFrom = friends.length - CONSTANTS.FRIENDS.LIMIT * pageCount;
+                indexTo = CONSTANTS.FRIENDS.LIMIT;
+
+            } else {
+                indexTo = friends.length - CONSTANTS.FRIENDS.LIMIT * (pageCount - 1);
+            }
+
+            friends = friends.splice(indexFrom, indexTo);
+
+            async.eachSeries(friends,
+
+                function(friendId, cb){
+
+                    Message.find({$and:[
+                        {show:{$in:[userId]}},
+                        {show:{$in:[friendId]}}
+
+                    ]},
+                        {__v: 0, chatId: 0, show: 0},
+
+                        {
+                            sort: {
+                                date: -1
+                            },
+                            limit: 1
+                        },
+
+                        function (err, messageModelsArray) {
+                            var msg;
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            if (!messageModelsArray.length){
+                               msg = 'New friend. Say Hello.'
+                            } else {
+                                msg = messageModelsArray[0].get('text');
+                            }
+
+                            Image.findOne({user:ObjectId(friendId)}, function(err, imageModel){
+                                var avatarName;
+                                var avatarUrl;
+                                var resultObj = {};
+
+                                if (err){
+                                    return cb(err);
+                                }
+
+                                if (imageModel){
+                                    avatarName = imageModel.get('avatar');
+                                    avatarUrl = ImageHandler.getAvatarUrl(avatarName);
+                                    resultObj.avatar = avatarUrl;
+                                }
+
+                                resultObj.friendId = friendId;
+                                resultObj.message = msg;
+
+                                resultArray.push(resultObj);
+                                cb();
+                            });
+
+                        })
+                },
+
+                function(err){
+                    if (err){
+                        return next(err);
+                    }
+
+                    resultArray.reverse();
+                    res.status(200).send(resultArray);
+                });
+
         });
     };
 
@@ -619,7 +712,7 @@ var UserHandler = function (db) {
 
     // TODO  TEST (remove in production)
 
-    this.testUser = function(req, res, next){
+    this.testUser = function (req, res, next) {
 
         var userModel;
 
@@ -636,15 +729,15 @@ var UserHandler = function (db) {
             }
         };
 
-        for(var i = 0; i < 1000; i++){
+        for (var i = 0; i < 1000; i++) {
             userObj['fbId'] = 'age' + i;
 
             userModel = new User(userObj);
 
             userModel
-                .save(function(err){
+                .save(function (err) {
 
-                    if (err){
+                    if (err) {
                         return next(err);
                     }
 
@@ -654,7 +747,6 @@ var UserHandler = function (db) {
         res.status(200).send({success: 'Users created successfully'});
 
     };
-
 
 
 };
