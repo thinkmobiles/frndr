@@ -170,6 +170,54 @@ module.exports = function (db) {
 
     }
 
+    function addPushToken(userId, pushToken, os, callback){
+
+        var pushTokenModel;
+
+        PushTokens
+            .findOne({user: userId}, function(err, resultModel){
+
+                if (err){
+                    return callback(err);
+                }
+
+                if (!resultModel){
+
+                    pushTokenModel = new PushTokens({user: userId, token: pushToken, os: os});
+
+                    pushTokenModel
+                        .save(function(err){
+
+                            if (err){
+                                return callback(err);
+                            }
+
+                            callback(null);
+
+                        });
+
+                } else {
+
+                    if (!(os === 'APPLE' || os === 'GOOGLE' || os === 'WINDOWS')) {
+                        return callback(badRequests.InvalidValue({value: os, param: 'os'}));
+                    }
+
+                    resultModel.update({$set: {token: pushToken, os: os}}, function(err){
+
+                        if (err){
+                            return callback(err);
+                        }
+
+                        callback(null);
+
+                    });
+
+                }
+
+            });
+
+    };
+
     function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
 
@@ -505,7 +553,8 @@ module.exports = function (db) {
         getUserById: getUserById,
         deleteUserById: deleteUserById,
         getAllUseBySearchSettings: getAllUseBySearchSettings,
-        addToBlockListById: addToBlockListById
+        addToBlockListById: addToBlockListById,
+        addPushToken: addPushToken
     };
 
 };

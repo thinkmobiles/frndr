@@ -156,6 +156,28 @@ var UserHandler = function (db) {
         session.kill(req, res, next);
     };
 
+    this.addPushToken = function(req, res, next){
+
+        var body = req.body;
+
+        var userId = req.session.uId;
+
+        if (!body || !body.pushToken || !body.os){
+            return next(badRequests.NotEnParams({reqParams: 'pushToken and os'}));
+        }
+
+        userHelper.addPushToken(userId, body.pushToken, body.os, function(err){
+
+            if (err){
+                return next(err);
+            }
+
+            res.status(200).send({success: 'Push token saved successfully'});
+
+        });
+
+    }
+
     this.getUserById = function (req, res, next) {
 
         /**
