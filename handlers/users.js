@@ -412,14 +412,14 @@ var UserHandler = function (db) {
          *      "coordinates": [15, 25],
          *      "profile": {
          *          "name": "Petrovich",
-         *          "age":"25",
-         *          "relStatus":"single",
-         *          "jobTitle":"Doctor",
-         *          "smoker":"true",
-         *          "sexual":"straight",
-         *          "things":["tennis", "box", "cars"],
+         *          "age": "25",
+         *          "relStatus": "single",
+         *          "jobTitle": "Doctor",
+         *          "smoker": "true",
+         *          "sexual": "straight",
+         *          "things": ["tennis", "box", "cars"],
          *          "bio": "Some biography",
-         *          "visible":"true",
+         *          "visible": "true",
          *          "sex": "M"
          *      }
          * }

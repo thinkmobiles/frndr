@@ -123,22 +123,13 @@ module.exports = function (db, defaults) {
                                 return done(err);
                             }
 
+                            uId1 = user._id;
+
                             expect(user).to.instanceOf(Object);
                             expect(user.loc.coordinates[0]).to.equals(user1.coordinates[0]);
                             expect(user.loc.coordinates[1]).to.equals(user1.coordinates[1]);
 
-                            uId1 = user._id;
-
-                            PushTokens
-                                .findOne({user: uId1}, function (err, resToken) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-
-                                    expect(resToken.token).to.equals(user1.pushToken);
-
-                                    done();
-                                });
+                            done(null);
                         });
 
                     expect(res.status).to.equals(200);
@@ -172,16 +163,7 @@ module.exports = function (db, defaults) {
 
                             uId2 = user._id;
 
-                            PushTokens
-                                .findOne({user: uId2}, function (err, resToken) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-
-                                    expect(resToken.token).to.equals(user2.pushToken);
-
-                                    done();
-                                });
+                            done(null);
                         });
 
                     expect(res.status).to.equals(200);
@@ -239,16 +221,7 @@ module.exports = function (db, defaults) {
 
                             expect(res.status).to.equals(200);
 
-                            PushTokens
-                                .findOne({user: uId1}, function (err, resToken) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-
-                                    expect(resToken.token).to.equals(newpushToken);
-
-                                    done();
-                                });
+                            done(null)
                         });
 
 
@@ -397,20 +370,10 @@ module.exports = function (db, defaults) {
                             expect(user.loc.coordinates[0]).to.equals(newCoordinates[0]);
                             expect(user.loc.coordinates[1]).to.equals(newCoordinates[1]);
 
-                            uId2 = user._id;
-
                             expect(res.status).to.equals(200);
 
-                            PushTokens
-                                .findOne({user: uId2}, function (err, resToken) {
-                                    if (err) {
-                                        return done(err);
-                                    }
+                            done(null);
 
-                                    expect(resToken.token).to.equals(newpushToken);
-
-                                    done();
-                                });
                         });
                 });
         });
@@ -565,7 +528,7 @@ module.exports = function (db, defaults) {
         });
 
         it('User2 have one friend user1', function(done){
-            var url = '/users/friendList';
+            var url = '/users/friendList/1';
 
             userAgent
                 .get(url)
@@ -573,9 +536,11 @@ module.exports = function (db, defaults) {
                     if (err){
                         return done(err);
                     }
-                    expect(res.body).instanceOf(Array);
-                    expect(res.body[0]).to.equals(uId1.toString());
-                    done();
+                    expect(res.body).to.instanceOf(Array);
+                    expect(res.body[0]).to.instanceOf(Object);
+                    expect(res.body[0].friendId).to.equals(uId1.toString());
+
+                    done(null);
                 })
         });
 
