@@ -79,15 +79,11 @@ var UserHandler = function (db) {
          *
          * {
          *      "fbId": "test1",
-         *      "pushToken": "pushTokenTest1",
-         *       "os": "APPLE",
          *       "coordinates": [1, 2]
          *
          * }
          *
          * @param {string} fbId - FaceBook Id for signing user
-         * @param {string} pushToken - Token for sending push notifications to user's device
-         * @param {string} os - type of operation system (using for push notifications)
          * @param {array} coordinates - geoLocation user
          * @method signInClient
          * @instance
@@ -178,6 +174,9 @@ var UserHandler = function (db) {
          *
          * @example Request example:
          *         http://192.168.88.250:8859/pushToker
+         *
+         * @param {string} pushToken - Token for sending Push Notifications
+         * @param {string} os - Type of device operation system
          *
          * @method addPushToken
          * @instance
