@@ -158,6 +158,31 @@ var UserHandler = function (db) {
 
     this.addPushToken = function(req, res, next){
 
+        /**
+         * __Type__ __`POST`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/pushToken`__
+         *
+         * This __method__ allows to add _Push Token_ to _User_
+         *
+         * @example Body example:
+         *
+         * {
+         *    "pushToken": "fsdfsf",
+         *    "os": "APPLE"
+         *  }
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/pushToker
+         *
+         * @method addPushToken
+         * @instance
+         */
+
         var body = req.body;
 
         var userId = req.session.uId;
