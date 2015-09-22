@@ -91,11 +91,11 @@ module.exports = function (db) {
         }
 
         return;
+
     }
 
     function createUser(profileData, callback) {
         var userModel;
-        var pushTokenModel;
         var uId;
         var saveObj;
         var err;
@@ -116,7 +116,7 @@ module.exports = function (db) {
                 }
 
             } else {
-                return callback(badRequests.NotEnParams({message: 'coordinates'}));
+                return callback(badRequests.NotEnParams({message: 'Not enough coordinates'}));
             }
 
             imageModel = new Image();
@@ -149,35 +149,19 @@ module.exports = function (db) {
 
                             searchSettingModel = new SearchSettings({user: uId});
 
-                            if (!resultModel) {
-                                pushTokenModel = new PushTokens({
-                                    user: uId,
-                                    token: profileData.pushToken,
-                                    os: profileData.os
-                                });
 
+                            searchSettingModel.save(function (err) {
+                                if (err) {
+                                    return callback(err);
+                                }
 
-                                searchSettingModel.save(function (err) {
-                                    if (err) {
-                                        return callback(err);
-                                    }
+                                callback(null, uId);
+                            });
 
-                                    callback(null, uId);
-                                });
-
-                            } else {
-
-                                searchSettingModel.save(function (err) {
-                                    if (err) {
-                                        return callback(err);
-                                    }
-
-                                    callback(null, uId);
-                                });
-
-                            }
 
                         });
+
+
                 });
 
         } else {
