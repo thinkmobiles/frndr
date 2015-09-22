@@ -456,7 +456,6 @@ var UserHandler = function (db) {
     };
 
     this.findNearestUsers = function (req, res, next) {
-
         /**
          * __Type__ __`GET`__
          *
@@ -464,19 +463,23 @@ var UserHandler = function (db) {
          *
          * __HOST: `http://192.168.88.250:8859`__
          *
-         * __URL: `users/find`__
+         * __URL: `users/find/:page`__
          *
          * This __method__ allows find nearest `FRNDR` user's to current _User_
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users/find
+         *         http://192.168.88.250:8859/users/find/2
          *
          * @method findNearestUsers
          * @instance
          */
 
         var uId = req.session.uId;
-        var limit = req.params.page;
+        var page = req.params.page;
+
+        if (page < 1){
+            return next(badRequests.InvalidValue({message: 'Page can not be less then 1'}));
+        }
 
         userHelper.getAllUseBySearchSettings(uId, page, function(err, user){
 
