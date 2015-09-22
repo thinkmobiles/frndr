@@ -255,7 +255,7 @@ var MessageHandler = function (app, db) {
         var friendId = req.params.id;
         var chatId;
 
-        if (isNaN(pageCount)) {
+        if (isNaN(pageCount) || (pageCount < 1)) {
             return next(badRequests.InvalidValue({message: 'Invalid value page count'}));
         }
 
