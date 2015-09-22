@@ -142,7 +142,7 @@ var UserHandler = function (db) {
          *
          * __HOST: `http://192.168.88.250:8859`__
          *
-         * __URL: `/signIn`__
+         * __URL: `/signOut`__
          *
          * This __method__ allows singOut _User_
          *
