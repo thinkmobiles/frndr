@@ -20,12 +20,12 @@ module.exports = {
         GALLERY:'gallery'
     },
     SEARCH_REL_STATUSES: {
-        SINGLE_FEMALE: 'single female',
-        SINGLE_MALE: 'single male',
-        COUPLE: 'couple',
-        FAMILY: 'family',
-        MALE_WITH_BABY: 'male with baby',
-        FEMALE_WITH_BABY: 'female with baby'
+        SINGLE_FEMALE: 'Single Female',
+        SINGLE_MALE: 'Single Male',
+        COUPLE: 'Couple',
+        FAMILY: 'Family',
+        MALE_WITH_BABY: 'Single Mother',
+        FEMALE_WITH_BABY: 'Single Father'
     },
     MESSAGES:{
         LIMIT:5
