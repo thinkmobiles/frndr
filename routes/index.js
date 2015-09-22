@@ -35,7 +35,7 @@ module.exports = function(app, db){
             if(status !== 401) {
                 logWriter.log( '', err.message + '\n' + err.stack );
             }
-            res.status( status ).send( err.message + '\n' + err.stack );
+            res.status( status ).send({message: err.message, stack: err.stack});
         }
 
         if(status === 401){

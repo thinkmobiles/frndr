@@ -91,7 +91,6 @@ module.exports = function (db) {
         }
 
         return;
-
     }
 
     function createUser(profileData, callback) {
@@ -105,11 +104,8 @@ module.exports = function (db) {
 
         if (profileData.constructor === Object) {
 
-            if (!profileData.fbId || !profileData.pushToken || !profileData.os) {
-                return callback(badRequests.NotEnParams({message: 'fbId and pushToken and os'}));
-            }
-            if (!(profileData.os === 'APPLE' || profileData.os === 'GOOGLE' || profileData.os === 'WINDOWS')) {
-                return callback(badRequests.InvalidValue({name: 'os'}));
+            if (!profileData.fbId) {
+                return callback(badRequests.NotEnParams({message: 'fbId pushToken os'}));
             }
 
             if (profileData.coordinates && profileData.coordinates.length) {
@@ -126,8 +122,8 @@ module.exports = function (db) {
             imageModel = new Image();
 
             imageModel
-                .save(function(err){
-                    if (err){
+                .save(function (err) {
+                    if (err) {
                         return callback(err);
                     }
 
@@ -148,54 +144,40 @@ module.exports = function (db) {
                                 return callback(err);
                             }
 
-                            PushTokens.findOne({token: profileData.pushToken}, function (err, resultModel) {
-                                if (err) {
-                                    return callback(err);
-                                }
 
-                                uId = userModel.get('_id');
+                            uId = userModel.get('_id');
 
-                                searchSettingModel = new SearchSettings({user: uId});
+                            searchSettingModel = new SearchSettings({user: uId});
 
-                                if (!resultModel) {
-                                    pushTokenModel = new PushTokens({
-                                        user: uId,
-                                        token: profileData.pushToken,
-                                        os: profileData.os
-                                    });
-
-                                    pushTokenModel.save(function (err) {
-                                        if (err) {
-                                            return callback(err);
-                                        }
+                            if (!resultModel) {
+                                pushTokenModel = new PushTokens({
+                                    user: uId,
+                                    token: profileData.pushToken,
+                                    os: profileData.os
+                                });
 
 
-                                        searchSettingModel.save(function(err){
-                                            if (err){
-                                                return callback(err);
-                                            }
+                                searchSettingModel.save(function (err) {
+                                    if (err) {
+                                        return callback(err);
+                                    }
 
-                                            callback(null, uId);
-                                        });
-                                    });
+                                    callback(null, uId);
+                                });
 
-                                } else {
+                            } else {
 
-                                    searchSettingModel.save(function(err){
-                                        if (err){
-                                            return callback(err);
-                                        }
+                                searchSettingModel.save(function (err) {
+                                    if (err) {
+                                        return callback(err);
+                                    }
 
-                                        callback(null, uId);
-                                    });
+                                    callback(null, uId);
+                                });
 
-                                }
-
-                            });
+                            }
 
                         });
-
-
                 });
 
         } else {
