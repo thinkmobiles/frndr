@@ -15,7 +15,6 @@ var Session = function () {
     };
 
     this.authenticatedUser = function ( req, res, next ) {
-
         if( req.session && req.session.uId && req.session.loggedIn ) {
             next();
         } else {

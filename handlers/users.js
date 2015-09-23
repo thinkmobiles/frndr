@@ -94,7 +94,6 @@ var UserHandler = function (app, db) {
 
 
         var options = req.body;
-
         if (!options || !options.fbId) {
             return next(badRequests.NotEnParams({message: 'fbId'}));
         }
@@ -443,7 +442,7 @@ var UserHandler = function (app, db) {
 
         var userId = req.session.uId;
         var options = req.body;
-
+        console.log(req.session.id);
         userHelper.getUserById(userId, function (err, userModel) {
             if (err) {
                 return next(err);

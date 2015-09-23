@@ -223,8 +223,8 @@ module.exports = function (db) {
 
     function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
+        var coordinates = updateData.coordinates;
 
-        function updateCoordinates(coordinates, cb) {
             if (coordinates && coordinates.length) {
                 var validateError = validateCoordinates(coordinates);
 
@@ -241,34 +241,15 @@ module.exports = function (db) {
                     .save(function (err) {
 
                         if (err) {
-                            return cb(err);
+                            return callback(err);
                         }
 
-                        cb(null);
+                        callback(null, uId);
 
                     });
             } else {
-                cb(null);
-            }
-        }
-
-
-        async
-            .parallel([
-
-                function(parallelCb){
-                    updateCoordinates(updateData.coordinates, parallelCb);
-                }
-
-            ], function (err) {
-
-                if (err) {
-                    return callback(err);
-                }
-
                 callback(null, uId);
-
-            });
+            }
     }
 
     function updateProfile(userModel, updateData, callback) {
