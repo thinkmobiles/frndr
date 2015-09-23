@@ -1,9 +1,11 @@
 var badRequests = require('../helpers/badRequests');
 var CONSTANTS = require('../constants');
 var mongoose = require('mongoose');
+var ImageHandler = require('../handlers/image');
 
 var async = require('async');
 var _ = require('lodash');
+var geo = require('geolib');
 var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = function (db) {
@@ -12,29 +14,7 @@ module.exports = function (db) {
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');
     var Image = db.model('Image');
-
-    function distance(lat1, lon1, lat2, lon2, unit) {
-        var radlat1 = Math.PI * lat1/180;
-        var radlat2 = Math.PI * lat2/180;
-        var radlon1 = Math.PI * lon1/180;
-        var radlon2 = Math.PI * lon2/180;
-        var theta = lon1-lon2;
-        var radtheta = Math.PI * theta/180;
-        var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-
-        dist = Math.acos(dist);
-        dist = dist * 180/Math.PI;
-        dist = dist * 60 * 1.1515;
-
-        if (unit=="K") {
-            dist = dist * 1.609344;
-        }
-        if (unit=="N") {
-            dist = dist * 0.8684;
-        }
-
-        return Math.round(dist);
-    }
+    var imageHandler = new ImageHandler(db);
 
     function prepareModelToSave(userModel, options, callback) {
 
@@ -264,7 +244,6 @@ module.exports = function (db) {
                             return cb(err);
                         }
 
-
                         cb(null);
 
                     });
@@ -393,6 +372,12 @@ module.exports = function (db) {
         var projectionObj;
         var notIObj;
         var limit = 10;
+        var foundedUsers = [];
+        var userObj;
+        var gallery;
+        var galleryUrls;
+        var avatarUrl;
+        var distance;
 
         SearchSettings.findOne({user: userId}, {_id: 0, __v: 0})
             .populate({path: 'user', select: 'loc friends blockList'})
@@ -512,7 +497,6 @@ module.exports = function (db) {
                 projectionObj = {
                     'fbId': 0,
                     '__v': 0,
-                    'loc': 0,
                     'notification': 0
                 };
 
@@ -529,10 +513,51 @@ module.exports = function (db) {
                             return callback(err);
                         }
 
-                        callback(null, resultUsers);
+                        async.each(resultUsers,
+
+                            function(user, cb){
+
+                                gallery = user.images.gallery;
+
+                                galleryUrls = gallery.map(function(g){
+                                   return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.GALLERY);
+                                });
+
+                                avatarUrl = user.images.avatar ? imageHandler.computeUrl(user.images.avatar, CONSTANTS.BUCKETS.AVATAR) : '';
+
+                                distance = geo.getDistance(
+                                    {latitude: resultUser.user.loc.coordinates[1], longitude: resultUser.user.loc.coordinates[0]},
+                                    {latitude: user.loc.coordinates[1], longitude: user.loc.coordinates[0]}
+                                )  * 0.000621;
+
+                                userObj = {
+                                    avatar: avatarUrl,
+                                    name: user.profile.name,
+                                    age: user.profile.age,
+                                    distance: distance,
+                                    sexual: user.profile.sexual,
+                                    jobTitle: user.profile.jobTitle,
+                                    smoker: user.profile.smoker,
+                                    likes: user.profile.things,
+                                    bio: user.profile.bio || '',
+                                    gallery: galleryUrls
+                                };
+
+                                foundedUsers.push(userObj);
+
+                                cb(null);
+
+                        },  function(err){
+
+                                if (err){
+                                    return callback(err);
+                                }
+
+                                callback(null, foundedUsers);
+
+                        });
 
                     });
-
             });
     }
 
