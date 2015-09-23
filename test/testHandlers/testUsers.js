@@ -570,7 +570,7 @@ module.exports = function (db, defaults) {
                             expect(blockList.indexOf(uId1.toString())).not.to.equals(-1);
 
                             User
-                                .findOne({_id:uId1}, function(err, user1Model){
+                                .findOne({_id: uId1}, function(err, user1Model){
                                     var friendList;
                                     var blockList;
 
