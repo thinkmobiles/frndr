@@ -432,9 +432,17 @@ module.exports = function (db) {
                   '_id': {$ne: userId}
                 };
 
-                sexualObj = {
-                    'profile.sexual': resultUser.sexual
-                };
+                if (resultUser.sexual === CONSTANTS.SEXUAL.ANY){
+
+                    sexualObj = {};
+
+                } else {
+
+                    sexualObj = {
+                        'profile.sexual': resultUser.sexual
+                    };
+
+                }
 
                 smokerObj = {
                     'profile.smoker': resultUser.smoker
