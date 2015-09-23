@@ -251,7 +251,7 @@ var MessageHandler = function (app, db) {
          */
 
         var userId = req.session.uId;
-        var pageCount = (req.params.pageCount - 1) * CONSTANTS.MESSAGES.LIMIT;
+        var pageCount = (req.params.pageCount - 1) * CONSTANTS.LIMIT.MESSAGES;
         var friendId = req.params.id;
         var chatId;
 
@@ -267,7 +267,7 @@ var MessageHandler = function (app, db) {
                     date: -1
                 },
                 skip: pageCount,
-                limit: CONSTANTS.MESSAGES.LIMIT
+                limit: CONSTANTS.LIMIT.MESSAGES
             },
 
             function (err, models) {

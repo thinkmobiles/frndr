@@ -169,7 +169,7 @@ var imageHandler = function (db) {
                 return next(badRequests.NotFound({message: 'Avatar not found'}));
             }
 
-            url = imageUploader.getImageUrl(avatarName, CONSTANTS.BUCKETS.AVATAR) + '.png';
+            url = self.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
             res.status(200).send({'url': url});
 
         });
@@ -434,7 +434,7 @@ var imageHandler = function (db) {
             }
 
             for (var i = 0; i < len; i++) {
-                urls.push(imageUploader.getImageUrl(photoNames[i], CONSTANTS.BUCKETS.GALLERY) + '.png');
+                urls.push(self.computeUrl(photoNames[i], CONSTANTS.BUCKETS.GALLERY));
             }
 
             res.status(200).send({'urls': urls});
@@ -442,9 +442,8 @@ var imageHandler = function (db) {
         });
     };
 
-    this.computeAvatarUrl = function(avatarName){
-        var url = imageUploader.getImageUrl(avatarName, CONSTANTS.BUCKETS.AVATAR) + '.png';
-        return url;
+    this.computeUrl = function(imageName, bucket){
+        return imageUploader.getImageUrl(imageName, bucket) + '.png';
     }
 
 
