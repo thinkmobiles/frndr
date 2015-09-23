@@ -3,7 +3,7 @@ var UserHandler = require('../handlers/users');
 module.exports = function (app, db) {
     var logWriter = require('../modules/logWriter')();
 
-    var userHandler = new UserHandler(db);
+    var userHandler = new UserHandler(app, db);
     var userRouter = require('./users')(app, db);
     var messageRouter = require('./messages')(app, db);
     var imageRouter = require('./image')(app, db);

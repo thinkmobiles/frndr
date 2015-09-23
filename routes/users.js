@@ -6,7 +6,7 @@ var SearchSettingsHandler = require('../handlers/searchSettings');
 var LikeHandler = require('../handlers/likes');
 
 module.exports = function(app, db){
-    var userHandler = new UserHandler(db);
+    var userHandler = new UserHandler(app, db);
     var sessionHandler = new SessionHandler();
     var like = new LikeHandler(db);
     var searchSettingsHandler = new SearchSettingsHandler(db);

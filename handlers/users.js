@@ -11,9 +11,10 @@ var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
 var ImageHandler = require('./image');
+var MessageHandler = require('./messages');
 
 
-var UserHandler = function (db) {
+var UserHandler = function (app, db) {
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');
@@ -24,6 +25,7 @@ var UserHandler = function (db) {
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
     var imageHandler = new ImageHandler(db);
+    var messageHandler = new MessageHandler(app, db);
 
     function removeAvatar(avatarName, callback) {
 
@@ -274,7 +276,7 @@ var UserHandler = function (db) {
          *
          * __URL: `/users`__
          *
-         * This __method__ allows delete _User_ profile
+         * This __method__ allows delete _User_ account
          *
          * @example Request example:
          *         http://192.168.88.250:8859/users
@@ -377,6 +379,17 @@ var UserHandler = function (db) {
 
 
                             })
+                    },
+
+                    //try to remove Messages, or update show array in them
+                    function(cb){
+                        messageHandler.deleteMessages(userId, function(err){
+                            if (err){
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
                     }
                 ],
 
@@ -652,7 +665,7 @@ var UserHandler = function (db) {
 
                                 if (imageModel){
                                     avatarName = imageModel.get('avatar');
-                                    avatarUrl = ImageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+                                    avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
                                     resultObj.avatar = avatarUrl;
                                 }
 
@@ -671,7 +684,8 @@ var UserHandler = function (db) {
                         return next(err);
                     }
 
-                    resultArray.reverse();
+                    resultArray.reverse(); //new friend at start of array
+
                     res.status(200).send(resultArray);
                 });
 

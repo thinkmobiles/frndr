@@ -14,6 +14,7 @@ var mongoose = require('mongoose');
 var MessageHandler = function (app, db) {
     var io = app.get('io');
     var Message = db.model('Message');
+    var self = this;
 
     function computeChatId(userId, friendId) {
         if (userId < friendId) {
@@ -22,6 +23,56 @@ var MessageHandler = function (app, db) {
             return friendId + ':' + userId;
         }
     }
+
+    this.deleteMessages = function(userId, callback){
+
+        Message
+            .find({show: {$in: [userId.toString()]}}, function (err, messageModels) {
+                if (err) {
+                    return callback(err);
+                }
+
+                if (!messageModels) {
+                    return callback(badRequests.NotFound({message: 'Messages not found'}));
+                }
+
+                async.each(messageModels,
+
+                    function (messageModel, cb) {
+                        var showArray = messageModel.get('show');
+
+                        if ((showArray.length === 1) && (showArray.indexOf(userId.toString()) !== -1)) {
+
+                            messageModel.remove(function (err) {
+                                if (err) {
+                                    return cb(err);
+                                }
+
+                                return cb();
+                            });
+
+                        } else {
+
+                            messageModel.update({$pull: {show: userId.toString()}}, function (err) {
+                                if (err) {
+                                    return cb(err);
+                                }
+
+                                return cb();
+                            });
+
+                        }
+                    },
+
+                    function (err) {
+                        if (err) {
+                            return callback(err);
+                        }
+
+                        callback();
+                    });
+            });
+    };
 
     this.sendMessage = function (req, res, next) {
 
@@ -270,12 +321,13 @@ var MessageHandler = function (app, db) {
                 limit: CONSTANTS.LIMIT.MESSAGES
             },
 
-            function (err, models) {
+            function (err, messagesModels) {
                 if (err) {
                     return next(err);
                 }
+                messagesModels.reverse(); //newest messages at the end of array
 
-                res.status(200).send(models);
+                res.status(200).send(messagesModels);
             });
 
     };
@@ -302,52 +354,13 @@ var MessageHandler = function (app, db) {
 
         var userId = req.session.uId;
 
-        Message
-            .find({show: {$in: [userId.toString()]}}, function (err, messageModels) {
-                if (err) {
-                    return next(err);
-                }
+        self.deleteMessages(userId, function(err){
+            if (err){
+                return next(err);
+            }
 
-                if (!messageModels) {
-                    return next(badRequests.NotFound({message: 'Messages not found'}));
-                }
-
-                async.each(messageModels,
-
-                    function (messageModel, cb) {
-                        var showArray = messageModel.get('show');
-
-                        if ((showArray.length === 1) && (showArray.indexOf(userId.toString()) !== -1)) {
-
-                            messageModel.remove(function (err) {
-                                if (err) {
-                                    return cb(err);
-                                }
-
-                                return cb();
-                            });
-
-                        } else {
-
-                            messageModel.update({$pull: {show: userId.toString()}}, function (err) {
-                                if (err) {
-                                    return cb(err);
-                                }
-
-                                return cb();
-                            });
-
-                        }
-                    },
-
-                    function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-
-                        res.status(200).send({success: 'All history cleared successfully'});
-                    });
-            });
+            res.status(200).send({success: 'All history cleared successfully'});
+        });
     };
 
 };
