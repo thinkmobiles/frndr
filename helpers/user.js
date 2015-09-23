@@ -244,11 +244,11 @@ module.exports = function (db) {
                             return cb(err);
                         }
 
-                        cb(null);
+                        cb(null, uId);
 
                     });
             } else {
-                cb(null);
+                cb(null, uId);
             }
         }
 
@@ -416,7 +416,7 @@ module.exports = function (db) {
                 geoObj = {
                     loc: {
                         $geoWithin: {
-                            $centerSphere: [userCoordinates, resultUser.distance / 3963.2]
+                            $centerSphere: [userCoordinates, resultUser.distance / 6400000]
                         }
                     }
                 };
