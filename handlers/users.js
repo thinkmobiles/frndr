@@ -601,12 +601,12 @@ var UserHandler = function (db) {
 
             friends = userModel.get('friends');
 
-            if (friends.length > CONSTANTS.FRIENDS.LIMIT * pageCount) {
-                indexFrom = friends.length - CONSTANTS.FRIENDS.LIMIT * pageCount;
-                indexTo = CONSTANTS.FRIENDS.LIMIT;
+            if (friends.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
+                indexFrom = friends.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
+                indexTo = CONSTANTS.LIMIT.FRIENDS;
 
             } else {
-                indexTo = friends.length - CONSTANTS.FRIENDS.LIMIT * (pageCount - 1);
+                indexTo = friends.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
             }
 
             friends = friends.splice(indexFrom, indexTo);
@@ -652,7 +652,7 @@ var UserHandler = function (db) {
 
                                 if (imageModel){
                                     avatarName = imageModel.get('avatar');
-                                    avatarUrl = ImageHandler.computeAvatarUrl(avatarName);
+                                    avatarUrl = ImageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
                                     resultObj.avatar = avatarUrl;
                                 }
 
