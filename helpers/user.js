@@ -535,8 +535,8 @@ module.exports = function (db) {
 
                                 distance = geo.getDistance(
                                     {latitude: resultUser.user.loc.coordinates[1], longitude: resultUser.user.loc.coordinates[0]},
-                                    {latitude: user.loc.coordinates[1], longitude: user.loc.coordinates[0]}
-                                )  * 0.000621;
+                                    {latitude: user.loc.coordinates[1], longitude: user.loc.coordinates[0]}, 1
+                                )  * 0.000621371192;
 
                                 userObj = {
                                     avatar: avatarUrl,
