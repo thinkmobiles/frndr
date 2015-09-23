@@ -229,7 +229,7 @@ module.exports = function (db) {
                 var validateError = validateCoordinates(coordinates);
 
                 if (validateError && validateError.constructor === Error) {
-                    return callback(validateError);
+                    return cb(validateError);
                 }
 
                 userModel.loc = {
@@ -244,50 +244,20 @@ module.exports = function (db) {
                             return cb(err);
                         }
 
-                        cb(null, uId);
-
-                    });
-            } else {
-                cb(null, uId);
-            }
-        }
-
-        function updatePushToken(pushToken, os, cb) {
-            var updateObj;
-            if (pushToken) {
-
-                if (os) {
-                    updateObj = {token: pushToken, os: os};
-                } else {
-                    updateObj = {token: pushToken}
-                }
-
-                PushTokens
-                    .findOneAndUpdate({user: uId}, updateObj)
-                    .exec(function (err) {
-
-                        if (err) {
-                            return cb(err);
-                        }
-
                         cb(null);
 
                     });
             } else {
-                cb(null)
+                cb(null);
             }
-
         }
+
 
         async
             .parallel([
 
                 function(parallelCb){
                     updateCoordinates(updateData.coordinates, parallelCb);
-                },
-
-                function(parallelCb){
-                    updatePushToken(updateData.pushToken, updateData.os, parallelCb);
                 }
 
             ], function (err) {

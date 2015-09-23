@@ -105,7 +105,7 @@ var UserHandler = function (app, db) {
                     User
                         .findOne({fbId: options.fbId}, function (err, userModel) {
                             if (err) {
-                                return next(err);
+                                return cb(err);
                             }
                             cb(null, userModel);
                         });
