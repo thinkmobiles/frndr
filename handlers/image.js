@@ -434,7 +434,9 @@ var imageHandler = function (db) {
             }
 
             for (var i = 0; i < len; i++) {
-                urls.push(self.computeUrl(photoNames[i], CONSTANTS.BUCKETS.GALLERY));
+                var smallPhotoName = photoNames[i] + '_small';
+
+                urls.push(self.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.GALLERY));
             }
 
             res.status(200).send({'urls': urls});
