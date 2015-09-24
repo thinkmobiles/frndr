@@ -152,24 +152,31 @@ var imageHandler = function (db) {
          *
          * __HOST: `http://192.168.88.250:8859`__
          *
-         * __URL: `/image/avatar`__
+         * __URL: `/image/avatar/:small?`__
          *
          * This __method__ allows get _User_ avatar
          *
          * @example Request example:
          *         http://192.168.88.250:8859/image/avatar
+         *  OR
+         *         http://192.168.88.250:8859/image/avatar/small
          *
          * @example Response example:
          *
          *   {
          *     "url": "http://192.168.88.250:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
          *   }
+         *  OR
+         *   {
+         *     "url": "http://192.168.88.250:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1_small.png"
+         *   }
          *
          * @method getAvatarUrl
          * @instance
          */
 
-        var uId = req.params.id || req.session.uId;
+        var uId = req.session.uId;
+        var small = req.params.small;
         var avatarName;
         var url = '';
 
@@ -179,10 +186,12 @@ var imageHandler = function (db) {
                 return next(err);
             }
 
-            if (!resultModel) {
-                avatarName = '';
-            } else {
+            if (resultModel) {
                 avatarName = resultModel.get('avatar');
+
+                if (small) {
+                    avatarName += '_small';
+                }
             }
 
             if (!avatarName) {

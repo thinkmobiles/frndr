@@ -120,6 +120,7 @@ var MessageHandler = function (app, db) {
 
         messageModel = new Message({
             chatId: chatId,
+            owner: userId,
             text: msg,
             show: [userId, friendId]
         });

@@ -304,7 +304,7 @@ module.exports = function (db) {
             });
     }
 
-    function getAllUseBySearchSettings (userId, page, callback){
+    function getAllUsersBySearchSettings (userId, page, callback){
 
         var userCoordinates;
         var relStatusArray = [];
@@ -481,7 +481,9 @@ module.exports = function (db) {
                                 gallery = user.images.gallery;
 
                                 galleryUrls = gallery.map(function(g){
-                                   return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.GALLERY);
+                                    g += '_small';
+
+                                    return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.GALLERY);
                                 });
 
                                 avatarUrl = user.images.avatar ? imageHandler.computeUrl(user.images.avatar, CONSTANTS.BUCKETS.AVATAR) : '';
@@ -562,7 +564,7 @@ module.exports = function (db) {
         updateProfile: updateProfile,
         getUserById: getUserById,
         deleteUserById: deleteUserById,
-        getAllUseBySearchSettings: getAllUseBySearchSettings,
+        getAllUsersBySearchSettings: getAllUsersBySearchSettings,
         addToBlockListById: addToBlockListById,
         addPushToken: addPushToken
     };
