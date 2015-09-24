@@ -444,14 +444,14 @@ var imageHandler = function (db) {
 
     this.computeUrl = function(imageName, bucket){
         return imageUploader.getImageUrl(imageName, bucket) + '.png';
-    }
+    };
 
 
     this.testResizeImage = function(req,res,next){
-        var imageName = '5602af2ff9e06a563bb6d207';
+        var imageName = '5602b09a0986ce600b74f03f';
         //var filePath = 'public/uploads/development/avatar/5602b09a0986ce600b74f03f.png';
 
-        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, function(err){
+        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, 35, function(err){
             if (err){
                 return next(err);
             }
