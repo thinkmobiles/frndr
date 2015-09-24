@@ -793,6 +793,8 @@ var UserHandler = function (app, db) {
                     avatarName = images.avatar;
                     avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
                     friendModel.images.avatar = avatarName;
+                } else {
+                    friendModel.images.avatar = '';
                 }
 
                 if (images.gallery && images.gallery.length){
