@@ -9,7 +9,7 @@ var imagesUploader = function (dirConfig) {
     var fs = require('fs');
     var path = require('path');
     var os = require('os');
-    var easyImage = require('easyimage');
+    var gm = require('gm').subClass({imageMagick: true});
 
     var osPathData = getDirAndSlash();
 
@@ -233,34 +233,29 @@ var imagesUploader = function (dirConfig) {
         return filePath;
     }
 
-    function resizeImage (imageName, folderName, callback){
-        var slash = osPathData.slash;
-        var dir = osPathData.dir + slash;
+    function resizeImage (imageName, folderName, width, height, callback){
         var newPath = getFilePath(imageName, folderName);
+        var index = newPath.length + 1;
+        var writePath = newPath.substring(0, index);
+
+        if (!callback && (typeof height === 'function')) {
+            callback = height;
+            height = null;
+        }
+
         newPath += '.png';
-        var index = newPath.lastIndexOf('/');
-        var writePath = newPath.substring(0, index + 1);
-        writePath += imageName + '_small.png';см
+        writePath += '_small.png';
 
-        console.log(newPath);
-        console.log(writePath);
-       // console.log(newPath);
+        gm(newPath)
+            .quality(100)
+            .resize(width, height)
+            .write(writePath, function(err){
+                if(err){
+                    return callback(err);
+                }
 
-        easyImage.resize({
-            src: newPath,
-            dst: writePath,
-            width: 300,
-            height: 300,
-            quality: 100
-        }).then(
-            function(image){
-                console.log('Image resize successfully');
-                callback(null);
-            },
-            function(err){
-                callback(err);
-            }
-        )
+                callback();
+        })
     }
 
     return {
