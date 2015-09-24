@@ -34,11 +34,24 @@ var imageHandler = function (db) {
     var imageUploader = require('../helpers/imageUploader/imageUploader')(uploaderConfig);
 
     function createImageName() {
-        return new ObjectId();
+        return (new ObjectId()).toString();
     }
 
     this.removeImageFile = function (fileName, folderName, callback) {
-        imageUploader.removeImage(fileName, folderName, callback);
+
+        var fileNameSmall = fileName + '_small';
+
+        async
+            .parallel([
+                async.apply(imageUploader.removeImage, fileName, folderName),
+                async.apply(imageUploader.removeImage, fileNameSmall, folderName)
+            ], function(err){
+                if (err){
+                    return callback(err);
+                }
+
+                callback(null);
+            });
     };
 
     this.uploadAvatar = function (req, res, next) {
@@ -95,8 +108,8 @@ var imageHandler = function (db) {
                             return callback(err);
                         }
 
-                        if (!imageModel.avatar) {
-                            imageName = createImageName();
+                        if (!imageModel.avatar.length) {
+                            imageName = createImageName().toString();
                         } else {
                             imageName = imageModel.get('avatar');
                         }
@@ -107,19 +120,26 @@ var imageHandler = function (db) {
                                 return next(err);
                             }
 
-                            imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+                            async
+                                .series([
+                                    function(cb){
+                                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, cb);
+                                    },
+                                    function(cb){
+                                        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, CONSTANTS.IMAGE.AVATAR_PREV.WIDTH, cb);
+                                    }
+                                ], function(err){
 
-                                if (err) {
-                                    return next(err);
-                                }
-                                res.status(200).send({success: 'Image upload successfully'});
+                                    if (err){
+                                        return next(err);
+                                    }
 
-                            });
+                                    res.status(200).send({success: 'Image upload successfully'});
 
+                                });
                         });
 
                     });
-
             });
     };
 
@@ -198,6 +218,7 @@ var imageHandler = function (db) {
 
         var userId = req.session.uId;
         var avatarName;
+        var avatarNameSmall;
 
         Image.findOne({user: userId}, function (err, imageModel) {
             if (err) {
@@ -215,6 +236,7 @@ var imageHandler = function (db) {
             }
 
             self.removeImageFile(avatarName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+
                 if (err) {
                     return next(err);
                 }
@@ -227,6 +249,7 @@ var imageHandler = function (db) {
                     }
                     res.status(200).send({success: 'Avatar removed successfully'});
                 });
+
             });
         });
     };
@@ -287,21 +310,27 @@ var imageHandler = function (db) {
                             return next(err);
                         }
 
-                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {
+                        async
+                            .series([
+                                function(cb){
+                                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, cb);
+                                },
+                                function(cb){
+                                    imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.GALLERY, CONSTANTS.IMAGE.GALLERY_PREV.WIDTH, cb);
+                                }
+                            ], function(err){
 
-                            if (err) {
-                                return next(err);
-                            }
+                                if (err){
+                                    return next(err);
+                                }
 
-                            res.status(200).send({success: 'Gallery image upload successfully'});
+                                res.status(200).send({success: 'Gallery image upload successfully'});
 
-                        });
+                            });
 
                     });
 
             });
-
-
     };
 
     this.removeImageFromGallery = function (req, res, next) {
@@ -448,10 +477,10 @@ var imageHandler = function (db) {
 
 
     this.testResizeImage = function(req,res,next){
-        var imageName = '5602b09a0986ce600b74f03f';
+        var imageName = '5602af2ff9e06a563bb6d207';
         //var filePath = 'public/uploads/development/avatar/5602b09a0986ce600b74f03f.png';
 
-        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, 35, function(err){
+        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, 300, function(err){
             if (err){
                 return next(err);
             }

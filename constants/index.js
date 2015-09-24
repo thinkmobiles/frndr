@@ -30,5 +30,15 @@ module.exports = {
     LIMIT:{
         MESSAGES:5,
         FRIENDS:8
+    },
+    IMAGE: {
+        AVATAR_PREV: {
+            WIDTH: 100,
+            HEIGHT: 100
+        },
+        GALLERY_PREV: {
+            WIDTH: 250,
+            HEIGHT: 250
+        }
     }
 };
