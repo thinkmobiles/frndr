@@ -202,7 +202,7 @@ var UserHandler = function (app, db) {
 
         });
 
-    }
+    };
 
     this.getUserById = function (req, res, next) {
 
@@ -442,7 +442,7 @@ var UserHandler = function (app, db) {
 
         var userId = req.session.uId;
         var options = req.body;
-        console.log(req.session.id);
+
         userHelper.getUserById(userId, function (err, userModel) {
             if (err) {
                 return next(err);
