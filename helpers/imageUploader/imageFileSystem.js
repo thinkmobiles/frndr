@@ -234,7 +234,9 @@ var imagesUploader = function (dirConfig) {
     }
 
     function resizeImage (imageName, folderName, width, height, callback){
-        var newPath = getFilePath(imageName, folderName);
+        var slash = osPathData.slash;
+        var dir = osPathData.dir + slash;
+        var newPath = path.join(dir, slash, folderName, imageName);
         var index = newPath.length + 1;
         var writePath = newPath.substring(0, index);
 

@@ -218,7 +218,6 @@ var imageHandler = function (db) {
 
         var userId = req.session.uId;
         var avatarName;
-        var avatarNameSmall;
 
         Image.findOne({user: userId}, function (err, imageModel) {
             if (err) {
