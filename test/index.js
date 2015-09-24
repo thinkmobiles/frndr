@@ -23,5 +23,6 @@ describe('Database initialization', function () {
     it('Test handlers', function () {
         require('./testHandlers/testUsers')(db);
         require('./testHandlers/testImages')(db);
+        require('./testHandlers/testChat')(db);
     });
 });

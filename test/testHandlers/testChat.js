@@ -4,23 +4,19 @@ var expect = require('chai').expect;
 var async = require('async');
 
 module.exports = function(db){
-    var Messages = db.model('Messages');
+    var Message = db.model('Message');
     var User = db.model('User');
 
     var host = process.env.HOST;
     var agent = request.agent(host);
 
     var user1 = {
-        fbId: 'test1',
-        pushToken: "125478963",
-        os: 'APPLE',
+        fbId: 'test1234',
         coordinates: [88.23, 75.66]
     };
 
     var user2 = {
         fbId: 'test2',
-        pushToken: "996633",
-        os: 'APPLE',
         coordinates: [88, 75]
     };
 
@@ -31,7 +27,7 @@ module.exports = function(db){
 
         it('SignIn User1', function (done){
 
-            var url = '/singIn';
+            var url = '/signIn';
 
             agent
                 .post(url)
@@ -42,7 +38,18 @@ module.exports = function(db){
                         return done(err);
                     }
 
-                    done(null);
+                    User
+                        .findOne({fbId: user1.fbId}, function(err, result){
+
+                            if (err){
+                                return done(err);
+                            }
+
+                            uId1 = result._id;
+
+                            done(null);
+
+                        });
 
                 });
 
@@ -61,13 +68,45 @@ module.exports = function(db){
                         return done(err);
                     }
 
+                    User
+                        .findOne({fbId: user2.fbId}, function(err, result){
+
+                            if (err){
+                                return done(err);
+                            }
+
+                            uId2 = result._id;
+
+                            done(null);
+
+                        });
+                });
+
+        });
+
+        it('User2 send message to User1', function(done){
+
+            var url = '/messages';
+
+            var messageObj = {
+                'friendId': uId1.toString(),
+                'message': 'test'
+            };
+
+            agent
+                .post(url)
+                .send(messageObj)
+                .expect(200, function(err, res){
+
+                    if (err){
+                        return done(err);
+                    }
+
                     done(null);
 
                 });
 
         });
-
-
 
     });
 
