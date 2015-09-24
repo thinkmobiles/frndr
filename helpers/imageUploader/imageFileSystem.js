@@ -240,7 +240,7 @@ var imagesUploader = function (dirConfig) {
         newPath += '.png';
         var index = newPath.lastIndexOf('/');
         var writePath = newPath.substring(0, index + 1);
-        writePath += imageName + '_small.png';см
+        writePath += imageName + '_small.png';
 
         console.log(newPath);
         console.log(writePath);
