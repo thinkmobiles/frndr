@@ -547,7 +547,7 @@ var UserHandler = function (app, db) {
             return next(badRequests.InvalidValue({message: 'Page can not be less then 1'}));
         }
 
-        userHelper.getAllUseBySearchSettings(uId, page, function (err, user) {
+        userHelper.getAllUsersBySearchSettings(uId, page, function (err, user) {
 
             if (err) {
                 return next(err);
@@ -664,6 +664,7 @@ var UserHandler = function (app, db) {
 
                                 if (imageModel){
                                     avatarName = imageModel.get('avatar');
+                                    avatarName += '_small';
                                     avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
                                     resultObj.avatar = avatarUrl;
                                 }
@@ -767,6 +768,49 @@ var UserHandler = function (app, db) {
 
     };
 
+    this.getFriendProfile = function(req, res, next){
+        var friendId = req.params.id;
+
+        //res.status(200).send('Not implemented yet');
+
+        User
+            .findOne({_id:ObjectId(friendId)})
+            .populate({path: 'images', select: 'avatar gallery'})
+            .exec(function(err, friendModel){
+                var avatarName;
+                var photoNamesArray;
+                var images;
+
+                if (err){
+                    return next(err);
+                }
+
+                if (!friendModel){
+                    return next(badRequests.NotFound({message: 'User not found'}));
+                }
+                images = friendModel.get('images');
+
+                if (images.avatar){
+                    avatarName = images.avatar;
+                }
+
+                if (images.gallery && images.gallery.length){
+                    var galleryUrls;
+
+                    photoNamesArray = images.gallery;
+
+                    galleryUrls = photoNamesArray.map(function(photoName){
+                        photoName += '_small';
+
+                        return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.GALLERY);
+                    });
+                }
+
+                res.status(200).send(friendModel);
+            });
+
+
+    };
 
 };
 

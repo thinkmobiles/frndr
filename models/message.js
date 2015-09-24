@@ -6,6 +6,7 @@ module.exports = function (db) {
 
     var Message = new Schema({
         chatId: String,
+        owner: String,
         text: String,
         date: {
             type: Date,
