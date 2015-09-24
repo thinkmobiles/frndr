@@ -771,10 +771,8 @@ var UserHandler = function (app, db) {
     this.getFriendProfile = function(req, res, next){
         var friendId = req.params.id;
 
-        //res.status(200).send('Not implemented yet');
-
         User
-            .findOne({_id:ObjectId(friendId)})
+            .findOne({_id:ObjectId(friendId)}, {__v:0, loc:0, friends:0, blockList:0, notification:0, fbId:0})
             .populate({path: 'images', select: 'avatar gallery'})
             .exec(function(err, friendModel){
                 var avatarName;
@@ -788,10 +786,13 @@ var UserHandler = function (app, db) {
                 if (!friendModel){
                     return next(badRequests.NotFound({message: 'User not found'}));
                 }
+
                 images = friendModel.get('images');
 
                 if (images.avatar){
                     avatarName = images.avatar;
+                    avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+                    friendModel.images.avatar = avatarName;
                 }
 
                 if (images.gallery && images.gallery.length){
@@ -804,12 +805,12 @@ var UserHandler = function (app, db) {
 
                         return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.GALLERY);
                     });
+
+                    friendModel.images.gallery = galleryUrls;
                 }
 
                 res.status(200).send(friendModel);
             });
-
-
     };
 
 };
