@@ -447,6 +447,19 @@ var imageHandler = function (db) {
     }
 
 
+    this.testResizeImage = function(req,res,next){
+        var imageName = '5602af2ff9e06a563bb6d207';
+        //var filePath = 'public/uploads/development/avatar/5602b09a0986ce600b74f03f.png';
+
+        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, function(err){
+            if (err){
+                return next(err);
+            }
+
+            res.status(200).send({success: 'Image upload successfully'});
+        });
+
+    };
 };
 
 module.exports = imageHandler;
