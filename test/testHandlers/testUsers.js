@@ -392,7 +392,7 @@ module.exports = function (db, defaults) {
                     var settings = res.body;
 
                     expect(settings).to.instanceOf(Object);
-                    expect(settings.distance).to.equals(20);
+                    expect(settings.distance).to.equals(2000 * 1609.344);
                     expect(settings.sexual).to.equals('any');
                     expect(settings.ageRange).to.instanceOf(Object);
                     expect(settings.ageRange.min).to.equals(25);
@@ -429,7 +429,7 @@ module.exports = function (db, defaults) {
                             }
 
                             expect(resultSettings).to.instanceOf(Object);
-                            expect(resultSettings.distance).to.equals(newSearchDistance);
+                            expect(resultSettings.distance).to.equals(newSearchDistance * 1609.344);
                             expect(resultSettings.relationship).to.instanceOf(Array);
                             expect(resultSettings.relationship.length).to.equals(2);
                             expect(resultSettings.relationship[0]).to.equals(newRelationShip[0]);

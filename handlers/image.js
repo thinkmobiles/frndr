@@ -108,7 +108,7 @@ var imageHandler = function (db) {
                             return callback(err);
                         }
 
-                        if (!imageModel.avatar.length) {
+                        if (!imageModel.avatar) {
                             imageName = createImageName().toString();
                         } else {
                             imageName = imageModel.get('avatar');
@@ -218,7 +218,6 @@ var imageHandler = function (db) {
 
         var userId = req.session.uId;
         var avatarName;
-        var avatarNameSmall;
 
         Image.findOne({user: userId}, function (err, imageModel) {
             if (err) {
