@@ -16,5 +16,7 @@ module.exports = function(app, db){
     router.delete('/photo', sessionHandler.authenticatedUser, image.removeImageFromGallery);
     router.get('/photo/:id?', sessionHandler.authenticatedUser, image.getPhotoUrls);
 
+    router.get('/test', image.testResizeImage);
+
     return router;
 };

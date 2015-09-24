@@ -459,6 +459,8 @@ module.exports = function (db) {
                     'notification': 0
                 };
 
+                page = page || 1;
+
                 User
                     .find(
                         findObj,
@@ -490,6 +492,7 @@ module.exports = function (db) {
                                 )  * 0.000621371192;
 
                                 userObj = {
+                                    userId: user._id,
                                     avatar: avatarUrl,
                                     name: user.profile.name,
                                     age: user.profile.age,

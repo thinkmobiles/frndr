@@ -9,6 +9,7 @@ var imagesUploader = function (dirConfig) {
     var fs = require('fs');
     var path = require('path');
     var os = require('os');
+    var easyImage = require('easyimage');
 
     var osPathData = getDirAndSlash();
 
@@ -232,6 +233,36 @@ var imagesUploader = function (dirConfig) {
         return filePath;
     }
 
+    function resizeImage (imageName, folderName, callback){
+        var slash = osPathData.slash;
+        var dir = osPathData.dir + slash;
+        var newPath = getFilePath(imageName, folderName);
+        newPath += '.png';
+        var index = newPath.lastIndexOf('/');
+        var writePath = newPath.substring(0, index + 1);
+        writePath += imageName + '_small.png';
+
+        console.log(newPath);
+        console.log(writePath);
+       // console.log(newPath);
+
+        easyImage.resize({
+            src: newPath,
+            dst: writePath,
+            width: 300,
+            height: 300,
+            quality: 100
+        }).then(
+            function(image){
+                console.log('Image resize successfully')
+                callback(null);
+            },
+            function(err){
+                callback(err);
+            }
+        )
+    }
+
     return {
         uploadImage: uploadImage,
         duplicateImage: duplicateImage,
@@ -239,7 +270,8 @@ var imagesUploader = function (dirConfig) {
         getImageUrl: getImagePath,
         uploadFile: uploadFile,
         getFileUrl: getImagePath,
-        getFilePath: getFilePath
+        getFilePath: getFilePath,
+        resizeImage: resizeImage
     };
 };
 
