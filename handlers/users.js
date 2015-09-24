@@ -789,7 +789,7 @@ var UserHandler = function (app, db) {
 
                 images = friendModel.get('images');
 
-                if (images.avatar && images.avatar.length){
+                if (images.avatar && (images.avatar !== '')){
                     avatarName = images.avatar;
                     avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
                     friendModel.images.avatar = avatarName;
