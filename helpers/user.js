@@ -367,7 +367,7 @@ module.exports = function (db) {
                 geoObj = {
                     loc: {
                         $geoWithin: {
-                            $centerSphere: [userCoordinates, resultUser.distance / 6400000]
+                            $centerSphere: [userCoordinates, resultUser.distance / 6378137]
                         }
                     }
                 };

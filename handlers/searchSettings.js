@@ -121,6 +121,8 @@ var SearchSettingsHandler = function (db) {
         var userId = req.session.uId;
         var saveData = prepareSaveData(req.body);
 
+        saveData.distance = saveData.distance * 1609.344;
+
         if (saveData && Object.keys(saveData).length === 0) {
             return res.status(400).send('Nothing to update');
         }

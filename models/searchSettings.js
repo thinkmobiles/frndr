@@ -12,7 +12,7 @@ module.exports = function (db) {
             type: ObjectId,
             ref: 'User'
         },
-        distance: {type: Number, default: 20},
+        distance: {type: Number, default: 2000 * 1609.344},
         relationship: [String],
         smoker: {type: Boolean, default: false},
         sexual: {

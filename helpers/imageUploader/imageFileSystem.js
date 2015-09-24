@@ -240,7 +240,7 @@ var imagesUploader = function (dirConfig) {
         newPath += '.png';
         var index = newPath.lastIndexOf('/');
         var writePath = newPath.substring(0, index + 1);
-        writePath += imageName + '_small.png';
+        writePath += imageName + '_small.png';см
 
         console.log(newPath);
         console.log(writePath);
@@ -254,7 +254,7 @@ var imagesUploader = function (dirConfig) {
             quality: 100
         }).then(
             function(image){
-                console.log('Image resize successfully')
+                console.log('Image resize successfully');
                 callback(null);
             },
             function(err){
