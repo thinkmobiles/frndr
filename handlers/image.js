@@ -43,8 +43,10 @@ var imageHandler = function (db) {
 
         async
             .parallel([
+
                 async.apply(imageUploader.removeImage, fileName, folderName),
                 async.apply(imageUploader.removeImage, fileNameSmall, folderName)
+
             ], function(err){
                 if (err){
                     return callback(err);
@@ -85,7 +87,6 @@ var imageHandler = function (db) {
         var uId = req.session.uId;
         var imageString = req.body.image;
         var imageName;
-
         var imageId;
 
         User
@@ -109,7 +110,7 @@ var imageHandler = function (db) {
                         }
 
                         if (!imageModel.avatar) {
-                            imageName = createImageName().toString();
+                            imageName = createImageName();
                         } else {
                             imageName = imageModel.get('avatar');
                         }
@@ -371,6 +372,10 @@ var imageHandler = function (db) {
 
         imageName = options.image;
 
+        if (imageName.substr(-5) === 'small'){
+            imageName = imageName.substr(0, imageName.length - 6);
+        }
+
         Image.findOne({user: userId}, function (err, imageModel) {
             var index;
 
@@ -431,7 +436,7 @@ var imageHandler = function (db) {
          *
          *   {
          *       "urls": [
-         *                  "http://192.168.88.250:8859/uploads/development/gallery/55f8300013f2901e421b026a.png"
+         *                  "http://192.168.88.250:8859/uploads/development/gallery/55f8300013f2901e421b026a_small.png"
          *               ]
          *   }
          *
