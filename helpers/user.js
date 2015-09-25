@@ -114,7 +114,7 @@ module.exports = function (db) {
             }
 
         } else {
-            return callback(badRequests.NotEnParams({reqParams: 'Coordinates'}));
+            return callback(badRequests.NotEnParams({reqParams: 'ñoordinates'}));
         }
 
         imageModel = new Image();

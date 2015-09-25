@@ -250,16 +250,32 @@ var MessageHandler = function (app, db) {
                 async.each(models,
 
                     function (messageModel, cb) {
-                        messageModel.update({$pull: {show: userId}}, function (err) {
-                            if (err) {
-                                return cb(err);
-                            }
+                        var showArray = messageModel.get('show');
 
-                            cb();
-                        });
+                        if ((showArray.length === 1) && (showArray.indexOf(userId) !== -1)) {
+
+                            messageModel.remove(function (err) {
+                                if (err) {
+                                    return cb(err);
+                                }
+
+                                cb();
+                            });
+
+                        } else {
+
+                            messageModel.update({$pull: {show: userId}}, function (err) {
+                                if (err) {
+                                    return cb(err);
+                                }
+
+                                cb();
+                            });
+
+                        }
                     },
 
-                    function (err, result) {
+                    function (err) {
                         if (err) {
                             return next(err);
                         }
