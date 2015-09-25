@@ -27,7 +27,7 @@ var MessageHandler = function (app, db) {
     this.deleteMessages = function(userId, callback){
 
         Message
-            .find({show: {$in: [userId.toString()]}}, function (err, messageModels) {
+            .find({show: {$in: [userId]}}, function (err, messageModels) {
                 if (err) {
                     return callback(err);
                 }
@@ -41,7 +41,7 @@ var MessageHandler = function (app, db) {
                     function (messageModel, cb) {
                         var showArray = messageModel.get('show');
 
-                        if ((showArray.length === 1) && (showArray.indexOf(userId.toString()) !== -1)) {
+                        if ((showArray.length === 1) && (showArray.indexOf(userId) !== -1)) {
 
                             messageModel.remove(function (err) {
                                 if (err) {
@@ -53,7 +53,7 @@ var MessageHandler = function (app, db) {
 
                         } else {
 
-                            messageModel.update({$pull: {show: userId.toString()}}, function (err) {
+                            messageModel.update({$pull: {show: userId}}, function (err) {
                                 if (err) {
                                     return cb(err);
                                 }
@@ -176,7 +176,7 @@ var MessageHandler = function (app, db) {
 
             showArray = messageModel.get('show');
 
-            if ((showArray.length === 1) && (showArray.indexOf(userId.toString()) !== -1)) {
+            if ((showArray.length === 1) && (showArray.indexOf(userId) !== -1)) {
 
                 messageModel.remove(function (err) {
                     if (err) {
@@ -188,7 +188,7 @@ var MessageHandler = function (app, db) {
 
             } else {
 
-                messageModel.update({$pull: {show: userId.toString()}}, function (err) {
+                messageModel.update({$pull: {show: userId}}, function (err) {
                     if (err) {
                         return next(err);
                     }
@@ -250,7 +250,7 @@ var MessageHandler = function (app, db) {
                 async.each(models,
 
                     function (messageModel, cb) {
-                        messageModel.update({$pull: {show: userId.toString()}}, function (err) {
+                        messageModel.update({$pull: {show: userId}}, function (err) {
                             if (err) {
                                 return cb(err);
                             }
