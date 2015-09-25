@@ -73,10 +73,10 @@ var UserHandler = function (app, db) {
          *
          * __URL: `/signIn`__
          *
-         * This __method__ allows singIn _User_
+         * This __method__ allows signIn _User_
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/singIn
+         *         http://192.168.88.250:8859/signIn
          *
          * @example Body example:
          *
@@ -142,10 +142,10 @@ var UserHandler = function (app, db) {
          *
          * __URL: `/signOut`__
          *
-         * This __method__ allows singOut _User_
+         * This __method__ allows signOut _User_
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/singOut
+         *         http://192.168.88.250:8859/signOut
          *
          * @method signOutClient
          * @instance
