@@ -93,6 +93,7 @@ var UserHandler = function (app, db) {
 
 
         var options = req.body;
+
         if (!options || !options.fbId) {
             return next(badRequests.NotEnParams({reqParams: 'fbId'}));
         }
