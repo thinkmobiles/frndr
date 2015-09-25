@@ -11,14 +11,14 @@ module.exports = function(app, db){
     var like = new LikeHandler(db);
     var searchSettingsHandler = new SearchSettingsHandler(db);
 
-    router.get('/test', userHandler.testUser);
+    //router.get('/test', userHandler.testUser);
 
     router.post('/pushToken', sessionHandler.authenticatedUser, userHandler.addPushToken);
     router.get('/friendProfile/:id', sessionHandler.authenticatedUser, userHandler.getFriendProfile);
     router.get('/friendList/:page', sessionHandler.authenticatedUser, userHandler.getFriendList);
     router.get('/blockFriend/:id', sessionHandler.authenticatedUser, userHandler.blockFriend);
     router.get('/searchSettings', sessionHandler.authenticatedUser, searchSettingsHandler.getSearchSettings);
-    router.put('/searchSettings', searchSettingsHandler.updateSearchSettings);
+    router.put('/searchSettings', sessionHandler.authenticatedUser, searchSettingsHandler.updateSearchSettings);
     router.get('/find/:page', sessionHandler.authenticatedUser, userHandler.findNearestUsers);
     router.get('/like/:id',sessionHandler.authenticatedUser,  like.likeUserById);
     router.get('/dislike/:id', sessionHandler.authenticatedUser, like.dislikesUserById);
