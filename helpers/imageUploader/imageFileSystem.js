@@ -236,7 +236,7 @@ var imagesUploader = function (dirConfig) {
     function resizeImage (imageName, folderName, width, height, callback){
         var slash = osPathData.slash;
         var dir = osPathData.dir + slash;
-        var newPath = path.join(dir, slash, folderName, imageName);
+        var readPath = path.join(dir, slash, folderName, imageName);
         var index = newPath.length + 1;
         var writePath = newPath.substring(0, index);
 
@@ -245,10 +245,10 @@ var imagesUploader = function (dirConfig) {
             height = null;
         }
 
-        newPath += '.png';
+        readPath += '.png';
         writePath += '_small.png';
 
-        gm(newPath)
+        gm(readPath)
             .quality(100)
             .resize(width, height)
             .write(writePath, function(err){

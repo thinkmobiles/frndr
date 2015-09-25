@@ -33,7 +33,7 @@ var MessageHandler = function (app, db) {
                 }
 
                 if (!messageModels) {
-                    return callback(badRequests.NotFound({message: 'Messages not found'}));
+                    return callback(badRequests.NotFound({target: 'Messages'}));
                 }
 
                 async.each(messageModels,
@@ -111,7 +111,7 @@ var MessageHandler = function (app, db) {
         var friendId;
 
         if (!options || !options.message || !options.friendId || !options.message.length) {
-            return next(badRequests.NotEnParams({message: 'message and friendId is required'}));
+            return next(badRequests.NotEnParams({reqParams: 'message and friendId'}));
         }
 
         msg = options.message;
@@ -171,7 +171,7 @@ var MessageHandler = function (app, db) {
             }
 
             if (!messageModel) {
-                return next(badRequests.NotFound({message: 'Message not found'}));
+                return next(badRequests.NotFound({target: 'Message'}));
             }
 
             showArray = messageModel.get('show');
@@ -235,7 +235,7 @@ var MessageHandler = function (app, db) {
         var friendId;
 
         if (!options || !options.friendId) {
-            return next(badRequests.NotEnParams({message: 'friendId is required'}));
+            return next(badRequests.NotEnParams({reqParams: 'friendId'}));
         }
 
         friendId = options.friendId;
@@ -308,7 +308,7 @@ var MessageHandler = function (app, db) {
         var chatId;
 
         if (isNaN(pageCount) || (pageCount < 0)) {
-            return next(badRequests.InvalidValue({message: 'Invalid value page count'}));
+            return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
         }
 
         chatId = computeChatId(userId, friendId);
