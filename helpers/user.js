@@ -90,7 +90,7 @@ module.exports = function (db) {
         latitude = coordinates[1];
 
         if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
-            return badRequests.InvalidValue({message: 'Longitude must be within (-90; 90). Latitude must be within (-180; 180) '});
+            return badRequests.InvalidValue({message: 'Longitude must be within (-180; 180). Latitude must be within (-90; 90) '});
         }
 
         return;
