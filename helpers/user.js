@@ -83,14 +83,14 @@ module.exports = function (db) {
         var latitude;
 
         if (!coordinates.length || !coordinates[1]) {
-            return badRequests.InvalidValue({message: 'Expected array coordinates'});
+            return badRequests.InvalidValue({value: coordinates, param: 'coordinates'});
         }
 
         longitude = coordinates[0];
         latitude = coordinates[1];
 
         if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
-            return badRequests.InvalidValue({message: 'Not valid values for coordinate'});
+            return badRequests.InvalidValue({message: 'Longitude must be within (-90; 90). Latitude must be within (-180; 180) '});
         }
 
         return;
@@ -105,72 +105,60 @@ module.exports = function (db) {
         var searchSettingModel;
         var imageModel;
 
-        if (profileData.constructor === Object) {
 
-            if (!profileData.fbId) {
-                return callback(badRequests.NotEnParams({message: 'fbId pushToken os'}));
+        if (profileData.coordinates) {
+            err = validateCoordinates(profileData.coordinates);
+
+            if (err) {
+                return callback(err);
             }
 
-            if (profileData.coordinates && profileData.coordinates.length) {
-                err = validateCoordinates(profileData.coordinates);
+        } else {
+            return callback(badRequests.NotEnParams({reqParams: 'Coordinates'}));
+        }
 
+        imageModel = new Image();
+
+        imageModel
+            .save(function (err) {
                 if (err) {
                     return callback(err);
                 }
 
-            } else {
-                return callback(badRequests.NotEnParams({message: 'Not enough coordinates'}));
-            }
+                saveObj = {
+                    fbId: profileData.fbId,
+                    loc: {
+                        type: 'Point',
+                        coordinates: profileData.coordinates
+                    },
+                    images: imageModel._id
+                };
 
-            imageModel = new Image();
+                userModel = new User(saveObj);
 
-            imageModel
-                .save(function (err) {
-                    if (err) {
-                        return callback(err);
-                    }
+                userModel
+                    .save(function (err) {
+                        if (err) {
+                            return callback(err);
+                        }
 
-                    saveObj = {
-                        fbId: profileData.fbId,
-                        loc: {
-                            type: 'Point',
-                            coordinates: profileData.coordinates
-                        },
-                        images: imageModel._id
-                    };
+                        uId = userModel.get('_id');
 
-                    userModel = new User(saveObj);
+                        searchSettingModel = new SearchSettings({user: uId});
 
-                    userModel
-                        .save(function (err) {
+                        searchSettingModel.save(function (err) {
                             if (err) {
                                 return callback(err);
                             }
 
-
-                            uId = userModel.get('_id');
-
-                            searchSettingModel = new SearchSettings({user: uId});
-
-
-                            searchSettingModel.save(function (err) {
-                                if (err) {
-                                    return callback(err);
-                                }
-
-                                callback(null, uId);
-                            });
-
-
+                            callback(null, uId);
                         });
 
 
-                });
+                    });
 
-        } else {
-            return callback(badRequests.InvalidValue({message: 'Expected profile data as Object'}));
-        }
 
+            });
     }
 
     function addPushToken(userId, pushToken, os, callback){
@@ -225,37 +213,37 @@ module.exports = function (db) {
         var uId = userModel.get('_id');
         var coordinates = updateData.coordinates;
 
-            if (coordinates && coordinates.length) {
-                var validateError = validateCoordinates(coordinates);
+        if (!coordinates || !coordinates.length) {
+            return callback(badRequests.NotEnParams({reqParams: 'coordinates'}));
+        }
 
-                if (validateError && validateError.constructor === Error) {
-                    return cb(validateError);
+        var validateError = validateCoordinates(coordinates);
+
+        if (validateError && validateError.constructor === Error) {
+            return cb(validateError);
+        }
+
+        userModel.loc = {
+            type: 'Point',
+            coordinates: coordinates
+        };
+
+        userModel
+            .save(function (err) {
+
+                if (err) {
+                    return callback(err);
                 }
 
-                userModel.loc = {
-                    type: 'Point',
-                    coordinates: coordinates
-                };
-
-                userModel
-                    .save(function (err) {
-
-                        if (err) {
-                            return callback(err);
-                        }
-
-                        callback(null, uId);
-
-                    });
-            } else {
                 callback(null, uId);
-            }
+
+            });
     }
 
     function updateProfile(userModel, updateData, callback) {
 
         if (Object.keys(updateData).length === 0) {
-            return callback(badRequests.NotEnParams({message: 'Nothing to update in Profile'}));
+            return callback(badRequests.NotEnParams({reqParams: 'profile'}));
         }
 
         prepareModelToSave(userModel, updateData, function (err, newUserModel) {
@@ -287,7 +275,7 @@ module.exports = function (db) {
                     return callback(err);
                 }
                 if (!userModel) {
-                    return callback(badRequests.NotFound({message: 'User not found'}));
+                    return callback(badRequests.NotFound({target: 'User'}));
                 }
                 callback(null, userModel);
             })
@@ -339,7 +327,7 @@ module.exports = function (db) {
                 }
 
                 if (!resultUser || !resultUser.user || !resultUser.user.loc || !resultUser.friends || !resultUser.blockList){
-                    badRequests.NotFound({message: 'User not found'});
+                    badRequests.NotFound({target: 'User'});
                 }
 
                 userCoordinates = resultUser.user.loc.coordinates;

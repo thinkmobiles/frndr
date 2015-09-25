@@ -63,14 +63,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/image/avatar`__
          *
          * This __method__ allows upload _User_ avatar
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/image/avatar
+         *         http://134.249.164.53:8859/image/avatar
          *
          * @example Body example:
          *
@@ -106,7 +106,7 @@ var imageHandler = function (db) {
                     .findOne({_id: imageId}, function (err, imageModel) {
 
                         if (err) {
-                            return callback(err);
+                            return next(err);
                         }
 
                         if (!imageModel.avatar) {
@@ -151,25 +151,25 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/image/avatar/:small?`__
          *
          * This __method__ allows get _User_ avatar
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/image/avatar
+         *         http://134.249.164.53:8859/image/avatar
          *  OR
-         *         http://192.168.88.250:8859/image/avatar/small
+         *         http://134.249.164.53:8859/image/avatar/small
          *
          * @example Response example:
          *
          *   {
-         *     "url": "http://192.168.88.250:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
+         *     "url": "http://134.249.164.53:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
          *   }
          *  OR
          *   {
-         *     "url": "http://192.168.88.250:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1_small.png"
+         *     "url": "http://134.249.164.53:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1_small.png"
          *   }
          *
          * @method getAvatarUrl
@@ -212,14 +212,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/image/avatar`__
          *
          * This __method__ allows delete _User_ avatar
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/image/avatar
+         *         http://134.249.164.53:8859/image/avatar
          *
          *
          * @method removeAvatar
@@ -270,14 +270,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/image/photo`__
          *
          * This __method__ allows upload _User_ photo to gallery
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/image/photo
+         *         http://134.249.164.53:8859/image/photo
          *
          * @example Body example:
          *
@@ -349,14 +349,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/image/photo`__
          *
          * This __method__ allows delete _User_ photo from gallery
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/image/photo
+         *         http://134.249.164.53:8859/image/photo
          *
          * @example Body example:
          *
@@ -432,20 +432,20 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/image/photo`__
          *
          * This __method__ allows get _User's_ photos from gallery
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/image/photo
+         *         http://134.249.164.53:8859/image/photo
          *
          * @example Response example:
          *
          *   {
          *       "urls": [
-         *                  "http://192.168.88.250:8859/uploads/development/gallery/55f8300013f2901e421b026a_small.png"
+         *                  "http://134.249.164.53:8859/uploads/development/gallery/55f8300013f2901e421b026a_small.png"
          *               ]
          *   }
          *

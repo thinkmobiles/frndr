@@ -69,21 +69,20 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/signIn`__
          *
          * This __method__ allows signIn _User_
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/signIn
+         *         http://134.249.164.53:8859/signIn
          *
          * @example Body example:
          *
          * {
          *      "fbId": "test1",
          *       "coordinates": [1, 2]
-         *
          * }
          *
          * @param {string} fbId - FaceBook Id for signing user
@@ -95,7 +94,7 @@ var UserHandler = function (app, db) {
 
         var options = req.body;
         if (!options || !options.fbId) {
-            return next(badRequests.NotEnParams({message: 'fbId'}));
+            return next(badRequests.NotEnParams({reqParams: 'fbId'}));
         }
 
         async.waterfall([
@@ -138,14 +137,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/signOut`__
          *
          * This __method__ allows signOut _User_
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/signOut
+         *         http://134.249.164.53:8859/signOut
          *
          * @method signOutClient
          * @instance
@@ -161,7 +160,7 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/pushToken`__
          *
@@ -175,7 +174,7 @@ var UserHandler = function (app, db) {
          *  }
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/pushToker
+         *         http://134.249.164.53:8859/pushToker
          *
          * @param {string} pushToken - Token for sending Push Notifications
          * @param {string} os - Type of device operation system
@@ -211,31 +210,41 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows get _User_ profile
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users
+         *         http://134.249.164.53:8859/users
          *
          * @example Response example:
          *
          * {
-         *  "_id": "55f7dae6e0c966b023c6e831",
-         *  "profile": {
-         *      "visible": true,
-         *      "things": [],
-         *      "sexual": "straight",
-         *      "relStatus": "single",
-         *      "sex": "M"
-         *      }
-         *  "notification": {
-         *          "newMessages": true,
+         *      "_id": "5603acdcbc68399017c2c3e3",
+         *      "images": "5603acdcbc68399017c2c3e2",
+         *      "notification": {
+         *          "newMessages": false,
          *          "newFriends": true
-         *      }
-         * }
+         *       },
+         *       "profile": {
+         *          "age": 25,
+         *          "bio": "Some biography",
+         *          "jobTitle": "Doctor",
+         *          "name": "Petrovich",
+         *          "smoker": true,
+         *          "visible": true,
+         *          "things": [
+         *                          "tenis",
+         *                          "box",
+         *                          "cars"
+         *                    ],
+         *          "sexual": "straight",
+         *          "relStatus": "single",
+         *          "sex": "M"
+         *          }
+         *       }
          *
          * @method getUserById
          * @instance
@@ -258,7 +267,7 @@ var UserHandler = function (app, db) {
                     return next(err);
                 }
                 if (!userModel) {
-                    return next(badRequests.NotFound({message: 'User not found'}));
+                    return next(badRequests.NotFound({target: 'User'}));
                 }
                 res.status(200).send(userModel);
             });
@@ -271,14 +280,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows delete _User_ account
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users
+         *         http://134.249.164.53:8859/users
          *
          *
          * @method deleteCurrentUser
@@ -409,14 +418,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows update _User_ profile
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users
+         *         http://134.249.164.53:8859/users
          *
          * @example Body example:
          *
@@ -464,14 +473,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/users/notifications`__
          *
-         * This __method__ allows update _User_ notification settings
+         * This __method__ allows update _User's_ notification settings
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users/notifications
+         *         http://134.249.164.53:8859/users/notifications
          *
          * @example Body example:
          *
@@ -488,7 +497,7 @@ var UserHandler = function (app, db) {
         var options = req.body;
 
         if (!options || (!(options.newFriends || (options.newFriends === false)) && !(options.newMessages || (options.newMessages === false)))) {
-            return next(badRequests.NotEnParams({message: 'newFriends or newMessages required'}));
+            return next(badRequests.NotEnParams({reqParams: 'newFriends or newMessages'}));
         }
 
         userHelper.getUserById(userId, function (err, userModel) {
@@ -527,14 +536,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `users/find/:page`__
          *
          * This __method__ allows find nearest `FRNDR` user's to current _User_
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users/find/2
+         *         http://134.249.164.53:8859/users/find/2
          *
          * @method findNearestUsers
          * @instance
@@ -543,8 +552,8 @@ var UserHandler = function (app, db) {
         var uId = req.session.uId;
         var page = req.params.page;
 
-        if (page < 1) {
-            return next(badRequests.InvalidValue({message: 'Page can not be less then 1'}));
+        if (page < 1 || isNaN(page)) {
+            return next(badRequests.InvalidValue({value: page, param: 'page'}));
         }
 
         userHelper.getAllUsersBySearchSettings(uId, page, function (err, user) {
@@ -566,14 +575,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/users/friendList/:page`__
          *
          * This __method__ allows to get _User's_ friends list
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users/friendList
+         *         http://134.249.164.53:8859/users/friendList
          *
          * @example Response example:
          *
@@ -581,7 +590,7 @@ var UserHandler = function (app, db) {
          *   {
          *      "friendId": "55ffc48dcc6f0ec80b4c0522",
          *      "message": "123456789",
-         *      "avatar": "http://192.168.88.250:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
+         *      "avatar": "http://134.249.164.53:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1_small.png"
          *   },
          *   {
          *      "friendId": "55ffc48dcc6f0ec80b4c0521",
@@ -598,7 +607,7 @@ var UserHandler = function (app, db) {
         var resultArray = [];
 
         if (isNaN(pageCount) || pageCount < 1) {
-            return next(badRequests.InvalidValue({message: 'Invalid value page'}));
+            return next(badRequests.InvalidValue({value: page, param: 'page'}));
         }
 
         userHelper.getUserById(userId, function (err, userModel) {
@@ -701,14 +710,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/users/blockFriend/:id`__
          *
-         * This __method__ allows block _User_
+         * This __method__ allows block _User's_ friend
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users/blockFriend/55f938010bc036b01945f1e7
+         *         http://134.249.164.53:8859/users/blockFriend/55f938010bc036b01945f1e7
          *
          * @method blockFriend
          * @instance
@@ -722,7 +731,7 @@ var UserHandler = function (app, db) {
                 async.apply(userHelper.addToBlockListById, blockedId, userId)
             ],
 
-            function (err, result) {
+            function (err) {
                 if (err) {
                     return next(err);
                 }
@@ -730,6 +739,107 @@ var UserHandler = function (app, db) {
                 res.status(200).send({success: 'User blocked successfully'});
             })
     };
+
+    this.getFriendProfile = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://134.249.164.53:8859`__
+         *
+         * __URL: `/users/friendProfile/:id`__
+         *
+         * This __method__ allows get __friends profile__
+         *
+         * @example Request example:
+         *         http://134.249.164.53:8859/users/friendProfile/5603acdcbc68399017c2c3e3
+         *
+         * @example Response example:
+         *
+         *  {
+         *      "_id": "5603acdcbc68399017c2c3e3",
+         *      "images": {
+         *          "avatar": "http://134.249.164.53:8859/uploads/development/avatar/56040a679a0df8a006ba6d01.png",
+         *          "gallery": [
+         *              "http://134.249.164.53:8859/uploads/development/gallery/5603e3a4f66aa99412af68df_small.png",
+         *              "http://134.249.164.53:8859/uploads/development/gallery/5603e3a7f66aa99412af68e0_small.png",
+         *              "http://134.249.164.53:8859/uploads/development/gallery/5603ec429f18dcd41a2f3623_small.png",
+         *              "http://134.249.164.53:8859/uploads/development/gallery/5603f27fa98e54641b7f7e6f_small.png"
+         *          ]
+         *      },
+         *      "profile": {
+         *          "age": 25,
+         *          "bio": "Some biography",
+         *          "jobTitle": "Doctor",
+         *          "name": "Petrovich",
+         *          "smoker": true,
+         *          "visible": true,
+         *          "things": [
+         *              "tennis",
+         *              "box",
+         *              "cars"
+         *          ],
+         *      "sexual": "straight",
+         *      "relStatus": "single",
+         *      "sex": "M"
+         *      }
+         *  }
+         *
+         * @method getFriendProfile
+         * @instance
+         */
+
+        var friendId = req.params.id;
+
+        User
+            .findOne({_id: ObjectId(friendId)}, {__v: 0, loc: 0, friends: 0, blockList: 0, notification: 0, fbId: 0})
+            .populate({path: 'images', select: '-_id avatar gallery'})
+            .exec(function (err, friendModel) {
+                var avatarName;
+                var photoNamesArray;
+                var images;
+
+                if (err) {
+                    return next(err);
+                }
+
+                if (!friendModel) {
+                    return next(badRequests.NotFound({target: 'User'}));
+                }
+
+                images = friendModel.get('images');
+
+                if (images.avatar && (images.avatar !== '')) {
+                    avatarName = images.avatar;
+                    avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+                    friendModel.images.avatar = avatarName;
+                } else {
+                    friendModel.images.avatar = '';
+                }
+
+                if (images.gallery && images.gallery.length) {
+                    var galleryUrls;
+
+                    photoNamesArray = images.gallery;
+
+                    galleryUrls = photoNamesArray.map(function (photoName) {
+                        photoName += '_small';
+
+                        return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.GALLERY);
+                    });
+
+                    friendModel.images.gallery = galleryUrls;
+                }
+
+                res.status(200).send(friendModel);
+            });
+    };
+
+
+
+
 
 
     // TODO  TEST (remove in production)
@@ -768,104 +878,6 @@ var UserHandler = function (app, db) {
 
         res.status(200).send({success: 'Users created successfully'});
 
-    };
-
-    this.getFriendProfile = function (req, res, next) {
-
-        /**
-         * __Type__ __`GET`__
-         *
-         * __Content-Type__ `application/json`
-         *
-         * __HOST: `http://192.168.88.250:8859`__
-         *
-         * __URL: `/users/friendProfile/:id`__
-         *
-         * This __method__ allows get __friends profile__
-         *
-         * @example Request example:
-         *         http://192.168.88.250:8859/users/friendProfile/5603acdcbc68399017c2c3e3
-         *
-         * @example Response example:
-         *
-         *  {
-         *      "_id": "5603acdcbc68399017c2c3e3",
-         *      "images": {
-         *          "_id": "5603acdcbc68399017c2c3e2",
-         *          "avatar": "http://192.168.88.250:8859/uploads/development/avatar/56040a679a0df8a006ba6d01.png",
-         *          "gallery": [
-         *              "http://192.168.88.250:8859/uploads/development/gallery/5603e3a4f66aa99412af68df_small.png",
-         *              "http://192.168.88.250:8859/uploads/development/gallery/5603e3a7f66aa99412af68e0_small.png",
-         *              "http://192.168.88.250:8859/uploads/development/gallery/5603ec429f18dcd41a2f3623_small.png",
-         *              "http://192.168.88.250:8859/uploads/development/gallery/5603f27fa98e54641b7f7e6f_small.png"
-         *          ]
-         *      },
-         *      "profile": {
-         *          "age": 25,
-         *          "bio": "Some biography",
-         *          "jobTitle": "Doctor",
-         *          "name": "Petrovich",
-         *          "smoker": true,
-         *          "visible": true,
-         *          "things": [
-         *              "tenis",
-         *              "box",
-         *              "cars"
-         *          ],
-         *      "sexual": "straight",
-         *      "relStatus": "single",
-         *      "sex": "M"
-         *      }
-         *  }
-         *
-         * @method getFriendProfile
-         * @instance
-         */
-
-        var friendId = req.params.id;
-
-        User
-            .findOne({_id: ObjectId(friendId)}, {__v: 0, loc: 0, friends: 0, blockList: 0, notification: 0, fbId: 0})
-            .populate({path: 'images', select: 'avatar gallery'})
-            .exec(function (err, friendModel) {
-                var avatarName;
-                var photoNamesArray;
-                var images;
-
-                if (err) {
-                    return next(err);
-                }
-
-                if (!friendModel) {
-                    return next(badRequests.NotFound({message: 'User not found'}));
-                }
-
-                images = friendModel.get('images');
-
-                if (images.avatar && (images.avatar !== '')) {
-                    avatarName = images.avatar;
-                    avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
-                    friendModel.images.avatar = avatarName;
-                } else {
-                    friendModel.images.avatar = '';
-                }
-
-                if (images.gallery && images.gallery.length) {
-                    var galleryUrls;
-
-                    photoNamesArray = images.gallery;
-
-                    galleryUrls = photoNamesArray.map(function (photoName) {
-                        photoName += '_small';
-
-                        return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.GALLERY);
-                    });
-
-                    friendModel.images.gallery = galleryUrls;
-                }
-
-                res.status(200).send(friendModel);
-            });
     };
 
 };

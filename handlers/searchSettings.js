@@ -101,7 +101,7 @@ var SearchSettingsHandler = function (db) {
          * This __method__ allows update _User_ searchSettings
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/users/searchSettings
+         *         http://134.249.164.53:8859/users/searchSettings
          *
          * @example Body example:
          * {

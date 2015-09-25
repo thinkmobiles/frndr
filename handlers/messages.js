@@ -81,14 +81,14 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/messages`__
          *
          * This __method__ allows send  _Message_
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/messages
+         *         http://134.249.164.53:8859/messages
          *
          * @example Body example:
          *
@@ -145,7 +145,7 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/messages/:id`__
          *
@@ -153,7 +153,7 @@ var MessageHandler = function (app, db) {
          *
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/messages/55fbcffaf60866ec1fe95ff6
+         *         http://134.249.164.53:8859/messages/55fbcffaf60866ec1fe95ff6
          *
          *
          * @method clearMessage
@@ -208,7 +208,7 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/messages/`__
          *
@@ -221,7 +221,7 @@ var MessageHandler = function (app, db) {
          *  }
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/messages/
+         *         http://134.249.164.53:8859/messages/
          *
          * @param {string} friendId - friend's id from delete chat history
          *
@@ -275,25 +275,27 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/messages/:id/:page`__
          *
          * This __method__ allows to get chat __`Messages`__
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/55fbcb7cc06791dc1dad4645/0
+         *         http://134.249.164.53:8859/55fbcb7cc06791dc1dad4645/0
          *
          *
          * @example Response example:
          *    [
          *      {
          *          "_id": "5600127b670ed1ac1b3d60b0",
+         *          "owner": "55fbcb7cc06791dc1dad46567",
          *          "text": "testing12gffd34ffffff5",
          *          "date": "2015-09-21T14:21:47.134Z"
          *      },
          *      {
          *          "_id": "56001273670ed1ac1b3d60af",
+         *          "owner": "55fbcb7cc06791dc1dad46567",
          *          "text": "testing1234ffffff5",
          *          "date": "2015-09-21T14:21:39.383Z"
          *      }
@@ -340,14 +342,14 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://192.168.88.250:8859`__
+         * __HOST: `http://134.249.164.53:8859`__
          *
          * __URL: `/messages/all/`__
          *
          * This __method__ allows delete all _Chats_ history
          *
          * @example Request example:
-         *         http://192.168.88.250:8859/messages/all/
+         *         http://134.249.164.53:8859/messages/all/
          *
          * @method clearAllMessages
          * @instance
