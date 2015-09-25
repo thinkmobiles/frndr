@@ -672,9 +672,15 @@ var UserHandler = function (app, db) {
 
                                 if (imageModel) {
                                     avatarName = imageModel.get('avatar');
-                                    avatarName += '_small';
-                                    avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
-                                    resultObj.avatar = avatarUrl;
+
+                                    if (avatarName === ''){
+                                        resultObj.avatar = '';
+                                    } else {
+                                        avatarName += '_small';
+                                        avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+                                        resultObj.avatar = avatarUrl;
+                                    }
+
                                 } else {
                                     resultObj.avatar = '';
                                 }
