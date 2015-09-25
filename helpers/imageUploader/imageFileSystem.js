@@ -237,8 +237,8 @@ var imagesUploader = function (dirConfig) {
         var slash = osPathData.slash;
         var dir = osPathData.dir + slash;
         var readPath = path.join(dir, slash, folderName, imageName);
-        var index = newPath.length + 1;
-        var writePath = newPath.substring(0, index);
+        var index = readPath.length + 1;
+        var writePath = readPath.substring(0, index);
 
         if (!callback && (typeof height === 'function')) {
             callback = height;
