@@ -344,12 +344,12 @@ var MessageHandler = function (app, db) {
          *
          * __URL: `/messages/all/`__
          *
-         * This __method__ allows delete _Chat_ history
+         * This __method__ allows delete all _Chats_ history
          *
          * @example Request example:
          *         http://192.168.88.250:8859/messages/all/
          *
-         * @method clearHistory
+         * @method clearAllMessages
          * @instance
          */
 
