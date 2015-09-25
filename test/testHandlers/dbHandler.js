@@ -69,7 +69,7 @@ var DbHandler = function (db) {
                 if (err) {
                     return callback(err);
                 }
-                console.log('>>>Drop database successfull\n');
+                console.log('>>>Drop database successfully\n');
                 console.log('============================================\n');
                 console.log();
                 callback();

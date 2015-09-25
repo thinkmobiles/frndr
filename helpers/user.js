@@ -220,7 +220,7 @@ module.exports = function (db) {
         var validateError = validateCoordinates(coordinates);
 
         if (validateError && validateError.constructor === Error) {
-            return cb(validateError);
+            return callback(validateError);
         }
 
         userModel.loc = {
