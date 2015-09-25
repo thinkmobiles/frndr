@@ -185,7 +185,6 @@ var UserHandler = function (app, db) {
          */
 
         var body = req.body;
-
         var userId = req.session.uId;
 
         if (!body || !body.pushToken || !body.os) {
@@ -298,6 +297,8 @@ var UserHandler = function (app, db) {
         var userId = req.session.uId;
 
         userHelper.deleteUserById(userId, function (err) {
+            var objectUserId = ObjectId(userId);
+
             if (err) {
                 return next(err);
             }
@@ -306,7 +307,7 @@ var UserHandler = function (app, db) {
 
                     //remove PushToken model
                     function (cb) {
-                        PushTokens.remove({user: ObjectId(userId)}, function (err) {
+                        PushTokens.remove({user: objectUserId}, function (err) {
                             if (err) {
                                 return cb(err);
                             }
@@ -317,7 +318,7 @@ var UserHandler = function (app, db) {
 
                     //remove SearchSettings model
                     function (cb) {
-                        SearchSettings.remove({user: ObjectId(userId)}, function (err) {
+                        SearchSettings.remove({user: objectUserId}, function (err) {
                             if (err) {
                                 return cb(err);
                             }
@@ -328,7 +329,7 @@ var UserHandler = function (app, db) {
 
                     //remove Like model
                     function (cb) {
-                        Like.remove({user: ObjectId(userId)}, function (err) {
+                        Like.remove({user: objectUserId}, function (err) {
                             if (err) {
                                 return cb(err);
                             }
@@ -340,7 +341,7 @@ var UserHandler = function (app, db) {
                     //try to delete all user images from Filesystem
                     function (cb) {
                         Image
-                            .findOne({user: ObjectId(userId)}, function (err, imageModel) {
+                            .findOne({user: objectUserId}, function (err, imageModel) {
                                 var galleryArrayNames;
                                 var avatarName;
 
@@ -402,7 +403,7 @@ var UserHandler = function (app, db) {
                     }
                 ],
 
-                function (err, results) {
+                function (err) {
                     if (err) {
                         return next(err);
                     }
