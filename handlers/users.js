@@ -154,7 +154,7 @@ var UserHandler = function (app, db) {
         session.kill(req, res, next);
     };
 
-    this.addPushToken = function(req, res, next){
+    this.addPushToken = function (req, res, next) {
 
         /**
          * __Type__ __`POST`__
@@ -188,13 +188,13 @@ var UserHandler = function (app, db) {
 
         var userId = req.session.uId;
 
-        if (!body || !body.pushToken || !body.os){
+        if (!body || !body.pushToken || !body.os) {
             return next(badRequests.NotEnParams({reqParams: 'pushToken and os'}));
         }
 
-        userHelper.addPushToken(userId, body.pushToken, body.os, function(err){
+        userHelper.addPushToken(userId, body.pushToken, body.os, function (err) {
 
-            if (err){
+            if (err) {
                 return next(err);
             }
 
@@ -381,9 +381,9 @@ var UserHandler = function (app, db) {
                     },
 
                     //try to remove Messages, or update show array in them
-                    function(cb){
-                        messageHandler.deleteMessages(userId, function(err){
-                            if (err){
+                    function (cb) {
+                        messageHandler.deleteMessages(userId, function (err) {
+                            if (err) {
                                 return cb(err);
                             }
 
@@ -625,13 +625,15 @@ var UserHandler = function (app, db) {
 
             async.eachSeries(friends,
 
-                function(friendId, cb){
+                function (friendId, cb) {
 
-                    Message.find({$and:[
-                        {show:{$in:[userId]}},
-                        {show:{$in:[friendId]}}
+                    Message.find({
+                            $and: [
+                                {show: {$in: [userId]}},
+                                {show: {$in: [friendId]}}
 
-                    ]},
+                            ]
+                        },
                         {__v: 0, chatId: 0, show: 0},
 
                         {
@@ -647,22 +649,22 @@ var UserHandler = function (app, db) {
                                 return cb(err);
                             }
 
-                            if (!messageModelsArray.length){
-                               msg = 'New friend. Say Hello.'
+                            if (!messageModelsArray.length) {
+                                msg = 'New friend. Say Hello.'
                             } else {
                                 msg = messageModelsArray[0].get('text');
                             }
 
-                            Image.findOne({user:ObjectId(friendId)}, function(err, imageModel){
+                            Image.findOne({user: ObjectId(friendId)}, function (err, imageModel) {
                                 var avatarName;
                                 var avatarUrl;
                                 var resultObj = {};
 
-                                if (err){
+                                if (err) {
                                     return cb(err);
                                 }
 
-                                if (imageModel){
+                                if (imageModel) {
                                     avatarName = imageModel.get('avatar');
                                     avatarName += '_small';
                                     avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
@@ -679,8 +681,8 @@ var UserHandler = function (app, db) {
                         })
                 },
 
-                function(err){
-                    if (err){
+                function (err) {
+                    if (err) {
                         return next(err);
                     }
 
@@ -768,28 +770,79 @@ var UserHandler = function (app, db) {
 
     };
 
-    this.getFriendProfile = function(req, res, next){
+    this.getFriendProfile = function (req, res, next) {
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://192.168.88.250:8859`__
+         *
+         * __URL: `/users/friendProfile/:id`__
+         *
+         * This __method__ allows get __friends profile__
+         *
+         * @example Request example:
+         *         http://192.168.88.250:8859/users/friendProfile/5603acdcbc68399017c2c3e3
+         *
+         * @example Response example:
+         *
+         *  {
+         *      "_id": "5603acdcbc68399017c2c3e3",
+         *      "images": {
+         *          "_id": "5603acdcbc68399017c2c3e2",
+         *          "avatar": "http://192.168.88.250:8859/uploads/development/avatar/56040a679a0df8a006ba6d01.png",
+         *          "gallery": [
+         *              "http://192.168.88.250:8859/uploads/development/gallery/5603e3a4f66aa99412af68df_small.png",
+         *              "http://192.168.88.250:8859/uploads/development/gallery/5603e3a7f66aa99412af68e0_small.png",
+         *              "http://192.168.88.250:8859/uploads/development/gallery/5603ec429f18dcd41a2f3623_small.png",
+         *              "http://192.168.88.250:8859/uploads/development/gallery/5603f27fa98e54641b7f7e6f_small.png"
+         *          ]
+         *      },
+         *      "profile": {
+         *          "age": 25,
+         *          "bio": "Some biography",
+         *          "jobTitle": "Doctor",
+         *          "name": "Petrovich",
+         *          "smoker": true,
+         *          "visible": true,
+         *          "things": [
+         *              "tenis",
+         *              "box",
+         *              "cars"
+         *          ],
+         *      "sexual": "straight",
+         *      "relStatus": "single",
+         *      "sex": "M"
+         *      }
+         *  }
+         *
+         * @method getFriendProfile
+         * @instance
+         */
+
         var friendId = req.params.id;
 
         User
-            .findOne({_id:ObjectId(friendId)}, {__v:0, loc:0, friends:0, blockList:0, notification:0, fbId:0})
+            .findOne({_id: ObjectId(friendId)}, {__v: 0, loc: 0, friends: 0, blockList: 0, notification: 0, fbId: 0})
             .populate({path: 'images', select: 'avatar gallery'})
-            .exec(function(err, friendModel){
+            .exec(function (err, friendModel) {
                 var avatarName;
                 var photoNamesArray;
                 var images;
 
-                if (err){
+                if (err) {
                     return next(err);
                 }
 
-                if (!friendModel){
+                if (!friendModel) {
                     return next(badRequests.NotFound({message: 'User not found'}));
                 }
 
                 images = friendModel.get('images');
 
-                if (images.avatar && (images.avatar !== '')){
+                if (images.avatar && (images.avatar !== '')) {
                     avatarName = images.avatar;
                     avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
                     friendModel.images.avatar = avatarName;
@@ -797,12 +850,12 @@ var UserHandler = function (app, db) {
                     friendModel.images.avatar = '';
                 }
 
-                if (images.gallery && images.gallery.length){
+                if (images.gallery && images.gallery.length) {
                     var galleryUrls;
 
                     photoNamesArray = images.gallery;
 
-                    galleryUrls = photoNamesArray.map(function(photoName){
+                    galleryUrls = photoNamesArray.map(function (photoName) {
                         photoName += '_small';
 
                         return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.GALLERY);
