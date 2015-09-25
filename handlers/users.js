@@ -589,12 +589,15 @@ var UserHandler = function (app, db) {
          * [
          *   {
          *      "friendId": "55ffc48dcc6f0ec80b4c0522",
+         *      "newFriend": "false",
          *      "message": "123456789",
          *      "avatar": "http://134.249.164.53:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1_small.png"
          *   },
          *   {
          *      "friendId": "55ffc48dcc6f0ec80b4c0521",
-         *      "message": "New friend. Say Hello."
+         *      "newFriend": "true",
+         *      "message": "New friend. Say Hello.",
+         *      "avatar": ""
          *   }
          * ]
          *
@@ -654,12 +657,15 @@ var UserHandler = function (app, db) {
 
                         function (err, messageModelsArray) {
                             var msg;
+                            var newFriend = false;
+
                             if (err) {
                                 return cb(err);
                             }
 
                             if (!messageModelsArray.length) {
-                                msg = 'New friend. Say Hello.'
+                                msg = 'New friend. Say Hello.';
+                                newFriend = true;
                             } else {
                                 msg = messageModelsArray[0].get('text');
                             }
@@ -675,12 +681,21 @@ var UserHandler = function (app, db) {
 
                                 if (imageModel) {
                                     avatarName = imageModel.get('avatar');
-                                    avatarName += '_small';
-                                    avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
-                                    resultObj.avatar = avatarUrl;
+
+                                    if (avatarName === ''){
+                                        resultObj.avatar = '';
+                                    } else {
+                                        avatarName += '_small';
+                                        avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+                                        resultObj.avatar = avatarUrl;
+                                    }
+
+                                } else {
+                                    resultObj.avatar = '';
                                 }
 
                                 resultObj.friendId = friendId;
+                                resultObj.newFriend = newFriend;
                                 resultObj.message = msg;
 
                                 resultArray.push(resultObj);

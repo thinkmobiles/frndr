@@ -153,7 +153,7 @@ var imageHandler = function (db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `/image/avatar/:small?`__
+         * __URL: `/image/avatar/small?`__
          *
          * This __method__ allows get _User_ avatar
          *
@@ -177,9 +177,13 @@ var imageHandler = function (db) {
          */
 
         var uId = req.session.uId;
-        var small = req.params.small;
         var avatarName;
+        var small;
         var url = '';
+
+        if (req.originalUrl === '/image/avatar/small') {
+            small = true;
+        }
 
         Image.findOne({user: uId}, function (err, resultModel) {
 

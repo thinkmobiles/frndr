@@ -80,7 +80,7 @@ var SearchSettingsHandler = function (db) {
                 }
 
                 if (!searchSettingsModel) {
-                    return next(badRequests.NotFound({message: 'Search settings not found'}));
+                    return next(badRequests.NotFound({target: 'Search settings'}));
                 }
 
                 res.status(200).send(searchSettingsModel);

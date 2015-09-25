@@ -39,7 +39,7 @@ var LikesHandler = function (db) {
         var likedUserId = req.params.id;
 
         if (!likedUserId) {
-            return next(badRequests.NotEnParams({message: 'likeId'}));
+            return next(badRequests.NotEnParams({reqParams: 'likeId'}));
         }
 
         async.waterfall([
