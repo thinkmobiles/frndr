@@ -14,6 +14,7 @@ module.exports = function (db) {
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');
     var Image = db.model('Image');
+    var Like = db.model('Like');
     var imageHandler = new ImageHandler(db);
 
     function prepareModelToSave(userModel, options, callback) {
@@ -105,7 +106,6 @@ module.exports = function (db) {
         var searchSettingModel;
         var imageModel;
 
-
         if (profileData.coordinates) {
             err = validateCoordinates(profileData.coordinates);
 
@@ -156,7 +156,6 @@ module.exports = function (db) {
 
 
                     });
-
 
             });
     }
@@ -317,6 +316,10 @@ module.exports = function (db) {
         var galleryUrls;
         var avatarUrl;
         var distance;
+        var likesArray;
+        var likesObj = {};
+        var disLikeArray;
+        var disLikeObj = {};
 
         SearchSettings.findOne({user: userId}, {_id: 0, __v: 0})
             .populate({path: 'user', select: 'loc friends blockList'})
@@ -326,190 +329,226 @@ module.exports = function (db) {
                     return callback(err);
                 }
 
-                if (!resultUser || !resultUser.user || !resultUser.user.loc || !resultUser.friends || !resultUser.blockList){
-                    badRequests.NotFound({target: 'User'});
-                }
+                Like.findOne({user: userId}, {_id: 0, __v: 0}, function(err, likesModel){
 
-                userCoordinates = resultUser.user.loc.coordinates;
+                    if (err){
+                        return callback(err);
+                    }
 
-                blockList = _.map(resultUser.blockList, function(b){
-                    return new ObjectId(b);
-                });
+                    if (likesModel){
 
-                friendList = _.map(resultUser.friends, function(f){
-                    return new ObjectId(f);
-                });
+                        if (likesModel.likes.length){
+                            likesArray = _.map(likesModel.likes, function(l){
+                               return new ObjectId(l)
+                            });
 
-                friendObj = {
-                    _id: {$nin: friendList}
-                };
-
-                blockedObj = {
-                    _id: {$nin: blockList}
-                };
-
-                visibleObj = {
-                    'profile.visible': true
-                };
-
-                geoObj = {
-                    loc: {
-                        $geoWithin: {
-                            $centerSphere: [userCoordinates, resultUser.distance / 6378137]
+                            likesObj = {
+                                _id: {$nin: likesArray}
+                            }
                         }
+
+                        if (likesModel.dislikes.length){
+                            disLikeArray = _.map(likesModel.dislikes, function(d){
+                               return new ObjectId(d);
+                            });
+
+                            disLikeObj = {
+                                _id: {$nin: disLikeArray}
+                            }
+                        }
+
                     }
-                };
 
-                ageObj = {
-                    $and: [
-                        {'profile.age': {$lte: resultUser.ageRange.max}},
-                        {'profile.age': {$gte: resultUser.ageRange.min}}
-                    ]
-                };
+                    if (!resultUser || !resultUser.user || !resultUser.user.loc || !resultUser.friends || !resultUser.blockList){
+                        badRequests.NotFound({target: 'User'});
+                    }
 
-                notIObj = {
-                  '_id': {$ne: userId}
-                };
+                    userCoordinates = resultUser.user.loc.coordinates;
 
-                if (resultUser.sexual === CONSTANTS.SEXUAL.ANY){
+                    blockList = _.map(resultUser.blockList, function(b){
+                        return new ObjectId(b);
+                    });
 
-                    sexualObj = {};
+                    friendList = _.map(resultUser.friends, function(f){
+                        return new ObjectId(f);
+                    });
 
-                } else {
-
-                    sexualObj = {
-                        'profile.sexual': resultUser.sexual
+                    friendObj = {
+                        _id: {$nin: friendList}
                     };
 
-                }
-
-                smokerObj = {
-                    'profile.smoker': resultUser.smoker
-                };
-
-                if (!resultUser.relationship.length){
-                    relStatusArray = [];
-                } else {
-
-                    relationship = _.clone(resultUser.relationship);
-
-                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE) !== -1){
-                        relStatusArray.push({'profile.sex': 'M', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
-                    }
-
-                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE) !== -1){
-                        relStatusArray.push({'profile.sex': 'F', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
-                    }
-
-                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.COUPLE) !== -1){
-                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.COUPLE});
-                    }
-
-                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FAMILY) !== -1){
-                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.FAMILY});
-                    }
-
-                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY) !== -1){
-                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'M'});
-                    }
-
-                    if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY) !== -1){
-                        relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'F'});
-                    }
-
-                }
-
-                if (!relStatusArray.length){
-                    relStatusObj = {};
-                } else {
-                    relStatusObj = {
-                        $or: relStatusArray
+                    blockedObj = {
+                        _id: {$nin: blockList}
                     };
-                }
 
-                findObj = {
-                    $and: [
-                        geoObj,
-                        visibleObj,
-                        relStatusObj,
-                        ageObj,
-                        sexualObj,
-                        smokerObj,
-                        blockedObj,
-                        friendObj,
-                        notIObj
-                    ]
-                };
+                    visibleObj = {
+                        'profile.visible': true
+                    };
 
-                projectionObj = {
-                    'fbId': 0,
-                    '__v': 0,
-                    'notification': 0
-                };
+                    geoObj = {
+                        loc: {
+                            $geoWithin: {
+                                $centerSphere: [userCoordinates, resultUser.distance / 6378137]
+                            }
+                        }
+                    };
 
-                page = page || 1;
+                    ageObj = {
+                        $and: [
+                            {'profile.age': {$lte: resultUser.ageRange.max}},
+                            {'profile.age': {$gte: resultUser.ageRange.min}}
+                        ]
+                    };
 
-                User
-                    .find(
+                    notIObj = {
+                        '_id': {$ne: userId}
+                    };
+
+                    if (resultUser.sexual === CONSTANTS.SEXUAL.ANY){
+
+                        sexualObj = {};
+
+                    } else {
+
+                        sexualObj = {
+                            'profile.sexual': resultUser.sexual
+                        };
+
+                    }
+
+                    smokerObj = {
+                        'profile.smoker': resultUser.smoker
+                    };
+
+                    if (!resultUser.relationship.length){
+                        relStatusArray = [];
+                    } else {
+
+                        relationship = _.clone(resultUser.relationship);
+
+                        if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE) !== -1){
+                            relStatusArray.push({'profile.sex': 'M', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                        }
+
+                        if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE) !== -1){
+                            relStatusArray.push({'profile.sex': 'F', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                        }
+
+                        if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.COUPLE) !== -1){
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.COUPLE});
+                        }
+
+                        if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FAMILY) !== -1){
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.FAMILY});
+                        }
+
+                        if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY) !== -1){
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'M'});
+                        }
+
+                        if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY) !== -1){
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'F'});
+                        }
+
+                    }
+
+                    if (!relStatusArray.length){
+                        relStatusObj = {};
+                    } else {
+                        relStatusObj = {
+                            $or: relStatusArray
+                        };
+                    }
+
+                    findObj = {
+                        $and: [
+                            geoObj,
+                            visibleObj,
+                            relStatusObj,
+                            ageObj,
+                            sexualObj,
+                            smokerObj,
+                            blockedObj,
+                            likesObj,
+                            disLikeObj,
+                            friendObj,
+                            notIObj
+                        ]
+                    };
+
+                    projectionObj = {
+                        'fbId': 0,
+                        '__v': 0,
+                        'notification': 0
+                    };
+
+                    page = page || 1;
+
+                    User
+                        .find(
                         findObj,
                         projectionObj
                     )
-                    .populate({path: 'images', select: '-_id avatar gallery'})
-                    .skip(limit * (page - 1))
-                    .limit(limit)
-                    .exec(function(err, resultUsers){
-                        if (err){
-                            return callback(err);
-                        }
+                        .populate({path: 'images', select: '-_id avatar gallery'})
+                        .skip(limit * (page - 1))
+                        .limit(limit)
+                        .exec(function(err, resultUsers){
+                            if (err){
+                                return callback(err);
+                            }
 
-                        async.each(resultUsers,
+                            async.each(resultUsers,
 
-                            function(user, cb){
+                                function(user, cb){
 
-                                gallery = user.images.gallery;
+                                    gallery = user.images.gallery;
 
-                                galleryUrls = gallery.map(function(g){
-                                    g += '_small';
+                                    galleryUrls = gallery.map(function(g){
+                                        g += '_small';
 
-                                    return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.GALLERY);
+                                        return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.GALLERY);
+                                    });
+
+                                    avatarUrl = user.images.avatar ? imageHandler.computeUrl(user.images.avatar, CONSTANTS.BUCKETS.AVATAR) : '';
+
+                                    distance = geo.getDistance(
+                                        {latitude: resultUser.user.loc.coordinates[1], longitude: resultUser.user.loc.coordinates[0]},
+                                        {latitude: user.loc.coordinates[1], longitude: user.loc.coordinates[0]}, 1
+                                    );
+
+                                    distance = geo.convertUnit('mi', distance, 20);
+
+                                    userObj = {
+                                        userId: user._id,
+                                        avatar: avatarUrl,
+                                        name: user.profile.name,
+                                        age: user.profile.age,
+                                        distance: distance,
+                                        sexual: user.profile.sexual,
+                                        jobTitle: user.profile.jobTitle,
+                                        smoker: user.profile.smoker,
+                                        likes: user.profile.things,
+                                        bio: user.profile.bio || '',
+                                        gallery: galleryUrls
+                                    };
+
+                                    foundedUsers.push(userObj);
+
+                                    cb(null);
+
+                                },  function(err){
+
+                                    if (err){
+                                        return callback(err);
+                                    }
+
+                                    callback(null, foundedUsers);
+
                                 });
-
-                                avatarUrl = user.images.avatar ? imageHandler.computeUrl(user.images.avatar, CONSTANTS.BUCKETS.AVATAR) : '';
-
-                                distance = geo.getDistance(
-                                    {latitude: resultUser.user.loc.coordinates[1], longitude: resultUser.user.loc.coordinates[0]},
-                                    {latitude: user.loc.coordinates[1], longitude: user.loc.coordinates[0]}, 1
-                                )  * 0.000621371192;
-
-                                userObj = {
-                                    userId: user._id,
-                                    avatar: avatarUrl,
-                                    name: user.profile.name,
-                                    age: user.profile.age,
-                                    distance: distance,
-                                    sexual: user.profile.sexual,
-                                    jobTitle: user.profile.jobTitle,
-                                    smoker: user.profile.smoker,
-                                    likes: user.profile.things,
-                                    bio: user.profile.bio || '',
-                                    gallery: galleryUrls
-                                };
-
-                                foundedUsers.push(userObj);
-
-                                cb(null);
-
-                        },  function(err){
-
-                                if (err){
-                                    return callback(err);
-                                }
-
-                                callback(null, foundedUsers);
 
                         });
 
-                    });
+                });
             });
     }
 

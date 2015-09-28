@@ -27,7 +27,7 @@ module.exports = {
         MALE_WITH_BABY: 'Single Father',
         FEMALE_WITH_BABY: 'Single Mother'
     },
-    LIMIT:{
+    LIMIT: {
         MESSAGES:5,
         FRIENDS:8
     },

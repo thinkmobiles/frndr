@@ -2,8 +2,8 @@ process.env.DB_HOST = 'localhost';
 process.env.DB_NAME = "FrndrDev";
 process.env.DB_PORT = 27017;
 
-process.env.HOST = 'http://134.249.164.53:8859';
-//process.env.HOST = 'http://localhost:8859';
+//process.env.HOST = 'http://134.249.164.53:8859';
+process.env.HOST = 'http://localhost:8859';
 process.env.PORT = '8859';
 
 //process.env.REDIS_HOST = '134.249.164.53';

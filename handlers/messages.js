@@ -183,7 +183,7 @@ var MessageHandler = function (app, db) {
                         return next(err);
                     }
 
-                    return res.status(200).send({success: 'Message deleted successfull'});
+                    return res.status(200).send({success: 'Message deleted successfully'});
                 });
 
             } else {
@@ -193,7 +193,7 @@ var MessageHandler = function (app, db) {
                         return next(err);
                     }
 
-                    return res.status(200).send({success: 'Message deleted successfull'});
+                    return res.status(200).send({success: 'Message deleted successfully'});
                 });
 
             }
@@ -233,6 +233,7 @@ var MessageHandler = function (app, db) {
         var options = req.body;
         var chatId;
         var friendId;
+        var showArray;
 
         if (!options || !options.friendId) {
             return next(badRequests.NotEnParams({reqParams: 'friendId'}));
@@ -250,16 +251,35 @@ var MessageHandler = function (app, db) {
                 async.each(models,
 
                     function (messageModel, cb) {
-                        messageModel.update({$pull: {show: userId}}, function (err) {
-                            if (err) {
-                                return cb(err);
-                            }
+                        showArray = messageModel.show;
 
-                            cb();
-                        });
+                        if (showArray.length === 1 && (showArray.indexOf(userId) !== -1)) {
+
+                            messageModel.remove(function(err){
+
+                                if (err){
+                                    return cb(err);
+                                }
+
+                                cb();
+
+                            });
+
+                        } else {
+
+                            messageModel.update({$pull: {show: userId}}, function (err) {
+                                if (err) {
+                                    return cb(err);
+                                }
+
+                                cb();
+                            });
+
+                        }
+
                     },
 
-                    function (err, result) {
+                    function (err) {
                         if (err) {
                             return next(err);
                         }

@@ -74,7 +74,7 @@ module.exports = function () {
             secret: '111',
             resave: true,
             saveUninitialized: true,
-            maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
+            maxAge: 10 * 365 * 24 * 60 * 60 * 1000, // ten years
             store: new MongoStore({
                 host: process.env.DB_HOST,
                 port: process.env.DB_PORT,
