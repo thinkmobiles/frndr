@@ -71,7 +71,7 @@ module.exports = function () {
         console.log("Connection to " + process.env.DB_NAME + " is success");
 
         app.use(session({
-            secret: '111',
+            secret: '82e9e46262b351b79826e58455b24aa30956a016350e4a0ab5d725a9bc608d9c',
             resave: true,
             saveUninitialized: true,
             maxAge: 10 * 365 * 24 * 60 * 60 * 1000, // ten years

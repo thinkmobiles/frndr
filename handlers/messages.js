@@ -131,6 +131,8 @@ var MessageHandler = function (app, db) {
                     return next(err);
                 }
 
+                //TODO send push notification to friendId
+
                 io.to(userId).emit('chat message', msg);
                 io.to(friendId).emit('chat message', msg);
 
