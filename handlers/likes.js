@@ -46,12 +46,12 @@ var LikesHandler = function (db) {
 
                 //create or update Like model of user with userId
                 function (cb) {
-                    var likesArray = [];
-
                     Like
                         .findOne({user: ObjectId(userId)}, function (err, likeModel) {
+                            var likesArray = [];
+
                             if (err) {
-                                return next(err);
+                                return cb(err);
                             }
 
                             if (!likeModel) {
@@ -85,7 +85,7 @@ var LikesHandler = function (db) {
                     likeModel
                         .save(function (err) {
                             if (err) {
-                                return next(err);
+                                return cb(err);
                             }
                             cb();
                         })
@@ -96,7 +96,7 @@ var LikesHandler = function (db) {
                     Like
                         .findOne({user: ObjectId(likedUserId)}, function (err, likeModel) {
                             if (err) {
-                                return next(err);
+                                return cb(err);
                             }
 
                             if (!likeModel) {
@@ -120,17 +120,15 @@ var LikesHandler = function (db) {
                     }
 
                     User
-                        .findOneAndUpdate({_id: ObjectId(userId)}, {$addToSet: {friends: likedUserId}},
-                        function (err) {
+                        .findOneAndUpdate({_id: ObjectId(userId)}, {$addToSet: {friends: likedUserId}}, function (err) {
                             if (err) {
-                                return next(err);
+                                return cb(err);
                             }
 
                             User
-                                .findOneAndUpdate({_id: ObjectId(likedUserId)}, {$addToSet: {friends: userId}},
-                                function (err) {
+                                .findOneAndUpdate({_id: ObjectId(likedUserId)}, {$addToSet: {friends: userId}}, function (err) {
                                     if (err) {
-                                        return next(err);
+                                        return cb(err);
                                     }
 
                                     cb();
@@ -170,18 +168,19 @@ var LikesHandler = function (db) {
 
         var uId = req.session.uId;
         var dislikeId = req.params.id;
-        var likeModel;
 
         Like
-            .findOne({user: uId})
+            .findOne({user: ObjectId(uId)})
             .exec(function(err, resultModel){
+                var likeModel;
+
                 if (err){
                     return next(err);
                 }
 
                 if (!resultModel){
 
-                    likeModel = new Like({user: uId, dislikes:[dislikeId]});
+                    likeModel = new Like({user: ObjectId(uId), dislikes:[dislikeId]});
 
                     likeModel
                         .save(function(err){
