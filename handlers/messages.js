@@ -16,13 +16,13 @@ var MessageHandler = function (app, db) {
     var Message = db.model('Message');
     var self = this;
 
-    function computeChatId(userId, friendId) {
+    this.computeChatId = function(userId, friendId) {
         if (userId < friendId) {
             return userId + ':' + friendId;
         } else {
             return friendId + ':' + userId;
         }
-    }
+    };
 
     this.deleteMessages = function(userId, callback){
 
@@ -116,7 +116,7 @@ var MessageHandler = function (app, db) {
 
         msg = options.message;
         friendId = options.friendId;
-        chatId = computeChatId(userId, friendId);
+        chatId = self.computeChatId(userId, friendId);
 
         messageModel = new Message({
             chatId: chatId,
@@ -165,7 +165,7 @@ var MessageHandler = function (app, db) {
         var userId = req.session.uId;
         var messageId = req.params.id;
 
-        Message.findOne({_id: messageId}, function (err, messageModel) {
+        Message.findOne({_id: ObjectId(messageId)}, function (err, messageModel) {
             var showArray;
 
             if (err) {
@@ -241,7 +241,7 @@ var MessageHandler = function (app, db) {
         }
 
         friendId = options.friendId;
-        chatId = computeChatId(userId, friendId);
+        chatId = self.computeChatId(userId, friendId);
 
         Message
             .find({chatId: chatId}, function (err, models) {
@@ -331,7 +331,7 @@ var MessageHandler = function (app, db) {
             return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
         }
 
-        chatId = computeChatId(userId, friendId);
+        chatId = self.computeChatId(userId, friendId);
 
         Message
             .find({chatId: chatId, show: {$in: [userId]}}, {__v: 0, chatId: 0, show: 0}, {

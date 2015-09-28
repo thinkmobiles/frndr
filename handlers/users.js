@@ -254,7 +254,7 @@ var UserHandler = function (app, db) {
         var userId = req.params.id || req.session.uId;
 
         User
-            .findOne({_id: userId},
+            .findOne({_id: ObjectId(userId)},
             {
                 fbId: 0,
                 __v: 0,
@@ -612,7 +612,7 @@ var UserHandler = function (app, db) {
         var resultArray = [];
 
         if (isNaN(pageCount) || pageCount < 1) {
-            return next(badRequests.InvalidValue({value: page, param: 'page'}));
+            return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
         }
 
         userHelper.getUserById(userId, function (err, userModel) {
@@ -623,7 +623,6 @@ var UserHandler = function (app, db) {
             if (err) {
                 return next(err);
             }
-
 
             friends = userModel.get('friends');
 
@@ -640,14 +639,17 @@ var UserHandler = function (app, db) {
             async.eachSeries(friends,
 
                 function (friendId, cb) {
+                    var chatId = messageHandler.computeChatId(userId, friendId);
 
-                    Message.find({
+                    Message.find(
+                        {
                             $and: [
-                                {show: {$in: [userId]}},
-                                {show: {$in: [friendId]}}
+                                {chatId: chatId},
+                                {show: {$in: [userId]}}
 
                             ]
                         },
+
                         {__v: 0, chatId: 0, show: 0},
 
                         {
@@ -665,6 +667,7 @@ var UserHandler = function (app, db) {
                                 return cb(err);
                             }
 
+                            //TODO: change for old friend when cleared chat history
                             if (!messageModelsArray.length) {
                                 msg = 'New friend. Say Hello.';
                                 newFriend = true;
