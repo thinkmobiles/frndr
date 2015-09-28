@@ -494,6 +494,58 @@ var imageHandler = function (db) {
         return imageUploader.getImageUrl(imageName, bucket) + '.png';
     };
 
+    this.changeAvatarFromGallery = function(req, res, next){
+
+        var body = req.body;
+        var uId = req.session.uId;
+        var currentAvatar = '';
+        var gallery;
+        var index;
+        var newAvatar;
+
+        if (!body.newAvatar){
+            return badRequests.NotEnParams({reqParams: 'newAvatar'});
+        }
+
+        newAvatar = body.newAvatar;
+
+        Image.findOne({user: uId}, function(err, imageModel){
+
+            if (err){
+                return next(err);
+            }
+
+            if (!imageModel){
+
+                return badRequests.DatabaseError();
+
+            }
+
+            if (imageModel && imageModel.avatar){
+                currentAvatar = imageModel.get('avatar');
+            }
+
+            gallery = imageModel.get('gallery');
+
+            index = gallery.indexOf(newAvatar);
+
+            gallery.splice(index, 1);
+
+            gallery.push(currentAvatar);
+
+            Image.update({user: uId}, {$set: {avatar: newAvatar, gallery: gallery}}, function(err){
+                if(err){
+                    return next(err);
+                }
+
+               res.status(200).send({success: 'Avatar changed successfully'});
+            });
+
+
+        });
+
+
+    };
 
     this.testResizeImage = function(req,res,next){
         var imageName = '5602af2ff9e06a563bb6d207';
