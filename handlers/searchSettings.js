@@ -122,7 +122,7 @@ var SearchSettingsHandler = function (db) {
         var saveData = prepareSaveData(req.body);
 
         if (saveData && Object.keys(saveData).length === 0) {
-            return res.status(400).send('Nothing to update');
+            return next(badRequests.NotEnParams({reqParams: 'ageRange or sexual or smoker or relationship or distance'}));
         }
 
         SearchSettings
@@ -131,7 +131,7 @@ var SearchSettingsHandler = function (db) {
                     return next(err);
                 }
 
-                res.status(200).send('Search settings updated successfully');
+                res.status(200).send({success: 'Search settings updated successfully'});
             });
     };
 };

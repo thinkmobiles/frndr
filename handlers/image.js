@@ -264,7 +264,7 @@ var imageHandler = function (db) {
             avatarName = imageModel.get('avatar');
 
             if (!avatarName.length) {
-                return res.status(200).send('There is no user avatar');
+                return res.status(200).send({success: 'There is no user avatar'});
             }
 
             self.removeImageFile(avatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {

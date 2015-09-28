@@ -526,7 +526,7 @@ var UserHandler = function (app, db) {
                         return next(err);
                     }
 
-                    res.status(200).send('Notifications updated successfully');
+                    res.status(200).send({success: 'Notifications updated successfully'});
                 });
         });
     };
