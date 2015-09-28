@@ -257,7 +257,7 @@ var imagesUploader = function (dirConfig) {
                 }
 
                 callback();
-        })
+        });
     }
 
     return {
