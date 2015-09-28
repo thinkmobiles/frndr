@@ -114,7 +114,7 @@ module.exports = function (db) {
             }
 
         } else {
-            return callback(badRequests.NotEnParams({reqParams: 'ñoordinates'}));
+            return callback(badRequests.NotEnParams({reqParams: 'coordinates'}));
         }
 
         imageModel = new Image();
@@ -500,6 +500,10 @@ module.exports = function (db) {
                             async.each(resultUsers,
 
                                 function(user, cb){
+
+                                    if (!user.images || !user.images.gallery ){
+                                        return badRequests.DatabaseError();
+                                    }
 
                                     gallery = user.images.gallery;
 
