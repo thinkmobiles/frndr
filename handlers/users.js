@@ -223,7 +223,6 @@ var UserHandler = function (app, db) {
          *
          * {
          *      "_id": "5603acdcbc68399017c2c3e3",
-         *      "images": "5603acdcbc68399017c2c3e2",
          *      "notification": {
          *          "newMessages": false,
          *          "newFriends": true
@@ -260,7 +259,8 @@ var UserHandler = function (app, db) {
                 __v: 0,
                 friends: 0,
                 blockList: 0,
-                loc: 0
+                loc: 0,
+                images: 0
             },
             function (err, userModel) {
                 if (err) {
@@ -526,7 +526,7 @@ var UserHandler = function (app, db) {
                         return next(err);
                     }
 
-                    res.status(200).send('Notifications updated successfully');
+                    res.status(200).send({success: 'Notifications updated successfully'});
                 });
         });
     };
