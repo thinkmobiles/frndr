@@ -233,7 +233,6 @@ var MessageHandler = function (app, db) {
         var options = req.body;
         var chatId;
         var friendId;
-        var showArray;
 
         if (!options || !options.friendId) {
             return next(badRequests.NotEnParams({reqParams: 'friendId'}));
@@ -251,18 +250,16 @@ var MessageHandler = function (app, db) {
                 async.each(models,
 
                     function (messageModel, cb) {
-                        showArray = messageModel.show;
+                        var showArray = messageModel.get('show');
 
-                        if (showArray.length === 1 && (showArray.indexOf(userId) !== -1)) {
+                        if ((showArray.length === 1) && (showArray.indexOf(userId) !== -1)) {
 
-                            messageModel.remove(function(err){
-
-                                if (err){
+                            messageModel.remove(function (err) {
+                                if (err) {
                                     return cb(err);
                                 }
 
                                 cb();
-
                             });
 
                         } else {
@@ -276,7 +273,6 @@ var MessageHandler = function (app, db) {
                             });
 
                         }
-
                     },
 
                     function (err) {
