@@ -33,7 +33,7 @@ var UserHandler = function (app, db) {
             return callback();
         }
 
-        imageHandler.removeImageFile(avatarName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+        imageHandler.removeImageFile(avatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
             if (err) {
                 return callback(err);
             }
@@ -51,7 +51,7 @@ var UserHandler = function (app, db) {
         async.each(galleryArrayNames,
 
             function (galleryName, cb) {
-                imageHandler.removeImageFile(galleryName, CONSTANTS.BUCKETS.GALLERY, cb);
+                imageHandler.removeImageFile(galleryName, CONSTANTS.BUCKETS.IMAGES, cb);
             },
 
             function (err) {
@@ -691,7 +691,7 @@ var UserHandler = function (app, db) {
                                         resultObj.avatar = '';
                                     } else {
                                         avatarName += '_small';
-                                        avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+                                        avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
                                         resultObj.avatar = avatarUrl;
                                     }
 
@@ -833,7 +833,7 @@ var UserHandler = function (app, db) {
 
                 if (images.avatar && (images.avatar !== '')) {
                     avatarName = images.avatar;
-                    avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+                    avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
                     friendModel.images.avatar = avatarName;
                 } else {
                     friendModel.images.avatar = '';
@@ -847,7 +847,7 @@ var UserHandler = function (app, db) {
                     galleryUrls = photoNamesArray.map(function (photoName) {
                         photoName += '_small';
 
-                        return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.GALLERY);
+                        return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.IMAGES);
                     });
 
                     friendModel.images.gallery = galleryUrls;
