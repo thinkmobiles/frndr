@@ -502,7 +502,7 @@ module.exports = function (db) {
                                 function(user, cb){
 
                                     if (!user.images || !user.images.gallery ){
-                                        return badRequests.DatabaseError();
+                                        return callback(badRequests.DatabaseError());
                                     }
 
                                     gallery = user.images.gallery;

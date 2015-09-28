@@ -523,7 +523,7 @@ var imageHandler = function (db) {
         var newAvatar;
 
         if (!body.newAvatar){
-            return badRequests.NotEnParams({reqParams: 'newAvatar'});
+            return next(badRequests.NotEnParams({reqParams: 'newAvatar'}));
         }
 
         newAvatar = body.newAvatar;
@@ -536,7 +536,7 @@ var imageHandler = function (db) {
 
             if (!imageModel){
 
-                return badRequests.DatabaseError();
+                return next(badRequests.DatabaseError());
 
             }
 
