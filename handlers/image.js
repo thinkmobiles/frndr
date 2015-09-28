@@ -87,60 +87,79 @@ var imageHandler = function (db) {
         var uId = req.session.uId;
         var imageString = req.body.image;
         var imageName;
-        var imageId;
 
         User
-            .findOne({_id: uId}, function (err, resUser) {
-
-                if (err) {
+            .findOne({_id: uId})
+            .populate({path: 'images', select: 'avatar'})
+            .exec(function(err, userModel){
+                if (err){
                     return next(err);
                 }
 
-                if (!resUser || !resUser.images) {
+                if(!userModel || !userModel.images){
                     return next(badRequests.DatabaseError());
                 }
 
-                imageId = resUser.images;
+                imageName = createImageName();
 
-                Image
-                    .findOne({_id: imageId}, function (err, imageModel) {
+                async.parallel([
 
-                        if (err) {
-                            return next(err);
-                        }
+                    function(cb){
+                        async
+                            .series([
 
-                        if (!imageModel.avatar) {
-                            imageName = createImageName();
-                        } else {
-                            imageName = imageModel.get('avatar');
-                        }
+                                function(callback){
+                                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, callback);
+                                },
 
-                        imageModel.update({$set: {avatar: imageName, user: ObjectId(uId)}}, function (err) {
+                                function(callback){
+                                    imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, CONSTANTS.IMAGE.AVATAR_PREV.WIDTH, callback);
+                                }
 
+                            ], function(err){
+                                if (err){
+                                    return cb(err);
+                                }
+
+                                cb();
+                            });
+                    },
+
+                    function(cb){
+                        var imageId = userModel.images._id;
+
+                        Image.findOneAndUpdate({_id: imageId}, {$set: {avatar: imageName, user: ObjectId(uId)}}, function (err) {
                             if (err) {
-                                return next(err);
+                                return cb(err);
                             }
 
-                            async
-                                .series([
-                                    function(cb){
-                                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, cb);
-                                    },
-                                    function(cb){
-                                        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, CONSTANTS.IMAGE.AVATAR_PREV.WIDTH, cb);
-                                    }
-                                ], function(err){
-
-                                    if (err){
-                                        return next(err);
-                                    }
-
-                                    res.status(200).send({success: 'Image upload successfully'});
-
-                                });
+                            cb();
                         });
+                    },
 
-                    });
+                    function(cb){
+                        var oldAvatarName;
+
+                        if (!userModel.images.avatar) {
+                            return cb();
+                        }
+                        oldAvatarName = userModel.images.avatar;
+
+                        self.removeImageFile(oldAvatarName, CONSTANTS.BUCKETS.IMAGES, function(err){
+                            if (err){
+                                return cb(err);
+                            }
+                            cb();
+                        });
+                    }
+
+                ], function(err){
+                    if (err){
+                        return next(err);
+                    }
+
+                    res.status(200).send({success: 'Image upload successfully'});
+                });
             });
     };
 
