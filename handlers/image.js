@@ -124,10 +124,10 @@ var imageHandler = function (db) {
                             async
                                 .series([
                                     function(cb){
-                                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.AVATAR, cb);
+                                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, cb);
                                     },
                                     function(cb){
-                                        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, CONSTANTS.IMAGE.AVATAR_PREV.WIDTH, cb);
+                                        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, CONSTANTS.IMAGE.AVATAR_PREV.WIDTH, cb);
                                     }
                                 ], function(err){
 
@@ -203,7 +203,7 @@ var imageHandler = function (db) {
                 return next(badRequests.NotFound({message: 'Avatar not found'}));
             }
 
-            url = self.computeUrl(avatarName, CONSTANTS.BUCKETS.AVATAR);
+            url = self.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
             res.status(200).send({'url': url});
 
         });
@@ -248,7 +248,7 @@ var imageHandler = function (db) {
                 return res.status(200).send('There is no user avatar');
             }
 
-            self.removeImageFile(avatarName, CONSTANTS.BUCKETS.AVATAR, function (err) {
+            self.removeImageFile(avatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
 
                 if (err) {
                     return next(err);
@@ -326,10 +326,10 @@ var imageHandler = function (db) {
                         async
                             .series([
                                 function(cb){
-                                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.GALLERY, cb);
+                                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, cb);
                                 },
                                 function(cb){
-                                    imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.GALLERY, CONSTANTS.IMAGE.GALLERY_PREV.WIDTH, cb);
+                                    imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, CONSTANTS.IMAGE.GALLERY_PREV.WIDTH, cb);
                                 }
                             ], function(err){
 
@@ -411,7 +411,7 @@ var imageHandler = function (db) {
                 return next(badRequests.NotFound({message: 'There is no photo in user gallery'}));
             }
 
-            self.removeImageFile(imageName, CONSTANTS.BUCKETS.GALLERY, function (err) {
+            self.removeImageFile(imageName, CONSTANTS.BUCKETS.IMAGES, function (err) {
                 if (err) {
                     return next(err);
                 }
@@ -482,7 +482,7 @@ var imageHandler = function (db) {
             for (var i = 0; i < len; i++) {
                 var smallPhotoName = photoNames[i] + '_small';
 
-                urls.push(self.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.GALLERY));
+                urls.push(self.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.IMAGES));
             }
 
             res.status(200).send({'urls': urls});
@@ -499,7 +499,7 @@ var imageHandler = function (db) {
         var imageName = '5602af2ff9e06a563bb6d207';
         //var filePath = 'public/uploads/development/avatar/5602b09a0986ce600b74f03f.png';
 
-        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.AVATAR, 300, function(err){
+        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, 300, function(err){
             if (err){
                 return next(err);
             }

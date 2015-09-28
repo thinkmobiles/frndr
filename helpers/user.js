@@ -510,10 +510,10 @@ module.exports = function (db) {
                                     galleryUrls = gallery.map(function(g){
                                         g += '_small';
 
-                                        return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.GALLERY);
+                                        return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.IMAGES);
                                     });
 
-                                    avatarUrl = user.images.avatar ? imageHandler.computeUrl(user.images.avatar, CONSTANTS.BUCKETS.AVATAR) : '';
+                                    avatarUrl = user.images.avatar ? imageHandler.computeUrl(user.images.avatar, CONSTANTS.BUCKETS.IMAGES) : '';
 
                                     distance = geo.getDistance(
                                         {latitude: resultUser.user.loc.coordinates[1], longitude: resultUser.user.loc.coordinates[0]},

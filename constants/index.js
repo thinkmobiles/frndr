@@ -16,8 +16,7 @@ module.exports = {
         ANY: 'any'
     },
     BUCKETS:{
-        AVATAR:'avatar',
-        GALLERY:'gallery'
+        IMAGES:'images'
     },
     SEARCH_REL_STATUSES: {
         SINGLE_FEMALE: 'Single Female',
