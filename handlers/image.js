@@ -188,10 +188,12 @@ var imageHandler = function (db) {
          * @example Response example:
          *
          *   {
+         *     "fileName": "55f91b11233e6ae311af1ca1",
          *     "url": "http://134.249.164.53:8859/uploads/development/images/55f91b11233e6ae311af1ca1.png"
          *   }
          *  OR
          *   {
+         *     "fileName": "55f91b11233e6ae311af1ca1_small",
          *     "url": "http://134.249.164.53:8859/uploads/development/images/55f91b11233e6ae311af1ca1_small.png"
          *   }
          *
@@ -202,13 +204,14 @@ var imageHandler = function (db) {
         var uId = req.session.uId;
         var avatarName;
         var small;
-        var url = '';
+        var avatarUrl = '';
 
         if (req.originalUrl === '/image/avatar/small') {
             small = true;
         }
 
         Image.findOne({user: uId}, function (err, resultModel) {
+            var fileName;
 
             if (err) {
                 return next(err);
@@ -217,7 +220,8 @@ var imageHandler = function (db) {
             if (resultModel) {
                 avatarName = resultModel.get('avatar');
 
-                if (small) {
+                fileName = avatarName;
+                if (avatarName && small) {
                     avatarName += '_small';
                 }
             }
@@ -226,8 +230,11 @@ var imageHandler = function (db) {
                 return next(badRequests.NotFound({message: 'Avatar not found'}));
             }
 
-            url = self.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
-            res.status(200).send({'url': url});
+            avatarUrl = self.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
+            res.status(200).send({
+                'fileName': fileName,
+                'url': avatarUrl
+            });
 
         });
     };
@@ -472,6 +479,7 @@ var imageHandler = function (db) {
          *
          *   {
          *       "urls": [
+         *                  "fileName":"55f8300013f2901e421b026a",
          *                  "http://134.249.164.53:8859/uploads/development/images/55f8300013f2901e421b026a_small.png"
          *               ]
          *   }
@@ -481,14 +489,15 @@ var imageHandler = function (db) {
          */
 
         var uId = req.params.id || req.session.uId;
-        var photoNames;
-        var urls = [];
 
         if (req.params.id && !CONSTANTS.REG_EXP.OBJECT_ID.test(uId)){
             return next(badRequests.InvalidValue({value: uId, param: 'id'}));
         }
 
         Image.findOne({user: uId}, function (err, imageModel) {
+            var galleryArray = [];
+            var photoUrl;
+            var photoNames;
             var len;
 
             if (err) {
@@ -509,10 +518,14 @@ var imageHandler = function (db) {
             for (var i = 0; i < len; i++) {
                 var smallPhotoName = photoNames[i] + '_small';
 
-                urls.push(self.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.IMAGES));
+                photoUrl = self.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.IMAGES);
+                galleryArray.push({
+                    'fileName':photoNames[i],
+                    'url':photoUrl
+                });
             }
 
-            res.status(200).send({'urls': urls});
+            res.status(200).send({'urls': galleryArray});
 
         });
     };
