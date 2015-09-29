@@ -114,8 +114,13 @@ var MessageHandler = function (app, db) {
             return next(badRequests.NotEnParams({reqParams: 'message and friendId'}));
         }
 
-        msg = options.message;
+        msg = options.message.toString();
         friendId = options.friendId;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
+            return next(badRequests.InvalidValue({value: friendId, param: 'friendId'}));
+        }
+
         chatId = self.computeChatId(userId, friendId);
 
         messageModel = new Message({
@@ -164,6 +169,10 @@ var MessageHandler = function (app, db) {
 
         var userId = req.session.uId;
         var messageId = req.params.id;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(messageId)){
+            return next(badRequests.InvalidValue({value: messageId, param: 'id'}));
+        }
 
         Message.findOne({_id: ObjectId(messageId)}, function (err, messageModel) {
             var showArray;
@@ -241,6 +250,11 @@ var MessageHandler = function (app, db) {
         }
 
         friendId = options.friendId;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
+            return next(badRequests.InvalidValue({value: friendId, param: 'friendId'}));
+        }
+
         chatId = self.computeChatId(userId, friendId);
 
         Message
@@ -329,6 +343,10 @@ var MessageHandler = function (app, db) {
 
         if (isNaN(pageCount) || (pageCount < 0)) {
             return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
+        }
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
+            return next(badRequests.InvalidValue({value: friendId, param: 'id'}));
         }
 
         chatId = self.computeChatId(userId, friendId);

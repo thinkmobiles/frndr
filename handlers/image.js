@@ -37,6 +37,10 @@ var imageHandler = function (db) {
         return (new ObjectId()).toString();
     }
 
+    this.computeUrl = function(imageName, bucket){
+        return imageUploader.getImageUrl(imageName, bucket) + '.png';
+    };
+
     this.removeImageFile = function (fileName, folderName, callback) {
 
         var fileNameSmall = fileName + '_small';
@@ -184,11 +188,11 @@ var imageHandler = function (db) {
          * @example Response example:
          *
          *   {
-         *     "url": "http://134.249.164.53:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1.png"
+         *     "url": "http://134.249.164.53:8859/uploads/development/images/55f91b11233e6ae311af1ca1.png"
          *   }
          *  OR
          *   {
-         *     "url": "http://134.249.164.53:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1_small.png"
+         *     "url": "http://134.249.164.53:8859/uploads/development/images/55f91b11233e6ae311af1ca1_small.png"
          *   }
          *
          * @method getAvatarUrl
@@ -399,10 +403,10 @@ var imageHandler = function (db) {
         var imageName;
 
         if (!options || !options.image) {
-            return next(badRequests.NotEnParams({message: 'image required'}));
+            return next(badRequests.NotEnParams({reqParams: 'image'}));
         }
 
-        imageName = options.image;
+        imageName = options.image.toString();
 
         if (imageName.substr(-5) === 'small'){
             imageName = imageName.substr(0, imageName.length - 6);
@@ -416,18 +420,18 @@ var imageHandler = function (db) {
             }
 
             if (!imageModel) {
-                return next(badRequests.NotFound({message: 'There is no gallery for current user'}));
+                return next(badRequests.NotFound({target: 'gallery for current user'}));
             }
 
             photoNames = imageModel.get('gallery');
             index = photoNames.indexOf(imageName);
 
             if (index === -1) {
-                return next(badRequests.NotFound({message: 'User havent photo with such file name'}));
+                return next(badRequests.NotFound({target: 'photo with such file name'}));
             }
 
             if (!photoNames.length) {
-                return next(badRequests.NotFound({message: 'There is no photo in user gallery'}));
+                return next(badRequests.NotFound({target: 'photo in user gallery'}));
             }
 
             self.removeImageFile(imageName, CONSTANTS.BUCKETS.IMAGES, function (err) {
@@ -468,7 +472,7 @@ var imageHandler = function (db) {
          *
          *   {
          *       "urls": [
-         *                  "http://134.249.164.53:8859/uploads/development/gallery/55f8300013f2901e421b026a_small.png"
+         *                  "http://134.249.164.53:8859/uploads/development/images/55f8300013f2901e421b026a_small.png"
          *               ]
          *   }
          *
@@ -479,6 +483,10 @@ var imageHandler = function (db) {
         var uId = req.params.id || req.session.uId;
         var photoNames;
         var urls = [];
+
+        if (req.params.id && !CONSTANTS.REG_EXP.OBJECT_ID.test(uId)){
+            return next(badRequests.InvalidValue({value: uId, param: 'id'}));
+        }
 
         Image.findOne({user: uId}, function (err, imageModel) {
             var len;
@@ -509,10 +517,6 @@ var imageHandler = function (db) {
         });
     };
 
-    this.computeUrl = function(imageName, bucket){
-        return imageUploader.getImageUrl(imageName, bucket) + '.png';
-    };
-
     this.changeAvatarFromGallery = function(req, res, next){
 
         var body = req.body;
@@ -528,6 +532,10 @@ var imageHandler = function (db) {
 
         newAvatar = body.newAvatar;
 
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(newAvatar)){
+            return next(badRequests.InvalidValue({value: newAvatar, param: 'newAvatar'}));
+        }
+
         Image.findOne({user: uId}, function(err, imageModel){
 
             if (err){
@@ -535,9 +543,7 @@ var imageHandler = function (db) {
             }
 
             if (!imageModel){
-
                 return badRequests.DatabaseError();
-
             }
 
             if (imageModel && imageModel.avatar){
@@ -552,23 +558,116 @@ var imageHandler = function (db) {
 
             gallery.push(currentAvatar);
 
-            Image.update({user: uId}, {$set: {avatar: newAvatar, gallery: gallery}}, function(err){
+            imageModel.update({$set: {avatar: newAvatar, gallery: gallery}}, function(err){
                 if(err){
                     return next(err);
                 }
 
                res.status(200).send({success: 'Avatar changed successfully'});
             });
-
-
         });
+    };
 
+    this.getAvatarAndGallery = function(req, res, next){
+
+        /**
+         * __Type__ __`GET`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://134.249.164.53:8859`__
+         *
+         * __URL: `/image/managePhotoes`__
+         *
+         * This __method__ allows get _User's_ avatar and photos from gallery
+         *
+         * @example Request example:
+         *         http://134.249.164.53:8859/image/managePhotoes
+         *
+         * @example Response example:
+         *
+         *   {
+         *      "avatar": {
+         *          "fileName": "56094a45ef04ea9c1eca9005",
+         *          "url": "http://134.249.164.53:8859/uploads/development/images/56094a45ef04ea9c1eca9005.png"
+         *      },
+         *      "gallery": [
+         *          {
+         *              "fileName": "5609348e9e7dae241fd45ae7",
+         *              "url": "http://134.249.164.53:8859/uploads/development/images/5609348e9e7dae241fd45ae7_small.png"
+         *          },
+         *          {
+         *              "fileName": "560a3b53c55d98e418a22af1",
+         *              "url": "http://134.249.164.53:8859/uploads/development/images/560a3b53c55d98e418a22af1_small.png"
+         *          },
+         *          {
+         *              "fileName": "560a3b98c55d98e418a22af2",
+         *              "url": "http://134.249.164.53:8859/uploads/development/images/560a3b98c55d98e418a22af2_small.png"
+         *          }
+         *      ]
+         *   }
+         *
+         * @method getAvatarAndGallery
+         * @instance
+         */
+
+        var userId = req.session.uId;
+
+        Image
+            .findOne({user: ObjectId(userId)}, function(err, imageModel){
+                var avatarName = '';
+                var photoNames;
+                var avatarUrl = '';
+                var photoUrl;
+                var len;
+                var galleryArray = [];
+
+                if (err){
+                    return next(err);
+                }
+
+                if (!imageModel){
+                    return next(badRequests.NotFound({target: 'photoes'}));
+                }
+
+                if (imageModel.avatar){
+                    avatarName = imageModel.get('avatar');
+                    avatarUrl = self.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
+                }
+
+                if (imageModel.gallery && imageModel.gallery.length){
+                    len = imageModel.gallery.length;
+                    photoNames = imageModel.get('gallery');
+
+                    for (var i = 0; i < len; i++) {
+                        var smallPhotoName = photoNames[i] + '_small';
+
+                        photoUrl = self.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.IMAGES);
+                        galleryArray.push(
+                            {
+                                fileName: photoNames[i],
+                                url: photoUrl
+                            });
+                    }
+                }
+
+                res.status(200).send(
+                    {
+                        avatar:
+                        {
+                            fileName: avatarName,
+                            url: avatarUrl
+                        },
+                        gallery: galleryArray
+                    });
+
+            });
 
     };
 
     this.testResizeImage = function(req,res,next){
         var imageName = '5602af2ff9e06a563bb6d207';
-        //var filePath = 'public/uploads/development/avatar/5602b09a0986ce600b74f03f.png';
+        //var filePath = 'public/uploads/development/images/5602b09a0986ce600b74f03f.png';
 
         imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, 300, function(err){
             if (err){
