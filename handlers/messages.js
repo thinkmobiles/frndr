@@ -14,6 +14,7 @@ var mongoose = require('mongoose');
 var MessageHandler = function (app, db) {
     var io = app.get('io');
     var Message = db.model('Message');
+    var ObjectId = mongoose.Types.ObjectId;
     var self = this;
 
     this.computeChatId = function(userId, friendId) {
