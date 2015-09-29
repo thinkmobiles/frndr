@@ -193,7 +193,7 @@ var imageHandler = function (db) {
          *   }
          *  OR
          *   {
-         *     "fileName": "55f91b11233e6ae311af1ca1_small",
+         *     "fileName": "55f91b11233e6ae311af1ca1",
          *     "url": "http://134.249.164.53:8859/uploads/development/images/55f91b11233e6ae311af1ca1_small.png"
          *   }
          *
