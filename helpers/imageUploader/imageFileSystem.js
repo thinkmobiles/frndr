@@ -253,7 +253,7 @@ var imagesUploader = function (dirConfig) {
             .resize(width, height)
             .write(writePath, function(err){
                 if(err){
-                    return callback(err);
+                    return callback(new Error('Occurs some problems with image resizing'));
                 }
 
                 callback();
