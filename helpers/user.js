@@ -39,7 +39,7 @@ module.exports = function (db) {
                 userModel.profile.name = profile.name;
             }
 
-            if (profile.age) {
+            if (profile.age && !isNaN(profile.age)) {
                 userModel.profile.age = profile.age;
             }
 
@@ -51,7 +51,7 @@ module.exports = function (db) {
                 userModel.profile.jobTitle = profile.jobTitle;
             }
 
-            if (profile.smoker || (profile.smoker === false)) {
+            if ((profile.smoker === true) || (profile.smoker === false)) {
                 userModel.profile.smoker = profile.smoker;
             }
 
@@ -67,7 +67,7 @@ module.exports = function (db) {
                 userModel.profile.bio = profile.bio;
             }
 
-            if (profile.visible || (profile.visible === false)) {
+            if ((profile.visible === true) || (profile.visible === false)) {
                 userModel.profile.visible = profile.visible;
             }
 
@@ -83,7 +83,7 @@ module.exports = function (db) {
         var longitude;
         var latitude;
 
-        if (!coordinates.length || !coordinates[1]) {
+        if (!Array.isArray(coordinates) || !(coordinates.length === 2) || !coordinates[1] || isNaN(coordinates[0]) || isNaN(coordinates[1])) {
             return badRequests.InvalidValue({value: coordinates, param: 'coordinates'});
         }
 

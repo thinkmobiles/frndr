@@ -89,8 +89,19 @@ var imageHandler = function (db) {
          */
 
         var uId = req.session.uId;
-        var imageString = req.body.image;
+        var body = req.body;
+        var imageString;
         var imageName;
+        var validImageString;
+
+        if (body && body.image){
+            imageString = body.image.toString();
+            validImageString = imageString.substring(23);
+
+            if (!CONSTANTS.REG_EXP.BASE_64.test(validImageString) || !validImageString.length){
+                return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
+            }
+        }
 
         User
             .findOne({_id: uId})

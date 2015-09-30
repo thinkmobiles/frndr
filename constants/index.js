@@ -41,6 +41,7 @@ module.exports = {
         }
     },
     REG_EXP:{
-        OBJECT_ID: new RegExp('(^[0-9a-fA-F]{24}$)')
+        OBJECT_ID: new RegExp('(^[0-9a-fA-F]{24}$)'),
+        BASE_64: new RegExp('^((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)$')
     }
 };

@@ -8,6 +8,7 @@
 
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
+var CONSTANTS = require('../constants/index');
 
 
 var SearchSettingsHandler = function (db) {
@@ -17,7 +18,7 @@ var SearchSettingsHandler = function (db) {
     function prepareSaveData(options) {
         var saveData = {};
 
-        if (options.distance) {
+        if (options.distance && !isNaN(options.distance)) {
             saveData.distance = options.distance * 1609.344;
         }
 
@@ -25,7 +26,7 @@ var SearchSettingsHandler = function (db) {
             saveData.relationship = options.relationship;
         }
 
-        if (options.smoker || (options.smoker === false)) {
+        if ((options.smoker === true) || (options.smoker === false)) {
             saveData.smoker = options.smoker;
         }
 
@@ -33,7 +34,9 @@ var SearchSettingsHandler = function (db) {
             saveData.sexual = options.sexual;
         }
 
-        if (options.ageRange && options.ageRange.min && options.ageRange.max) {
+        if (options.ageRange && options.ageRange.min && !isNaN(options.ageRange.min) &&
+            options.ageRange.max && !isNaN(options.ageRange.max)) {
+
             saveData.ageRange = options.ageRange;
         }
 
