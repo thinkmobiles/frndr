@@ -551,6 +551,30 @@ var UserHandler = function (app, db) {
          * @example Request example:
          *         http://134.249.164.53:8859/users/find/2
          *
+         * @example Response example:
+         *
+         * [
+         *   {
+         *      "userId": "560919c349d6a608179610c5",
+         *      "avatar": "http://134.249.164.53:8859/uploads/development/images/560919cb49d6a608179610c7.png",
+         *      "name": "Petrovich",
+         *      "age": 25,
+         *      "distance": 0,
+         *      "sexual": "straight",
+         *      "jobTitle": "Doctor",
+         *      "smoker": false,
+         *      "likes": [
+         *          "tenis",
+         *          "box",
+         *          "cars"
+         *      ],
+         *      "bio": "Some biography",
+         *      "gallery": [
+         *          "http://134.249.164.53:8859/uploads/development/images/560919cd49d6a608179610c8_small.png"
+         *      ]
+         *   }
+         * ]
+         *
          * @method findNearestUsers
          * @instance
          */
