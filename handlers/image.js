@@ -509,8 +509,10 @@ var imageHandler = function (db) {
          *
          *   {
          *       "urls": [
-         *                  "fileName":"55f8300013f2901e421b026a",
-         *                  "http://134.249.164.53:8859/uploads/development/images/55f8300013f2901e421b026a_small.png"
+         *                  {
+         *                      "fileName":"55f8300013f2901e421b026a",
+         *                      "url":"http://134.249.164.53:8859/uploads/development/images/55f8300013f2901e421b026a_small.png"
+         *                  }
          *               ]
          *   }
          *

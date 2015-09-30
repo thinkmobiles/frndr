@@ -310,9 +310,9 @@ var MessageHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `/messages/:id/:page`__
+         * __URL: `/messages/:id/:page?`__
          *
-         * This __method__ allows to get chat __`Messages`__
+         * This __method__ allows to get chat __Messages__
          *
          * @example Request example:
          *         http://134.249.164.53:8859/55fbcb7cc06791dc1dad4645/0
@@ -338,11 +338,11 @@ var MessageHandler = function (app, db) {
          */
 
         var userId = req.session.uId;
-        var pageCount = (req.params.pageCount - 1) * CONSTANTS.LIMIT.MESSAGES;
+        var pageCount = req.params.pageCount || 1;
         var friendId = req.params.id;
         var chatId;
 
-        if (isNaN(pageCount) || (pageCount < 0)) {
+        if (isNaN(pageCount) || (pageCount < 1)) {
             return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
         }
 
@@ -350,6 +350,7 @@ var MessageHandler = function (app, db) {
             return next(badRequests.InvalidValue({value: friendId, param: 'id'}));
         }
 
+        pageCount = (pageCount -1) * CONSTANTS.LIMIT.MESSAGES;
         chatId = self.computeChatId(userId, friendId);
 
         Message
@@ -381,7 +382,7 @@ var MessageHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `/messages/all/`__
+         * __URL: `/messages/all`__
          *
          * This __method__ allows delete all _Chats_ history
          *

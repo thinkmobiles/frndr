@@ -235,9 +235,9 @@ var UserHandler = function (app, db) {
          *          "smoker": true,
          *          "visible": true,
          *          "things": [
-         *                          "tenis",
-         *                          "box",
-         *                          "cars"
+         *                      "tenis",
+         *                      "box",
+         *                      "cars"
          *                    ],
          *          "sexual": "straight",
          *          "relStatus": "single",
@@ -544,7 +544,7 @@ var UserHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `users/find/:page`__
+         * __URL: `users/find/:page?`__
          *
          * This __method__ allows find nearest `FRNDR` user's to current _User_
          *
@@ -556,7 +556,7 @@ var UserHandler = function (app, db) {
          */
 
         var uId = req.session.uId;
-        var page = req.params.page;
+        var page = req.params.page || 1;
 
         if (page < 1 || isNaN(page)) {
             return next(badRequests.InvalidValue({value: page, param: 'page'}));
@@ -583,7 +583,7 @@ var UserHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `/users/friendList/:page`__
+         * __URL: `/users/friendList/:page?`__
          *
          * This __method__ allows to get _User's_ friends list
          *
@@ -612,7 +612,7 @@ var UserHandler = function (app, db) {
          */
 
         var userId = req.session.uId;
-        var pageCount = req.params.page;
+        var pageCount = req.params.page || 1;
         var resultArray = [];
 
         if (isNaN(pageCount) || pageCount < 1) {
@@ -779,7 +779,7 @@ var UserHandler = function (app, db) {
          *
          * __URL: `/users/friendProfile/:id`__
          *
-         * This __method__ allows get __friends profile__
+         * This __method__ allows get _friends profile_
          *
          * @example Request example:
          *         http://134.249.164.53:8859/users/friendProfile/5603acdcbc68399017c2c3e3

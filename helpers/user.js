@@ -482,8 +482,6 @@ module.exports = function (db) {
                         'notification': 0
                     };
 
-                    page = page || 1;
-
                     User
                         .find(
                         findObj,
