@@ -392,7 +392,7 @@ module.exports = function (db, defaults) {
                     var settings = res.body;
 
                     expect(settings).to.instanceOf(Object);
-                    expect(settings.distance).to.equals(2000 * 1609.344);
+                    expect(settings.distance).to.equals(2000 * 1609344);
                     expect(settings.sexual).to.equals('any');
                     expect(settings.ageRange).to.instanceOf(Object);
                     expect(settings.ageRange.min).to.equals(25);
