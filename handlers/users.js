@@ -830,6 +830,7 @@ var UserHandler = function (app, db) {
          * @instance
          */
 
+        var userId = req.session.uId;
         var friendId = req.params.id;
 
         if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
@@ -837,7 +838,7 @@ var UserHandler = function (app, db) {
         }
 
         User
-            .findOne({_id: ObjectId(friendId)}, {__v: 0, loc: 0, friends: 0, blockList: 0, notification: 0, fbId: 0})
+            .findOne({_id: ObjectId(friendId)}, {__v: 0, loc: 0, blockList: 0, notification: 0, fbId: 0})
             .populate({path: 'images', select: '-_id avatar gallery'})
             .exec(function (err, friendModel) {
                 var friendModelJSON;
@@ -847,6 +848,7 @@ var UserHandler = function (app, db) {
                 var photoNames;
                 var galleryArray = [];
                 var images;
+                var friends;
 
                 if (err) {
                     return next(err);
@@ -857,6 +859,13 @@ var UserHandler = function (app, db) {
                 }
 
                 friendModelJSON = friendModel.toJSON();
+                friends = friendModelJSON.friends;
+
+                if (friends.indexOf(userId) === -1){
+                    return next(badRequests.AccessError({message: 'This user is not your friend'}));
+                }
+
+                delete friendModelJSON.friends;
 
                 images = friendModelJSON.images;
 
