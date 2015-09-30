@@ -94,13 +94,15 @@ var imageHandler = function (db) {
         var imageName;
         var validImageString;
 
-        if (body && body.image){
-            imageString = body.image.toString();
-            validImageString = imageString.substring(23);
+        if (!body || !body.image){
+            return next(badRequests.NotEnParams({reqParams: 'image'}));
+        }
 
-            if (!CONSTANTS.REG_EXP.BASE_64.test(validImageString) || !validImageString.length){
-                return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
-            }
+        imageString = body.image.toString();
+        validImageString = imageString.substring(23);
+
+        if (!CONSTANTS.REG_EXP.BASE_64.test(validImageString) || !validImageString.length){
+            return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
         }
 
         User
@@ -337,9 +339,22 @@ var imageHandler = function (db) {
          */
 
         var uId = req.session.uId;
-        var imageString = req.body.image;
+        var body = req.body;
         var imageName = createImageName();
         var imageId;
+        var imageString;
+        var validImageString;
+
+        if (!body || !body.image){
+            return next(badRequests.NotEnParams({reqParams: 'image'}));
+        }
+
+        imageString = body.image.toString();
+        validImageString = imageString.substring(23);
+
+        if (!CONSTANTS.REG_EXP.BASE_64.test(validImageString) || !validImageString.length){
+            return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
+        }
 
         User
             .findOne({_id: uId}, function (err, resUser) {
@@ -550,7 +565,7 @@ var imageHandler = function (db) {
         var index;
         var newAvatar;
 
-        if (!body.newAvatar){
+        if (!body || !body.newAvatar){
             return badRequests.NotEnParams({reqParams: 'newAvatar'});
         }
 
