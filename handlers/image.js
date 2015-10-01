@@ -92,18 +92,14 @@ var imageHandler = function (db) {
         var body = req.body;
         var imageString;
         var imageName;
-        var validImageFormat;
-        var validImageString;
 
         if (!body || !body.image){
             return next(badRequests.NotEnParams({reqParams: 'image'}));
         }
 
         imageString = body.image.toString();
-        validImageFormat = imageString.substring(0,23);
-        validImageString = imageString.substring(23);
 
-        if (!CONSTANTS.REG_EXP.BASE_64.test(validImageString) || !validImageString.length || (validImageFormat !== 'data:image/png;base64, ')){
+        if (!CONSTANTS.REG_EXP.BASE_64.test(imageString)){
             return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
         }
 
@@ -345,18 +341,14 @@ var imageHandler = function (db) {
         var imageName = createImageName();
         var imageId;
         var imageString;
-        var validImageString;
-        var validImageFormat;
 
         if (!body || !body.image){
             return next(badRequests.NotEnParams({reqParams: 'image'}));
         }
 
         imageString = body.image.toString();
-        validImageFormat = imageString.substring(0,23);
-        validImageString = imageString.substring(23);
 
-        if (!CONSTANTS.REG_EXP.BASE_64.test(validImageString) || !validImageString.length || (validImageFormat !== 'data:image/png;base64, ')){
+        if (!CONSTANTS.REG_EXP.BASE_64.test(imageString)){
             return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
         }
 

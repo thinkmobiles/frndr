@@ -8,7 +8,7 @@ var LikeHandler = require('../handlers/likes');
 module.exports = function(app, db){
     var userHandler = new UserHandler(app, db);
     var sessionHandler = new SessionHandler();
-    var like = new LikeHandler(db);
+    var like = new LikeHandler(app, db);
     var searchSettingsHandler = new SearchSettingsHandler(db);
 
     //router.get('/test', userHandler.testUser);
