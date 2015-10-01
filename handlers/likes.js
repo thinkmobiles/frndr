@@ -8,13 +8,15 @@ var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
+//var MessageHandler = require('./messages');
 
 
-var LikesHandler = function (db) {
+var LikesHandler = function (app, db) {
 
     var Like = db.model('Like');
     var User = db.model('User');
     var ObjectId = mongoose.Types.ObjectId;
+    //var messageHandler = new MessageHandler(app, db);
 
     this.likeUserById = function (req, res, next) {
 
@@ -132,9 +134,18 @@ var LikesHandler = function (db) {
 
                             User
                                 .findOneAndUpdate({_id: ObjectId(likedUserId)}, {$addToSet: {friends: userId}}, function (err) {
+                                    /*var pushOptions = {
+                                         expirationDate: Date.now()/1000
+                                         //payload:{}, //доп інфа для аплікейшена наприклад
+                                         //badge:'', //картинка
+                                         //sound:'' //звук
+                                     };*/
+
                                     if (err) {
                                         return cb(err);
                                     }
+
+                                    //messageHandler.sendPushNotification(likedUserId, 'You have new friend', pushOptions, cb);
 
                                     cb();
                                 })

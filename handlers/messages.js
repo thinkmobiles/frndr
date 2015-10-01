@@ -9,11 +9,13 @@ var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
+//var apn = require('../helpers/apns')(path.join('config/PseudoAPNSDev_2.p12'));
 
 
 var MessageHandler = function (app, db) {
     var io = app.get('io');
     var Message = db.model('Message');
+    var PushTokens = db.model('PushTokens');
     var ObjectId = mongoose.Types.ObjectId;
     var self = this;
 
@@ -23,6 +25,32 @@ var MessageHandler = function (app, db) {
         } else {
             return friendId + ':' + userId;
         }
+    };
+
+    this.sendPushNotification = function(friendId, message, pushOptions, callback){
+
+        PushTokens.findOne({user:ObjectId(friendId)}, function(err, pushModel){
+            var pushToken;
+            var success = false;
+
+            if (err){
+                return callback(err);
+            }
+
+            if (!pushModel){
+                return callback(badRequests.DatabaseError());
+            }
+
+            pushToken = pushModel.get('token');
+
+            if (!pushToken || !pushToken.length){
+                console.warn('Push token for user, with id: ' + friendId + ' is empty, please check it.');
+            } else {
+                success = apn.sendPush(pushToken, message, pushOptions);
+            }
+
+            callback(null, success);
+        });
     };
 
     this.deleteMessages = function(userId, callback){
@@ -133,14 +161,34 @@ var MessageHandler = function (app, db) {
 
         messageModel
             .save(function (err) {
+                /*var pushOptions = {
+                    expirationDate: Date.now()/1000
+                    //payload:{}, //доп інфа для аплікейшена наприклад
+                    //badge:'', //картинка
+                    //sound:'' //звук
+                };*/
+
                 if (err) {
                     return next(err);
                 }
 
-                //TODO send push notification to friendId
-
                 io.to(userId).emit('chat message', msg);
                 io.to(friendId).emit('chat message', msg);
+
+                //TODO send push notification to friendId
+
+                /*self.sendPushNotification(friendId, msg, pushOptions, function(err, success){
+                    if (err){
+                        //return next(err);
+                        console.warn(err);
+                    }
+
+                    if (!success){
+                        console.warn('Push notification not sended');
+                    }
+
+                    res.status(200).send({success: 'Message send successfully'});
+                });*/
 
                 res.status(200).send({success: 'Message send successfully'});
             });
