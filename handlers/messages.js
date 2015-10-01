@@ -14,6 +14,7 @@ var mongoose = require('mongoose');
 var MessageHandler = function (app, db) {
     var io = app.get('io');
     var Message = db.model('Message');
+    var ObjectId = mongoose.Types.ObjectId;
     var self = this;
 
     this.computeChatId = function(userId, friendId) {
@@ -114,8 +115,13 @@ var MessageHandler = function (app, db) {
             return next(badRequests.NotEnParams({reqParams: 'message and friendId'}));
         }
 
-        msg = options.message;
+        msg = options.message.toString();
         friendId = options.friendId;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
+            return next(badRequests.InvalidValue({value: friendId, param: 'friendId'}));
+        }
+
         chatId = self.computeChatId(userId, friendId);
 
         messageModel = new Message({
@@ -164,6 +170,10 @@ var MessageHandler = function (app, db) {
 
         var userId = req.session.uId;
         var messageId = req.params.id;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(messageId)){
+            return next(badRequests.InvalidValue({value: messageId, param: 'id'}));
+        }
 
         Message.findOne({_id: ObjectId(messageId)}, function (err, messageModel) {
             var showArray;
@@ -241,6 +251,11 @@ var MessageHandler = function (app, db) {
         }
 
         friendId = options.friendId;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
+            return next(badRequests.InvalidValue({value: friendId, param: 'friendId'}));
+        }
+
         chatId = self.computeChatId(userId, friendId);
 
         Message
@@ -295,9 +310,9 @@ var MessageHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `/messages/:id/:page`__
+         * __URL: `/messages/:id/:page?`__
          *
-         * This __method__ allows to get chat __`Messages`__
+         * This __method__ allows to get chat __Messages__
          *
          * @example Request example:
          *         http://134.249.164.53:8859/55fbcb7cc06791dc1dad4645/0
@@ -323,14 +338,19 @@ var MessageHandler = function (app, db) {
          */
 
         var userId = req.session.uId;
-        var pageCount = (req.params.pageCount - 1) * CONSTANTS.LIMIT.MESSAGES;
+        var pageCount = req.params.pageCount || 1;
         var friendId = req.params.id;
         var chatId;
 
-        if (isNaN(pageCount) || (pageCount < 0)) {
+        if (isNaN(pageCount) || (pageCount < 1)) {
             return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
         }
 
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
+            return next(badRequests.InvalidValue({value: friendId, param: 'id'}));
+        }
+
+        pageCount = (pageCount -1) * CONSTANTS.LIMIT.MESSAGES;
         chatId = self.computeChatId(userId, friendId);
 
         Message
@@ -362,7 +382,7 @@ var MessageHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `/messages/all/`__
+         * __URL: `/messages/all`__
          *
          * This __method__ allows delete all _Chats_ history
          *

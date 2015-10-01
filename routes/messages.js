@@ -9,7 +9,7 @@ module.exports = function(app, db){
 
     router.delete('/all', sessionHandler.authenticatedUser, messageHandler.clearAllMessages);
     router.delete('/:id', sessionHandler.authenticatedUser, messageHandler.clearMessage);
-    router.get('/:id/:pageCount', sessionHandler.authenticatedUser, messageHandler.getChatHistory);
+    router.get('/:id/:pageCount?', sessionHandler.authenticatedUser, messageHandler.getChatHistory);
     router.post('/', sessionHandler.authenticatedUser, messageHandler.sendMessage);
     router.delete('/', sessionHandler.authenticatedUser, messageHandler.clearHistory);
 

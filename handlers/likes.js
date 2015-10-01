@@ -4,6 +4,7 @@
  *
  */
 
+var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
@@ -37,6 +38,10 @@ var LikesHandler = function (db) {
 
         var userId = req.session.uId;
         var likedUserId = req.params.id;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(likedUserId)){
+            return next(badRequests.InvalidValue({value: likedUserId, param: 'id'}));
+        }
 
         if (!likedUserId) {
             return next(badRequests.NotEnParams({reqParams: 'likeId'}));
@@ -168,6 +173,10 @@ var LikesHandler = function (db) {
 
         var uId = req.session.uId;
         var dislikeId = req.params.id;
+
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(dislikeId)){
+            return next(badRequests.InvalidValue({value: dislikeId, param: 'id'}));
+        }
 
         Like
             .findOne({user: ObjectId(uId)})

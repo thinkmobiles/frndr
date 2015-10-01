@@ -235,9 +235,9 @@ var UserHandler = function (app, db) {
          *          "smoker": true,
          *          "visible": true,
          *          "things": [
-         *                          "tenis",
-         *                          "box",
-         *                          "cars"
+         *                      "tenis",
+         *                      "box",
+         *                      "cars"
          *                    ],
          *          "sexual": "straight",
          *          "relStatus": "single",
@@ -251,6 +251,10 @@ var UserHandler = function (app, db) {
 
 
         var userId = req.params.id || req.session.uId;
+
+        if (req.params.id && !CONSTANTS.REG_EXP.OBJECT_ID.test(userId)){
+            return next(badRequests.InvalidValue({value: userId, param: 'id'}));
+        }
 
         User
             .findOne({_id: ObjectId(userId)},
@@ -540,19 +544,43 @@ var UserHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `users/find/:page`__
+         * __URL: `users/find/:page?`__
          *
          * This __method__ allows find nearest `FRNDR` user's to current _User_
          *
          * @example Request example:
          *         http://134.249.164.53:8859/users/find/2
          *
+         * @example Response example:
+         *
+         * [
+         *   {
+         *      "userId": "560919c349d6a608179610c5",
+         *      "avatar": "http://134.249.164.53:8859/uploads/development/images/560919cb49d6a608179610c7.png",
+         *      "name": "Petrovich",
+         *      "age": 25,
+         *      "distance": 0,
+         *      "sexual": "straight",
+         *      "jobTitle": "Doctor",
+         *      "smoker": false,
+         *      "likes": [
+         *          "tenis",
+         *          "box",
+         *          "cars"
+         *      ],
+         *      "bio": "Some biography",
+         *      "gallery": [
+         *          "http://134.249.164.53:8859/uploads/development/images/560919cd49d6a608179610c8_small.png"
+         *      ]
+         *   }
+         * ]
+         *
          * @method findNearestUsers
          * @instance
          */
 
         var uId = req.session.uId;
-        var page = req.params.page;
+        var page = req.params.page || 1;
 
         if (page < 1 || isNaN(page)) {
             return next(badRequests.InvalidValue({value: page, param: 'page'}));
@@ -579,7 +607,7 @@ var UserHandler = function (app, db) {
          *
          * __HOST: `http://134.249.164.53:8859`__
          *
-         * __URL: `/users/friendList/:page`__
+         * __URL: `/users/friendList/:page?`__
          *
          * This __method__ allows to get _User's_ friends list
          *
@@ -593,7 +621,7 @@ var UserHandler = function (app, db) {
          *      "friendId": "55ffc48dcc6f0ec80b4c0522",
          *      "newFriend": "false",
          *      "message": "123456789",
-         *      "avatar": "http://134.249.164.53:8859/uploads/development/avatar/55f91b11233e6ae311af1ca1_small.png"
+         *      "avatar": "http://134.249.164.53:8859/uploads/development/images/55f91b11233e6ae311af1ca1_small.png"
          *   },
          *   {
          *      "friendId": "55ffc48dcc6f0ec80b4c0521",
@@ -608,7 +636,7 @@ var UserHandler = function (app, db) {
          */
 
         var userId = req.session.uId;
-        var pageCount = req.params.page;
+        var pageCount = req.params.page || 1;
         var resultArray = [];
 
         if (isNaN(pageCount) || pageCount < 1) {
@@ -746,6 +774,10 @@ var UserHandler = function (app, db) {
         var userId = req.session.uId;
         var blockedId = req.params.id;
 
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(blockedId)){
+            return next(badRequests.InvalidValue({value: blockedId, param: 'id'}));
+        }
+
         async.parallel([
                 async.apply(userHelper.addToBlockListById, userId, blockedId),
                 async.apply(userHelper.addToBlockListById, blockedId, userId)
@@ -771,7 +803,7 @@ var UserHandler = function (app, db) {
          *
          * __URL: `/users/friendProfile/:id`__
          *
-         * This __method__ allows get __friends profile__
+         * This __method__ allows get _friends profile_
          *
          * @example Request example:
          *         http://134.249.164.53:8859/users/friendProfile/5603acdcbc68399017c2c3e3
@@ -781,12 +813,23 @@ var UserHandler = function (app, db) {
          *  {
          *      "_id": "5603acdcbc68399017c2c3e3",
          *      "images": {
-         *          "avatar": "http://134.249.164.53:8859/uploads/development/avatar/56040a679a0df8a006ba6d01.png",
+         *          "avatar": {
+         *              "fileName": "56091c0c49d6a608179610df",
+         *              "url": "http://134.249.164.53:8859/uploads/development/images/56091c0c49d6a608179610df.png"
+         *          },
          *          "gallery": [
-         *              "http://134.249.164.53:8859/uploads/development/gallery/5603e3a4f66aa99412af68df_small.png",
-         *              "http://134.249.164.53:8859/uploads/development/gallery/5603e3a7f66aa99412af68e0_small.png",
-         *              "http://134.249.164.53:8859/uploads/development/gallery/5603ec429f18dcd41a2f3623_small.png",
-         *              "http://134.249.164.53:8859/uploads/development/gallery/5603f27fa98e54641b7f7e6f_small.png"
+         *              {
+         *                  "fileName": "56091c1049d6a608179610e0",
+         *                  "url": "http://134.249.164.53:8859/uploads/development/images/56091c1049d6a608179610e0_small.png"
+         *              },
+         *              {
+         *                  "fileName": "56091c1149d6a608179610e1",
+         *                  "url": "http://134.249.164.53:8859/uploads/development/images/56091c1149d6a608179610e1_small.png"
+         *              },
+         *              {
+         *                  "fileName": "56091c1149d6a608179610e2",
+         *                  "url": "http://134.249.164.53:8859/uploads/development/images/56091c1149d6a608179610e2_small.png"
+         *              }
          *          ]
          *      },
          *      "profile": {
@@ -811,15 +854,25 @@ var UserHandler = function (app, db) {
          * @instance
          */
 
+        var userId = req.session.uId;
         var friendId = req.params.id;
 
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
+            return next(badRequests.InvalidValue({value: friendId, param: 'id'}));
+        }
+
         User
-            .findOne({_id: ObjectId(friendId)}, {__v: 0, loc: 0, friends: 0, blockList: 0, notification: 0, fbId: 0})
+            .findOne({_id: ObjectId(friendId)}, {__v: 0, loc: 0, blockList: 0, notification: 0, fbId: 0})
             .populate({path: 'images', select: '-_id avatar gallery'})
             .exec(function (err, friendModel) {
-                var avatarName;
-                var photoNamesArray;
+                var friendModelJSON;
+                var avatarName = '';
+                var avatarUrl = '';
+                var photoUrl;
+                var photoNames;
+                var galleryArray = [];
                 var images;
+                var friends;
 
                 if (err) {
                     return next(err);
@@ -829,31 +882,47 @@ var UserHandler = function (app, db) {
                     return next(badRequests.NotFound({target: 'User'}));
                 }
 
-                images = friendModel.get('images');
+                friendModelJSON = friendModel.toJSON();
+                friends = friendModelJSON.friends;
 
-                if (images.avatar && (images.avatar !== '')) {
-                    avatarName = images.avatar;
-                    avatarName = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
-                    friendModel.images.avatar = avatarName;
-                } else {
-                    friendModel.images.avatar = '';
+                if (friends.indexOf(userId) === -1){
+                    return next(badRequests.AccessError({message: 'This user is not your friend'}));
                 }
+
+                delete friendModelJSON.friends;
+
+                images = friendModelJSON.images;
+
+                if (images.avatar) {
+                    avatarName = images.avatar;
+                    avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
+                }
+
+                images.avatar = {
+                    fileName: avatarName,
+                    url: avatarUrl
+                };
 
                 if (images.gallery && images.gallery.length) {
-                    var galleryUrls;
+                    photoNames = images.gallery;
 
-                    photoNamesArray = images.gallery;
+                    galleryArray = photoNames.map(function (photoName) {
+                        var smallPhotoName = photoName + '_small';
 
-                    galleryUrls = photoNamesArray.map(function (photoName) {
-                        photoName += '_small';
+                        photoUrl = imageHandler.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.IMAGES);
 
-                        return imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.IMAGES);
+                        return {
+                            fileName: photoName,
+                            url: photoUrl
+                        };
                     });
 
-                    friendModel.images.gallery = galleryUrls;
+                    images.gallery = galleryArray;
                 }
 
-                res.status(200).send(friendModel);
+                friendModelJSON.images = images;
+
+                res.status(200).send(friendModelJSON);
             });
     };
 
