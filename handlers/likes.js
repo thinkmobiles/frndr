@@ -145,7 +145,19 @@ var LikesHandler = function (app, db) {
                                         return cb(err);
                                     }
 
-                                    //messageHandler.sendPushNotification(likedUserId, 'You have new friend', pushOptions, cb);
+                                    //messageHandler.sendPushNotification(userId, 'You have new friend', pushOptions, function(err, userSuccess){
+                                    // if (err){
+                                    //  return cb(err);
+                                    // }
+                                    // messageHandler.sendPushNotification(likedUserId, 'You have new friend', pushOptions, function(err, friendSuccess){
+                                    //      if (err){
+                                    //          return cb(err);
+                                    //      }
+                                    //        cb(null, userSuccess && friendSuccess)
+                                    //      });
+                                    //
+                                    // });
+
 
                                     cb();
                                 })

@@ -4,7 +4,7 @@ var Session = function () {
     this.register = function ( req, res, userId ) {
         req.session.loggedIn = true;
         req.session.uId = userId;
-        res.status( 200 ).send( { success: "Login successful" } );
+        res.status( 200 ).send( { success: "Login successful", userId: userId } );
     };
 
     this.kill = function ( req, res, next ) {
