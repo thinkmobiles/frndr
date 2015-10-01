@@ -8,21 +8,39 @@
 
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
-var CONSTANTS = require('../constants/index');
+var CONSTANTS = require('../constants');
+var _ = require('lodash');
 
+var sexualString = CONSTANTS.SEXUAL.ANY + '|' + CONSTANTS.SEXUAL.STRAIGHT + '|' + CONSTANTS.SEXUAL.BISEXUAL + '|' + CONSTANTS.SEXUAL.LESBIAN;
+var sexualRegExp = new RegExp(sexualString);
+
+var relationShipString = CONSTANTS.SEARCH_REL_STATUSES.COUPLE + '|' + CONSTANTS.SEARCH_REL_STATUSES.FAMILY + '|' + CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY + '|' + CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY + '|' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE + '|' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE;
+var relationShipRegExp = new RegExp(relationShipString);
 
 var SearchSettingsHandler = function (db) {
     var SearchSettings = db.model('SearchSettings');
     var ObjectId = mongoose.Types.ObjectId;
 
-    function prepareSaveData(options) {
+    function prepareSaveData(options, callback) {
         var saveData = {};
+        var relation;
 
         if (options.distance && !isNaN(options.distance)) {
             saveData.distance = options.distance * 1609.344;
         }
 
         if (options.relationship && options.relationship.length) {
+
+            relation = options.relationship;
+
+            for ( var i = relation.length; i--; ){
+                if (!relationShipRegExp.test(relation[i])){
+                    return callback(badRequests.InvalidValue({value: 'relationship'}));
+                }
+
+            }
+
+
             saveData.relationship = options.relationship;
         }
 
@@ -31,6 +49,11 @@ var SearchSettingsHandler = function (db) {
         }
 
         if (options.sexual) {
+
+            if (!sexualRegExp.test(options.sexual)){
+                return callback(badRequests.InvalidValue({value: 'sexual'}));
+            }
+
             saveData.sexual = options.sexual;
         }
 
@@ -40,7 +63,7 @@ var SearchSettingsHandler = function (db) {
             saveData.ageRange = options.ageRange;
         }
 
-        return saveData;
+        return callback(null, saveData);
     }
 
     this.getSearchSettings = function (req, res, next) {
@@ -86,6 +109,8 @@ var SearchSettingsHandler = function (db) {
                     return next(badRequests.NotFound({target: 'Search settings'}));
                 }
 
+                searchSettingsModel.distance /= 1609.344;
+
                 res.status(200).send(searchSettingsModel);
             })
     };
@@ -122,20 +147,26 @@ var SearchSettingsHandler = function (db) {
          */
 
         var userId = req.session.uId;
-        var saveData = prepareSaveData(req.body);
+        prepareSaveData(req.body, function(err, saveData){
 
-        if (saveData && Object.keys(saveData).length === 0) {
-            return next(badRequests.NotEnParams({reqParams: 'ageRange or sexual or smoker or relationship or distance'}));
-        }
+            if (err){
+                return next(err);
+            }
 
-        SearchSettings
-            .findOneAndUpdate({user: ObjectId(userId)}, saveData, function (err) {
-                if (err) {
-                    return next(err);
-                }
+            if (saveData && Object.keys(saveData).length === 0) {
+                return next(badRequests.NotEnParams({reqParams: 'ageRange or sexual or smoker or relationship or distance'}));
+            }
 
-                res.status(200).send({success: 'Search settings updated successfully'});
-            });
+            SearchSettings
+                .findOneAndUpdate({user: ObjectId(userId)}, saveData, function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    res.status(200).send({success: 'Search settings updated successfully'});
+                });
+        });
+
     };
 };
 

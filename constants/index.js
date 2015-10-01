@@ -27,8 +27,8 @@ module.exports = {
         FEMALE_WITH_BABY: 'Single Mother'
     },
     LIMIT: {
-        MESSAGES:5,
-        FRIENDS:8
+        MESSAGES: 5,
+        FRIENDS: 8
     },
     IMAGE: {
         AVATAR_PREV: {
