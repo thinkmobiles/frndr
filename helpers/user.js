@@ -87,7 +87,7 @@ module.exports = function (db) {
         var longitude;
         var latitude;
 
-        if (!Array.isArray(coordinates) || !(coordinates.length === 2) || !coordinates[1] || isNaN(coordinates[0]) || isNaN(coordinates[1])) {
+        if (!Array.isArray(coordinates) || coordinates.length !== 2 || isNaN(coordinates[0]) || isNaN(coordinates[1])) {
             return badRequests.InvalidValue({value: coordinates, param: 'coordinates'});
         }
 
