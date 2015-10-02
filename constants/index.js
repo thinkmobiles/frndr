@@ -3,6 +3,10 @@ module.exports = {
         MIN_AGE: 0,
         MAX_AGE: 200
     },
+    SEX: {
+        MALE: 'Male',
+        FEMALE: 'Female'
+    },
     REL_STATUSES: {
         SINGLE: 'Single',
         COUPLE: 'Couple',

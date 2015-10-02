@@ -12,10 +12,10 @@ var CONSTANTS = require('../constants');
 var _ = require('lodash');
 
 var sexualString = CONSTANTS.SEXUAL.ANY + '|' + CONSTANTS.SEXUAL.STRAIGHT + '|' + CONSTANTS.SEXUAL.BISEXUAL + '|' + CONSTANTS.SEXUAL.LESBIAN;
-var sexualRegExp = new RegExp(sexualString, 'i');
+var sexualRegExp = new RegExp(sexualString);
 
 var relationShipString = CONSTANTS.SEARCH_REL_STATUSES.COUPLE + '|' + CONSTANTS.SEARCH_REL_STATUSES.FAMILY + '|' + CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY + '|' + CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY + '|' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE + '|' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE;
-var relationShipRegExp = new RegExp(relationShipString, 'i');
+var relationShipRegExp = new RegExp(relationShipString);
 
 var SearchSettingsHandler = function (db) {
     var SearchSettings = db.model('SearchSettings');

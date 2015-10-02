@@ -8,13 +8,11 @@ var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
-//var MessageHandler = require('./messages');
 //var PushHandler = require('./pushes');
 
 var LikesHandler = function (app, db) {
 
     //var push = PushHandler(db);
-
     var Like = db.model('Like');
     var User = db.model('User');
     var ObjectId = mongoose.Types.ObjectId;

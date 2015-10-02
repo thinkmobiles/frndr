@@ -39,11 +39,13 @@ module.exports = function (db) {
                 userModel.profile.name = profile.name;
             }
 
-            if (profile.age && !isNaN(profile.age)) {
+            if (profile.age && !isNaN(profile.age) && (profile.age <= CONSTANTS.AGE.MAX_AGE && profile.age >= CONSTANTS.AGE.MIN_AGE)) {
                 userModel.profile.age = profile.age;
             }
 
-            if (profile.relStatus) {
+            if (profile.relStatus && (profile.relStatus === CONSTANTS.REL_STATUSES.SINGLE || profile.relStatus === CONSTANTS.REL_STATUSES.COUPLE ||
+                profile.relStatus === CONSTANTS.REL_STATUSES.FAMILY || profile.relStatus === CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY)) {
+
                 userModel.profile.relStatus = profile.relStatus;
             }
 
@@ -55,7 +57,9 @@ module.exports = function (db) {
                 userModel.profile.smoker = profile.smoker;
             }
 
-            if (profile.sexual) {
+            if (profile.sexual && (profile.sexual === CONSTANTS.SEXUAL.STRAIGHT || profile.sexual === CONSTANTS.SEXUAL.LESBIAN ||
+                profile.sexual === CONSTANTS.SEXUAL.BISEXUAL || profile.sexual === CONSTANTS.SEXUAL.ANY)) {
+
                 userModel.profile.sexual = profile.sexual;
             }
 
@@ -71,7 +75,7 @@ module.exports = function (db) {
                 userModel.profile.visible = profile.visible;
             }
 
-            if (profile.sex) {
+            if (profile.sex && (profile.sex === CONSTANTS.SEX.MALE || profile.sex === CONSTANTS.SEX.FEMALE)) {
                 userModel.profile.sex = profile.sex;
             }
         }
@@ -427,11 +431,11 @@ module.exports = function (db) {
                         relationship = _.clone(resultUser.relationship);
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE) !== -1){
-                            relStatusArray.push({'profile.sex': 'M', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                            relStatusArray.push({'profile.sex': CONSTANTS.SEX.MALE, 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE) !== -1){
-                            relStatusArray.push({'profile.sex': 'F', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                            relStatusArray.push({'profile.sex': CONSTANTS.SEX.FEMALE, 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.COUPLE) !== -1){
@@ -443,11 +447,11 @@ module.exports = function (db) {
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY) !== -1){
-                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'M'});
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': CONSTANTS.SEX.MALE});
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY) !== -1){
-                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'F'});
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': CONSTANTS.SEX.FEMALE});
                         }
 
                     }
