@@ -75,7 +75,7 @@ module.exports = function (db) {
                 userModel.profile.visible = profile.visible;
             }
 
-            if (profile.sex && (profile.sex === 'Male' || profile.sex === 'Female')) {
+            if (profile.sex && (profile.sex === CONSTANTS.SEX.MALE || profile.sex === CONSTANTS.SEX.FEMALE)) {
                 userModel.profile.sex = profile.sex;
             }
         }
@@ -431,11 +431,11 @@ module.exports = function (db) {
                         relationship = _.clone(resultUser.relationship);
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE) !== -1){
-                            relStatusArray.push({'profile.sex': 'Male', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                            relStatusArray.push({'profile.sex': CONSTANTS.SEX.MALE, 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE) !== -1){
-                            relStatusArray.push({'profile.sex': 'Female', 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
+                            relStatusArray.push({'profile.sex': CONSTANTS.SEX.FEMALE, 'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE});
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.COUPLE) !== -1){
@@ -447,11 +447,11 @@ module.exports = function (db) {
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY) !== -1){
-                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'Male'});
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': CONSTANTS.SEX.MALE});
                         }
 
                         if (relationship.indexOf(CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY) !== -1){
-                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': 'Female'});
+                            relStatusArray.push({'profile.relStatus': CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY, 'profile.sex': CONSTANTS.SEX.FEMALE});
                         }
 
                     }
