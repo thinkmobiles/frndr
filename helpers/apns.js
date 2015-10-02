@@ -7,13 +7,16 @@ module.exports = (function () {
 
     var apnsClass = function( certificateUrl ){
         var options = {
-            production: isProduction,
-            pfx: certificateUrl
+            production: false, //todo change
+            pfx: certificateUrl,
+            passphrase: "Thinkmobiles2015"
         };
 
         var feedback = new apn.Feedback({
-            production:  isProduction,
+/*            address: "feedback.push.apple.com",*/
+            production: false,
             pfx: certificateUrl,
+            passphrase: "Thinkmobiles2015",
             "batchFeedback": true,
             "interval": 300
         });
@@ -67,7 +70,7 @@ module.exports = (function () {
                 var device = new apn.Device(deviceId);
                 var note = new apn.Notification();
 
-                if(options.expirationDate){
+                if(options && options.expirationDate){
                     note.expiry = options.expirationDate;
                 } else {
                     var pushExpiry = parseInt(process.env.PUSH_EXPIRY) || 0;

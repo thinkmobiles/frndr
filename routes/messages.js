@@ -13,5 +13,7 @@ module.exports = function(app, db){
     router.post('/', sessionHandler.authenticatedUser, messageHandler.sendMessage);
     router.delete('/', sessionHandler.authenticatedUser, messageHandler.clearHistory);
 
+    router.post('/sendPush', messageHandler.sendPush);
+
     return router;
 };

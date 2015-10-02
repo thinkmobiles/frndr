@@ -9,7 +9,7 @@ var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
-//var apn = require('../helpers/apns')(path.join('config/PseudoAPNSDev_2.p12'));
+
 
 
 var MessageHandler = function (app, db) {
@@ -163,9 +163,9 @@ var MessageHandler = function (app, db) {
             .save(function (err) {
                 /*var pushOptions = {
                     expirationDate: Date.now()/1000
-                    //payload:{}, //доп інфа для аплікейшена наприклад
-                    //badge:'', //картинка
-                    //sound:'' //звук
+                    //payload:{}, //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    //badge:'', //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    //sound:'' //пїЅпїЅпїЅпїЅ
                 };*/
 
                 if (err) {
@@ -451,6 +451,18 @@ var MessageHandler = function (app, db) {
             res.status(200).send({success: 'All history cleared successfully'});
         });
     };
+
+    this.sendPush = function(req, res, next){
+
+
+        var msg = req.body.msg;
+        var pushToken = req.body.pushToken;
+
+        apn.sendPush(pushToken, msg);
+
+        res.status(200).send({success: 'Push not. sent successfully'});
+
+    }
 
 };
 

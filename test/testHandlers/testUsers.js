@@ -4,6 +4,7 @@ var request = require('supertest');
 var expect = require('chai').expect;
 var async = require('async');
 var _ = require('lodash');
+var CONSTANTS = require('../../constants');
 
 module.exports = function (db, defaults) {
     var User = db.model('User');
@@ -52,7 +53,7 @@ module.exports = function (db, defaults) {
 
 
     var newSearchDistance = 2500;
-    var newRelationShip = ['couple', 'family'];
+    var newRelationShip = [CONSTANTS.SEARCH_REL_STATUSES.COUPLE, CONSTANTS.SEARCH_REL_STATUSES.FAMILY];
     var newAgeRange = {
         min: 28,
         max: 32
@@ -392,7 +393,7 @@ module.exports = function (db, defaults) {
                     var settings = res.body;
 
                     expect(settings).to.instanceOf(Object);
-                    expect(settings.distance).to.equals(2000 * 1609344);
+                    expect(settings.distance).to.equals(2000000);
                     expect(settings.sexual).to.equals('any');
                     expect(settings.ageRange).to.instanceOf(Object);
                     expect(settings.ageRange.min).to.equals(25);

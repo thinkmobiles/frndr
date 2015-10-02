@@ -9,14 +9,57 @@ var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
 //var MessageHandler = require('./messages');
-
+//var PushHandler = require('./pushes');
 
 var LikesHandler = function (app, db) {
+
+    //var push = PushHandler(db);
 
     var Like = db.model('Like');
     var User = db.model('User');
     var ObjectId = mongoose.Types.ObjectId;
-    //var messageHandler = new MessageHandler(app, db);
+
+
+    function addToFriend(userId, friendId, callback){
+
+        var message = 'You have new friend';
+
+        async
+            .series([
+                function(cb){
+                    User
+                        .findOneAndUpdate({_id: ObjectId(userId)}, {$addToSet: {friends: friendId}}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                }/*,
+
+                function(cb){
+                    push.sendPushNotification(userId, message, function(err){
+                        if (err){
+                            return cb(err);
+                        }
+
+                        cb();
+                    });
+                }*/
+
+            ],
+            function(err){
+
+                if (err){
+                    return callback(err);
+                }
+
+                callback(null);
+
+            });
+
+
+    }
 
     this.likeUserById = function (req, res, next) {
 
@@ -121,47 +164,23 @@ var LikesHandler = function (app, db) {
                 },
 
                 //add to friends
-                function (addToFriend, cb) {
-                    if (!addToFriend) {
+                function (canBeFriends, cb) {
+                    if (!canBeFriends) {
                         return cb();
                     }
 
-                    User
-                        .findOneAndUpdate({_id: ObjectId(userId)}, {$addToSet: {friends: likedUserId}}, function (err) {
-                            if (err) {
+                    async
+                        .parallel([
+                            async.apply(addToFriend, userId, likedUserId),
+                            async.apply(addToFriend, likedUserId, userId)
+                        ], function(err){
+                            if (err){
                                 return cb(err);
                             }
 
-                            User
-                                .findOneAndUpdate({_id: ObjectId(likedUserId)}, {$addToSet: {friends: userId}}, function (err) {
-                                    /*var pushOptions = {
-                                         expirationDate: Date.now()/1000
-                                         //payload:{}, //доп інфа для аплікейшена наприклад
-                                         //badge:'', //картинка
-                                         //sound:'' //звук
-                                     };*/
+                            cb(null);
+                        });
 
-                                    if (err) {
-                                        return cb(err);
-                                    }
-
-                                    //messageHandler.sendPushNotification(userId, 'You have new friend', pushOptions, function(err, userSuccess){
-                                    // if (err){
-                                    //  return cb(err);
-                                    // }
-                                    // messageHandler.sendPushNotification(likedUserId, 'You have new friend', pushOptions, function(err, friendSuccess){
-                                    //      if (err){
-                                    //          return cb(err);
-                                    //      }
-                                    //        cb(null, userSuccess && friendSuccess)
-                                    //      });
-                                    //
-                                    // });
-
-
-                                    cb();
-                                })
-                        })
                 }
             ],
             function (err) {
