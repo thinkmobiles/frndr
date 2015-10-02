@@ -14,8 +14,8 @@ module.exports = function (db) {
             age: Number,
             sex: {
                 type: String,
-                match: /M|F/i,
-                default: 'M'
+                match: /Male|Female/i,
+                default: 'Male'
             },
             relStatus: {
                 type: String,
