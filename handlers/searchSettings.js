@@ -29,7 +29,7 @@ var SearchSettingsHandler = function (db) {
             saveData.distance = options.distance * 1609.344;
         }
 
-        if (options.relationship && options.relationship.length) {
+        if (options.relationship) {
 
             relation = options.relationship;
 
