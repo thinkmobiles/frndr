@@ -44,12 +44,12 @@ module.exports = function (db, defaults) {
     var newCoordinates = [88, 76];
     var newUserName = 'Gandalf';
     var newAge = 30;
-    var newSex = 'M';
+    var newSex = 'Male';
     var newJobTitle = 'wizard';
     var newCoordinates1 = [88, 76];
     var newRelStatus = 'couple';
     var newSmoker = true;
-    var newSexual = 'any';
+    var newSexual = 'Any';
 
 
     var newSearchDistance = 2500;
@@ -394,7 +394,7 @@ module.exports = function (db, defaults) {
 
                     expect(settings).to.instanceOf(Object);
                     expect(settings.distance).to.equals(2000000);
-                    expect(settings.sexual).to.equals('any');
+                    expect(settings.sexual).to.equals('Any');
                     expect(settings.ageRange).to.instanceOf(Object);
                     expect(settings.ageRange.min).to.equals(25);
                     expect(settings.ageRange.max).to.equals(40);

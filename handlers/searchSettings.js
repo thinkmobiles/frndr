@@ -40,7 +40,6 @@ var SearchSettingsHandler = function (db) {
 
             }
 
-
             saveData.relationship = options.relationship;
         }
 
