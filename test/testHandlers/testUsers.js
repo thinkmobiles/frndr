@@ -47,7 +47,7 @@ module.exports = function (db, defaults) {
     var newSex = 'Male';
     var newJobTitle = 'wizard';
     var newCoordinates1 = [88, 76];
-    var newRelStatus = 'couple';
+    var newRelStatus = 'Couple';
     var newSmoker = true;
     var newSexual = 'Any';
 
@@ -240,7 +240,7 @@ module.exports = function (db, defaults) {
                     var user = res.body;
 
                     if (err) {
-                        done(err);
+                        return done(err);
                     }
 
 
@@ -387,7 +387,7 @@ module.exports = function (db, defaults) {
                 .expect(200, function (err, res) {
 
                     if (err) {
-                        done(err);
+                       return done(err);
                     }
 
                     var settings = res.body;
@@ -419,14 +419,14 @@ module.exports = function (db, defaults) {
                 .expect(200, function (err) {
 
                     if (err) {
-                        done(err);
+                        return done(err);
                     }
 
                     SearchSettings
                         .findOne({user: uId2}, function (err, resultSettings) {
 
                             if (err) {
-                                done(err);
+                                return done(err);
                             }
 
                             expect(resultSettings).to.instanceOf(Object);

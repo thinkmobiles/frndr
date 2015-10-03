@@ -83,14 +83,14 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/messages`__
          *
          * This __method__ allows send  _Message_
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/messages
+         *         http://projects.thinkmobiles.com:8859/messages
          *
          * @example Body example:
          *
@@ -154,7 +154,7 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/messages/:id`__
          *
@@ -162,7 +162,7 @@ var MessageHandler = function (app, db) {
          *
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/messages/55fbcffaf60866ec1fe95ff6
+         *         http://projects.thinkmobiles.com:8859/messages/55fbcffaf60866ec1fe95ff6
          *
          *
          * @method clearMessage
@@ -221,7 +221,7 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/messages/`__
          *
@@ -234,7 +234,7 @@ var MessageHandler = function (app, db) {
          *  }
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/messages/
+         *         http://projects.thinkmobiles.com:8859/messages/
          *
          * @param {string} friendId - friend's id from delete chat history
          *
@@ -309,14 +309,14 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/messages/:id/:page?`__
          *
          * This __method__ allows to get chat __Messages__
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/55fbcb7cc06791dc1dad4645/0
+         *         http://projects.thinkmobiles.com:8859/messages/55fbcb7cc06791dc1dad4645/0
          *
          *
          * @example Response example:
@@ -381,14 +381,14 @@ var MessageHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/messages/all`__
          *
          * This __method__ allows delete all _Chats_ history
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/messages/all/
+         *         http://projects.thinkmobiles.com:8859/messages/all/
          *
          * @method clearAllMessages
          * @instance

@@ -69,14 +69,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/signIn`__
          *
          * This __method__ allows signIn _User_
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/signIn
+         *         http://projects.thinkmobiles.com:8859/signIn
          *
          * @example Body example:
          *
@@ -90,7 +90,6 @@ var UserHandler = function (app, db) {
          * @method signInClient
          * @instance
          */
-
 
         var options = req.body;
 
@@ -138,14 +137,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/signOut`__
          *
          * This __method__ allows signOut _User_
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/signOut
+         *         http://projects.thinkmobiles.com:8859/signOut
          *
          * @method signOutClient
          * @instance
@@ -161,7 +160,7 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/pushToken`__
          *
@@ -175,7 +174,7 @@ var UserHandler = function (app, db) {
          *  }
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/pushToker
+         *         http://projects.thinkmobiles.com:8859/pushToker
          *
          * @param {string} pushToken - Token for sending Push Notifications
          * @param {string} os - Type of device operation system
@@ -210,14 +209,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows get _User_ profile
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users
+         *         http://projects.thinkmobiles.com:8859/users
          *
          * @example Response example:
          *
@@ -284,14 +283,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows delete _User_ account
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users
+         *         http://projects.thinkmobiles.com:8859/users
          *
          *
          * @method deleteCurrentUser
@@ -361,7 +360,7 @@ var UserHandler = function (app, db) {
 
                                 async.parallel([
 
-                                        //remove avat from filesystem
+                                        //remove avatar from filesystem
                                         function (callback) {
                                             removeAvatar(avatarName, callback);
                                         },
@@ -424,14 +423,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows update _User_ profile
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users
+         *         http://projects.thinkmobiles.com:8859/users
          *
          * @example Body example:
          *
@@ -479,14 +478,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users/notifications`__
          *
          * This __method__ allows update _User's_ notification settings
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users/notifications
+         *         http://projects.thinkmobiles.com:8859/users/notifications
          *
          * @example Body example:
          *
@@ -542,21 +541,21 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `users/find/:page?`__
          *
          * This __method__ allows find nearest `FRNDR` user's to current _User_
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users/find/2
+         *         http://projects.thinkmobiles.com:8859/users/find/2
          *
          * @example Response example:
          *
          * [
          *   {
          *      "userId": "560919c349d6a608179610c5",
-         *      "avatar": "http://134.249.164.53:8859/uploads/development/images/560919cb49d6a608179610c7.png",
+         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/560919cb49d6a608179610c7.png",
          *      "name": "Petrovich",
          *      "age": 25,
          *      "distance": 0,
@@ -570,7 +569,7 @@ var UserHandler = function (app, db) {
          *      ],
          *      "bio": "Some biography",
          *      "gallery": [
-         *          "http://134.249.164.53:8859/uploads/development/images/560919cd49d6a608179610c8_small.png"
+         *          "http://projects.thinkmobiles.com:8859/uploads/development/images/560919cd49d6a608179610c8_small.png"
          *      ]
          *   }
          * ]
@@ -605,14 +604,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users/friendList/:page?`__
          *
          * This __method__ allows to get _User's_ friends list
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users/friendList
+         *         http://projects.thinkmobiles.com:8859/users/friendList
          *
          * @example Response example:
          *
@@ -621,7 +620,7 @@ var UserHandler = function (app, db) {
          *      "friendId": "55ffc48dcc6f0ec80b4c0522",
          *      "newFriend": "false",
          *      "message": "123456789",
-         *      "avatar": "http://134.249.164.53:8859/uploads/development/images/55f91b11233e6ae311af1ca1_small.png"
+         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/55f91b11233e6ae311af1ca1_small.png"
          *   },
          *   {
          *      "friendId": "55ffc48dcc6f0ec80b4c0521",
@@ -758,14 +757,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users/blockFriend/:id`__
          *
          * This __method__ allows block _User's_ friend
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users/blockFriend/55f938010bc036b01945f1e7
+         *         http://projects.thinkmobiles.com:8859/users/blockFriend/55f938010bc036b01945f1e7
          *
          * @method blockFriend
          * @instance
@@ -799,14 +798,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users/friendProfile/:id`__
          *
          * This __method__ allows get _friends profile_
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users/friendProfile/5603acdcbc68399017c2c3e3
+         *         http://projects.thinkmobiles.com:8859/users/friendProfile/5603acdcbc68399017c2c3e3
          *
          * @example Response example:
          *
@@ -815,20 +814,20 @@ var UserHandler = function (app, db) {
          *      "images": {
          *          "avatar": {
          *              "fileName": "56091c0c49d6a608179610df",
-         *              "url": "http://134.249.164.53:8859/uploads/development/images/56091c0c49d6a608179610df.png"
+         *              "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c0c49d6a608179610df.png"
          *          },
          *          "gallery": [
          *              {
          *                  "fileName": "56091c1049d6a608179610e0",
-         *                  "url": "http://134.249.164.53:8859/uploads/development/images/56091c1049d6a608179610e0_small.png"
+         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1049d6a608179610e0_small.png"
          *              },
          *              {
          *                  "fileName": "56091c1149d6a608179610e1",
-         *                  "url": "http://134.249.164.53:8859/uploads/development/images/56091c1149d6a608179610e1_small.png"
+         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e1_small.png"
          *              },
          *              {
          *                  "fileName": "56091c1149d6a608179610e2",
-         *                  "url": "http://134.249.164.53:8859/uploads/development/images/56091c1149d6a608179610e2_small.png"
+         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e2_small.png"
          *              }
          *          ]
          *      },

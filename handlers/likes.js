@@ -66,14 +66,14 @@ var LikesHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users/like/:id`__
          *
          * This __method__ allows _User_ like some people
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users/like/55f6ad4bb70b86d02a0d1751
+         *         http://projects.thinkmobiles.com:8859/users/like/55f6ad4bb70b86d02a0d1751
          *
          * @method likeUserById
          * @instance
@@ -198,14 +198,14 @@ var LikesHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://134.249.164.53:8859`__
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
          * __URL: `/users/dislike/:id`__
          *
          * This __method__ allows _User_ dislike some people
          *
          * @example Request example:
-         *         http://134.249.164.53:8859/users/dislike/55f6ad4bb70b86d02a0d1751
+         *         http://projects.thinkmobiles.com:8859/users/dislike/55f6ad4bb70b86d02a0d1751
          *
          * @method dislikesUserById
          * @instance
