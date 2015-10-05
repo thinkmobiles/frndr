@@ -557,6 +557,30 @@ var imageHandler = function (db) {
 
     this.changeAvatarFromGallery = function(req, res, next){
 
+        /**
+         * __Type__ __`PUT`__
+         *
+         * __Content-Type__ `application/json`
+         *
+         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         *
+         * __URL: `/image/avatar`__
+         *
+         * This __method__ allows change _User's_ avatar with gallery photo
+         *
+         * @example Request example:
+         *         http://projects.thinkmobiles.com:8859/image/avatar
+         *
+         * @example Body example:
+         *
+         *   {
+         *      "newAvatar":"55f8300013f2901e421b026a"
+         *   }
+         *
+         * @method changeAvatarFromGallery
+         * @instance
+         */
+
         var body = req.body;
         var uId = req.session.uId;
         var currentAvatar = '';
