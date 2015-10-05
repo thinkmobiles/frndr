@@ -404,11 +404,7 @@ var imageHandler = function (db) {
             return next(badRequests.NotEnParams({reqParams: 'image'}));
         }
 
-        imageName = options.image.toString();
-
-        if (imageName.substr(-5) === 'small'){
-            imageName = imageName.substr(0, imageName.length - 6);
-        }
+        imageName = options.image;
 
         Image.findOne({user: userId}, function (err, imageModel) {
             var index;
