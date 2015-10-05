@@ -8,6 +8,15 @@ var _ = require('lodash');
 var geo = require('geolib');
 var ObjectId = mongoose.Types.ObjectId;
 
+var sexualString = CONSTANTS.SEXUAL.ANY + '|' + CONSTANTS.SEXUAL.STRAIGHT + '|' + CONSTANTS.SEXUAL.BISEXUAL + '|' + CONSTANTS.SEXUAL.LESBIAN;
+var sexualRegExp = new RegExp(sexualString);
+
+var relationStatusString = CONSTANTS.REL_STATUSES.COUPLE + '|' + CONSTANTS.REL_STATUSES.FAMILY + '|' + CONSTANTS.REL_STATUSES.SINGLE + '|' + CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY;
+var relationStatusRegExp = new RegExp(relationStatusString);
+
+var sexString = CONSTANTS.SEX.MALE + '|' + CONSTANTS.SEX.FEMALE;
+var sexRegExp = new RegExp(sexString);
+
 module.exports = function (db) {
 
     var User = db.model('User');
@@ -43,8 +52,11 @@ module.exports = function (db) {
                 userModel.profile.age = profile.age;
             }
 
-            if (profile.relStatus && (profile.relStatus === CONSTANTS.REL_STATUSES.SINGLE || profile.relStatus === CONSTANTS.REL_STATUSES.COUPLE ||
-                profile.relStatus === CONSTANTS.REL_STATUSES.FAMILY || profile.relStatus === CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY)) {
+            if (profile.relStatus) {
+
+                if (!relationStatusRegExp.test(profile.relStatus)){
+                    return callback(badRequests.InvalidValue({value: profile.relStatus, param: 'relation status'}));
+                }
 
                 userModel.profile.relStatus = profile.relStatus;
             }
@@ -57,8 +69,11 @@ module.exports = function (db) {
                 userModel.profile.smoker = profile.smoker;
             }
 
-            if (profile.sexual && (profile.sexual === CONSTANTS.SEXUAL.STRAIGHT || profile.sexual === CONSTANTS.SEXUAL.LESBIAN ||
-                profile.sexual === CONSTANTS.SEXUAL.BISEXUAL || profile.sexual === CONSTANTS.SEXUAL.ANY)) {
+            if (profile.sexual) {
+
+                if (!sexualRegExp.test(profile.sexual)){
+                    return callback(badRequests.InvalidValue({value: profile.sexual, param: 'sexual orientation'}));
+                }
 
                 userModel.profile.sexual = profile.sexual;
             }
@@ -75,7 +90,12 @@ module.exports = function (db) {
                 userModel.profile.visible = profile.visible;
             }
 
-            if (profile.sex && (profile.sex === CONSTANTS.SEX.MALE || profile.sex === CONSTANTS.SEX.FEMALE)) {
+            if (profile.sex) {
+
+                if (!sexRegExp.test(profile.sex)){
+                    return callback(badRequests.InvalidValue({value: profile.sex, param: 'sex'}));
+                }
+
                 userModel.profile.sex = profile.sex;
             }
         }
