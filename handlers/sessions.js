@@ -1,10 +1,10 @@
 
 var Session = function () {
 
-    this.register = function ( req, res, userId, haveAvatar ) {
+    this.register = function ( req, res, userId, haveAvatar, firstLogin ) {
         req.session.loggedIn = true;
         req.session.uId = userId;
-        res.status( 200 ).send( { success: "Login successful", userId: userId, haveAvatar: haveAvatar } );
+        res.status( 200 ).send( { success: "Login successful", userId: userId, haveAvatar: haveAvatar, firstLogin: firstLogin } );
     };
 
     this.kill = function ( req, res, next ) {

@@ -90,7 +90,8 @@ var UserHandler = function (app, db) {
          *  {
          *      "success": "Login successful",
          *      "userId": "561229dd419a2d2c0233cb2f",
-         *      "haveAvatar": true
+         *      "haveAvatar": true,
+         *      "firstLogin": false
          *  }
          *
          * @param {string} fbId - FaceBook Id for signing user
@@ -101,6 +102,7 @@ var UserHandler = function (app, db) {
 
         var options = req.body;
         var haveAvatar = false;
+        var firstLogin = false;
 
         if (!options || !options.fbId) {
             return next(badRequests.NotEnParams({reqParams: 'fbId'}));
@@ -124,6 +126,7 @@ var UserHandler = function (app, db) {
                     var avatarName;
 
                     if (!userModel) {
+                        firstLogin = true;
                         userHelper.createUser(options, cb);
                     } else {
                         avatarName = userModel.images.get('avatar');
@@ -143,7 +146,7 @@ var UserHandler = function (app, db) {
                     return next(err);
                 }
 
-                return session.register(req, res, uId.toString(), haveAvatar);
+                return session.register(req, res, uId.toString(), haveAvatar, firstLogin);
             });
 
     };

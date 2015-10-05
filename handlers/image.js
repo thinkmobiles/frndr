@@ -617,12 +617,12 @@ var imageHandler = function (db) {
          *
          * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
-         * __URL: `/image/managePhotoes`__
+         * __URL: `/image/managePhotos`__
          *
          * This __method__ allows get _User's_ avatar and photos from gallery
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/managePhotoes
+         *         http://projects.thinkmobiles.com:8859/image/managePhotos
          *
          * @example Response example:
          *

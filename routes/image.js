@@ -17,7 +17,7 @@ module.exports = function(app, db){
     router.post('/photo', sessionHandler.authenticatedUser, image.uploadPhotoToGallery);
     router.delete('/photo', sessionHandler.authenticatedUser, image.removeImageFromGallery);
     router.get('/photo/:id?', sessionHandler.authenticatedUser, image.getPhotoUrls);
-    router.get('/managePhotoes', sessionHandler.authenticatedUser, image.getAvatarAndGallery);
+    router.get('/managePhotos', sessionHandler.authenticatedUser, image.getAvatarAndGallery);
 
 
     //router.get('/test', image.testResizeImage);
