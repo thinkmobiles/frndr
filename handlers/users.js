@@ -641,7 +641,7 @@ var UserHandler = function (app, db) {
          *      "friendId": "55ffc48dcc6f0ec80b4c0522",
          *      "newFriend": "false",
          *      "message": "123456789",
-         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/55f91b11233e6ae311af1ca1_small.png"
+         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/55f91b11233e6ae311af1ca1.png"
          *   },
          *   {
          *      "friendId": "55ffc48dcc6f0ec80b4c0521",
@@ -738,7 +738,6 @@ var UserHandler = function (app, db) {
                                     if (avatarName === ''){
                                         resultObj.avatar = '';
                                     } else {
-                                        avatarName += '_small';
                                         avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
                                         resultObj.avatar = avatarUrl;
                                     }
@@ -840,15 +839,15 @@ var UserHandler = function (app, db) {
          *          "gallery": [
          *              {
          *                  "fileName": "56091c1049d6a608179610e0",
-         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1049d6a608179610e0_small.png"
+         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1049d6a608179610e0.png"
          *              },
          *              {
          *                  "fileName": "56091c1149d6a608179610e1",
-         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e1_small.png"
+         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e1.png"
          *              },
          *              {
          *                  "fileName": "56091c1149d6a608179610e2",
-         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e2_small.png"
+         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e2.png"
          *              }
          *          ]
          *      },
@@ -927,9 +926,7 @@ var UserHandler = function (app, db) {
                     photoNames = images.gallery;
 
                     galleryArray = photoNames.map(function (photoName) {
-                        var smallPhotoName = photoName + '_small';
-
-                        photoUrl = imageHandler.computeUrl(smallPhotoName, CONSTANTS.BUCKETS.IMAGES);
+                        photoUrl = imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.IMAGES);
 
                         return {
                             fileName: photoName,

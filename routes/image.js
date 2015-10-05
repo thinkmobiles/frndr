@@ -12,7 +12,6 @@ module.exports = function(app, db){
     router.post('/avatar', sessionHandler.authenticatedUser, image.uploadAvatar);
     router.put('/avatar', sessionHandler.authenticatedUser, image.changeAvatarFromGallery);
     router.delete('/avatar', sessionHandler.authenticatedUser, image.removeAvatar);
-    router.get('/avatar/small', sessionHandler.authenticatedUser, image.getAvatarUrl);
     router.get('/avatar', sessionHandler.authenticatedUser, image.getAvatarUrl);
     router.post('/photo', sessionHandler.authenticatedUser, image.uploadPhotoToGallery);
     router.delete('/photo', sessionHandler.authenticatedUser, image.removeImageFromGallery);

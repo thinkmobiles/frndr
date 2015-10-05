@@ -249,7 +249,7 @@ var imagesUploader = function (dirConfig) {
         writePath += '_small.png';
 
         gm(readPath)
-            .quality(100)
+            .quality(0)
             .resize(width, height)
             .write(writePath, function(err){
                 if(err){
