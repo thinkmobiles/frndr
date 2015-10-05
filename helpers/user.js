@@ -510,8 +510,6 @@ module.exports = function (db) {
                                     gallery = user.images.gallery;
 
                                     galleryUrls = gallery.map(function(g){
-                                        g += '_small';
-
                                         return imageHandler.computeUrl(g, CONSTANTS.BUCKETS.IMAGES);
                                     });
 
