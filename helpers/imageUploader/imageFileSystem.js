@@ -9,7 +9,7 @@ var imagesUploader = function (dirConfig) {
     var fs = require('fs');
     var path = require('path');
     var os = require('os');
-    var gm = require('gm').subClass({imageMagick: true});
+
 
     var osPathData = getDirAndSlash();
 
@@ -233,32 +233,7 @@ var imagesUploader = function (dirConfig) {
         return filePath;
     }
 
-    function resizeImage (imageName, folderName, width, height, callback){
-        var slash = osPathData.slash;
-        var dir = osPathData.dir + slash;
-        var readPath = path.join(dir, slash, folderName, imageName);
-        var index = readPath.length + 1;
-        var writePath = readPath.substring(0, index);
 
-        if (!callback && (typeof height === 'function')) {
-            callback = height;
-            height = null;
-        }
-
-        readPath += '.png';
-        writePath += '_small.png';
-
-        gm(readPath)
-            .quality(0)
-            .resize(width, height)
-            .write(writePath, function(err){
-                if(err){
-                    return callback(new Error('Occurs some problems with image resizing'));
-                }
-
-                callback();
-        });
-    }
 
     return {
         uploadImage: uploadImage,
@@ -267,8 +242,7 @@ var imagesUploader = function (dirConfig) {
         getImageUrl: getImagePath,
         uploadFile: uploadFile,
         getFileUrl: getImagePath,
-        getFilePath: getFilePath,
-        resizeImage: resizeImage
+        getFilePath: getFilePath
     };
 };
 

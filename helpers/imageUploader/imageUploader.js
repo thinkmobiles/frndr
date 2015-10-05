@@ -33,8 +33,7 @@ var imageUploader = function (config) {
         getImageUrl: imageUploadImpl.getImageUrl,
         uploadFile: imageUploadImpl.uploadFile,
         getFileUrl: imageUploadImpl.getFileUrl,
-        getFilePath: imageUploadImpl.getFilePath,
-        resizeImage: imageUploadImpl.resizeImage
+        getFilePath: imageUploadImpl.getFilePath
     };
 };
 
