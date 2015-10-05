@@ -6,7 +6,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apn": "^1.7.4",
+    "apn": "1.7.4",
     "async": "1.4.2",
     "body-parser": "1.13.3",
     "chai": "3.2.0",

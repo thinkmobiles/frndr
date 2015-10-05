@@ -21,13 +21,11 @@ module.exports = function(db){
             .exec(function(err, resModel){
 
                 if (err){
-                    return callback(null);
+                    return callback(err);
                 }
 
                 if(!resModel){
-
                     return callback(badRequests.DatabaseError());
-
                 }
 
                 pushToken = resModel.token;
