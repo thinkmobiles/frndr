@@ -116,24 +116,7 @@ var imageHandler = function (db) {
                 async.parallel([
 
                     function(cb){
-                        async
-                            .series([
-
-                                function(callback){
-                                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, callback);
-                                },
-
-                                function(callback){
-                                    imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, CONSTANTS.IMAGE.AVATAR_PREV.WIDTH, callback);
-                                }
-
-                            ], function(err){
-                                if (err){
-                                    return cb(err);
-                                }
-
-                                cb();
-                            });
+                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, cb);
                     },
 
                     function(cb){
@@ -368,23 +351,15 @@ var imageHandler = function (db) {
                             return next(err);
                         }
 
-                        async
-                            .series([
-                                function(cb){
-                                    imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, cb);
-                                },
-                                function(cb){
-                                    imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, CONSTANTS.IMAGE.GALLERY_PREV.WIDTH, cb);
-                                }
-                            ], function(err){
+                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, function(err){
 
-                                if (err){
-                                    return next(err);
-                                }
+                            if (err){
+                                return next(err);
+                            }
 
-                                res.status(200).send({success: 'Gallery image upload successfully'});
+                            res.status(200).send({success: 'Gallery image upload successfully'});
 
-                            });
+                        });
 
                     });
 
@@ -721,19 +696,6 @@ var imageHandler = function (db) {
 
     };
 
-    this.testResizeImage = function(req,res,next){
-        var imageName = '5602af2ff9e06a563bb6d207';
-        //var filePath = 'public/uploads/development/images/5602b09a0986ce600b74f03f.png';
-
-        imageUploader.resizeImage(imageName, CONSTANTS.BUCKETS.IMAGES, 300, function(err){
-            if (err){
-                return next(err);
-            }
-
-            res.status(200).send({success: 'Image upload successfully'});
-        });
-
-    };
 };
 
 module.exports = imageHandler;
