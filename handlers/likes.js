@@ -19,7 +19,6 @@ var LikesHandler = function (app, db) {
 
 
     function addToFriend(userId, friendId, callback){
-
         var message = 'You have new friend';
 
         async
@@ -47,16 +46,12 @@ var LikesHandler = function (app, db) {
 
             ],
             function(err){
-
                 if (err){
                     return callback(err);
                 }
 
-                callback(null);
-
+                callback();
             });
-
-
     }
 
     this.likeUserById = function (req, res, next) {

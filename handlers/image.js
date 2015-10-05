@@ -99,10 +99,6 @@ var imageHandler = function (db) {
 
         imageString = body.image.toString();
 
-        if (!CONSTANTS.REG_EXP.BASE_64.test(imageString)){
-            return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
-        }
-
         User
             .findOne({_id: uId})
             .populate({path: 'images', select: 'avatar'})
@@ -348,10 +344,6 @@ var imageHandler = function (db) {
         }
 
         imageString = body.image.toString();
-
-        if (!CONSTANTS.REG_EXP.BASE_64.test(imageString)){
-            return next(badRequests.InvalidValue({value: imageString, param: 'image'}));
-        }
 
         User
             .findOne({_id: uId}, function (err, resUser) {
