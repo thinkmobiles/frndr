@@ -386,7 +386,7 @@ var UserHandler = function (app, db) {
                                             removeAvatar(avatarName, callback);
                                         },
 
-                                        //remove gallery photoes from filesystem
+                                        //remove gallery photos from filesystem
                                         function (callback) {
                                             removeGalleryPhotoes(galleryArrayNames, callback);
                                         },
