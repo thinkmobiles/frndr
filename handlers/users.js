@@ -85,6 +85,14 @@ var UserHandler = function (app, db) {
          *       "coordinates": [1, 2]
          * }
          *
+         * @example Response example:
+         *
+         *  {
+         *      "success": "Login successful",
+         *      "userId": "561229dd419a2d2c0233cb2f",
+         *      "haveAvatar": true
+         *  }
+         *
          * @param {string} fbId - FaceBook Id for signing user
          * @param {array} coordinates - geoLocation user
          * @method signInClient
@@ -92,6 +100,7 @@ var UserHandler = function (app, db) {
          */
 
         var options = req.body;
+        var haveAvatar = false;
 
         if (!options || !options.fbId) {
             return next(badRequests.NotEnParams({reqParams: 'fbId'}));
@@ -101,7 +110,9 @@ var UserHandler = function (app, db) {
 
                 function (cb) {
                     User
-                        .findOne({fbId: options.fbId}, function (err, userModel) {
+                        .findOne({fbId: options.fbId})
+                        .populate({path:'images', select:'-_id avatar'})
+                        .exec(function (err, userModel) {
                             if (err) {
                                 return cb(err);
                             }
@@ -110,10 +121,17 @@ var UserHandler = function (app, db) {
                 },
 
                 function (userModel, cb) {
+                    var avatarName;
 
                     if (!userModel) {
                         userHelper.createUser(options, cb);
                     } else {
+                        avatarName = userModel.images.get('avatar');
+
+                        if (avatarName && avatarName.length){
+                            haveAvatar = true;
+                        }
+
                         userHelper.updateUser(userModel, options, cb);
                     }
 
@@ -125,7 +143,7 @@ var UserHandler = function (app, db) {
                     return next(err);
                 }
 
-                return session.register(req, res, uId.toString());
+                return session.register(req, res, uId.toString(), haveAvatar);
             });
 
     };

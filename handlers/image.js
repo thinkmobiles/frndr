@@ -667,7 +667,7 @@ var imageHandler = function (db) {
                 }
 
                 if (!imageModel){
-                    return next(badRequests.NotFound({target: 'photoes'}));
+                    return next(badRequests.NotFound({target: 'photos'}));
                 }
 
                 if (imageModel.avatar){

@@ -322,16 +322,16 @@ var MessageHandler = function (app, db) {
          * @example Response example:
          *    [
          *      {
-         *          "_id": "5600127b670ed1ac1b3d60b0",
-         *          "owner": "55fbcb7cc06791dc1dad46567",
-         *          "text": "testing12gffd34ffffff5",
-         *          "date": "2015-09-21T14:21:47.134Z"
-         *      },
-         *      {
          *          "_id": "56001273670ed1ac1b3d60af",
          *          "owner": "55fbcb7cc06791dc1dad46567",
          *          "text": "testing1234ffffff5",
          *          "date": "2015-09-21T14:21:39.383Z"
+         *      },
+         *      {
+         *          "_id": "5600127b670ed1ac1b3d60b0",
+         *          "owner": "55fbcb7cc06791dc1dad46567",
+         *          "text": "testing12gffd34ffffff5",
+         *          "date": "2015-09-21T14:21:47.134Z"
          *      }
          *    ]
          * @method getChatHistory
