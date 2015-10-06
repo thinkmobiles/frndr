@@ -34,10 +34,6 @@ var MessageHandler = function (app, db) {
                     return callback(err);
                 }
 
-                if (!messageModels) {
-                    return callback(badRequests.NotFound({target: 'Messages'}));
-                }
-
                 async.each(messageModels,
 
                     function (messageModel, cb) {

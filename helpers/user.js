@@ -384,7 +384,7 @@ module.exports = function (db) {
                     }
 
                     if (!resultUser || !resultUser.user || !resultUser.user.loc || !resultUser.friends || !resultUser.blockList){
-                        badRequests.NotFound({target: 'User'});
+                        return callback(badRequests.NotFound({target: 'User'}));
                     }
 
                     userCoordinates = resultUser.user.loc.coordinates;
