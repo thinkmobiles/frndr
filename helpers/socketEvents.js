@@ -3,7 +3,7 @@
 var socketEvents = function (io) {
 
 
-    io.on('connection', function( socket ) {
+    io.on('connect', function( socket ) {
 
         socket.on('authorize', function (userId){
             console.log('>>> User with userId: ' + userId + ' connected to socket');
@@ -13,6 +13,7 @@ var socketEvents = function (io) {
         socket.on('logout', function(){
             socket.disconnect();
         });
+
     });
 
 

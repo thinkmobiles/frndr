@@ -415,6 +415,21 @@ var MessageHandler = function (app, db) {
 
         res.status(200).send({success: 'Push not. sent successfully'});
 
+    };
+
+    this.testSocket = function(req, res, next){
+
+        var body = req.body;
+
+        var msg = body.msg;
+        var uId = body.user;
+
+        var io = app.get('io');
+
+        io.to(uId).emit('chat message', msg);
+
+        res.status(200).send({success: "Message sent successfully"});
+
     }
 
 };
