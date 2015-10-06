@@ -383,17 +383,17 @@ module.exports = function (db) {
 
                     }
 
-                    if (!resultUser || !resultUser.user || !resultUser.user.loc || !resultUser.friends || !resultUser.blockList){
+                    if (!resultUser || !resultUser.user || !resultUser.user.loc || !resultUser.user.friends || !resultUser.user.blockList){
                         return callback(badRequests.NotFound({target: 'User'}));
                     }
 
                     userCoordinates = resultUser.user.loc.coordinates;
 
-                    blockList = _.map(resultUser.blockList, function(b){
+                    blockList = _.map(resultUser.user.blockList, function(b){
                         return new ObjectId(b);
                     });
 
-                    friendList = _.map(resultUser.friends, function(f){
+                    friendList = _.map(resultUser.user.friends, function(f){
                         return new ObjectId(f);
                     });
 
