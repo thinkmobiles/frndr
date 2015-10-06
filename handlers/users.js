@@ -186,7 +186,7 @@ var UserHandler = function (app, db) {
          *
          * __HOST: `http://projects.thinkmobiles.com:8859`__
          *
-         * __URL: `/pushToken`__
+         * __URL: `/users/pushToken`__
          *
          * This __method__ allows to add _Push Token_ to _User_
          *
@@ -198,7 +198,7 @@ var UserHandler = function (app, db) {
          *  }
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/pushToker
+         *         http://projects.thinkmobiles.com:8859/users/pushToken
          *
          * @param {string} pushToken - Token for sending Push Notifications
          * @param {string} os - Type of device operation system

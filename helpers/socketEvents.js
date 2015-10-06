@@ -17,8 +17,6 @@ var socketEvents = function (io) {
         });
 
     });
-
-
 };
 
 module.exports = socketEvents;

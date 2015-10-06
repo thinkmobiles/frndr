@@ -25,7 +25,7 @@ module.exports = function(db){
                 }
 
                 if(!resModel){
-                    return callback(badRequests.DatabaseError());
+                   return callback(null);
                 }
 
                 pushToken = resModel.token;

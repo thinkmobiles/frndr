@@ -9,10 +9,10 @@ var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
-
-
+var PushHandler = require('./pushes');
 
 var MessageHandler = function (app, db) {
+    var pusher = PushHandler(db);
     var io = app.get('io');
     var Message = db.model('Message');
     var ObjectId = mongoose.Types.ObjectId;
@@ -141,7 +141,19 @@ var MessageHandler = function (app, db) {
                 io.to(userId).emit('chat message', {ownerId: userId, friendId: friendId, message: msg});
                 io.to(friendId).emit('chat message', {ownerId: userId, friendId: userId, message: msg});
 
-                //TODO send push notification to friendId
+                /*async
+                    .parallel([
+                        async.apply(pusher.sendPushNotification, userId, msg),
+                        async.apply(pusher.sendPushNotification, friendId, msg)
+                    ], function(err){
+
+                        if (err){
+                            return next(err);
+                        }
+
+                        res.status(200).send({success: 'Message send successfully'});
+
+                    });*/
 
                 res.status(200).send({success: 'Message send successfully'});
             });
