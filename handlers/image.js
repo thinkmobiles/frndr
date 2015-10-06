@@ -181,15 +181,12 @@ var imageHandler = function (db) {
         var avatarUrl = '';
 
         Image.findOne({user: uId}, function (err, resultModel) {
-            var fileName;
-
             if (err) {
                 return next(err);
             }
 
             if (resultModel) {
                 avatarName = resultModel.get('avatar');
-                fileName = avatarName;
             }
 
             if (!avatarName) {
@@ -199,7 +196,7 @@ var imageHandler = function (db) {
             avatarUrl = self.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
             
             res.status(200).send({
-                'fileName': fileName,
+                'fileName': avatarName,
                 'url': avatarUrl
             });
 
@@ -241,7 +238,7 @@ var imageHandler = function (db) {
 
             avatarName = imageModel.get('avatar');
 
-            if (!avatarName.length) {
+            if (!avatarName) {
                 return res.status(200).send({success: 'There is no user avatar'});
             }
 
@@ -302,7 +299,7 @@ var imageHandler = function (db) {
             return next(badRequests.NotEnParams({reqParams: 'image'}));
         }
 
-        imageString = body.image.toString();
+        imageString = body.image;
 
         User
             .findOne({_id: uId}, function (err, resUser) {
@@ -393,15 +390,17 @@ var imageHandler = function (db) {
             }
 
             photoNames = imageModel.get('gallery');
+
+            if (!photoNames.length) {
+                return next(badRequests.NotFound({target: 'photos in user gallery'}));
+            }
+
             index = photoNames.indexOf(imageName);
 
             if (index === -1) {
                 return next(badRequests.NotFound({target: 'photo with such file name'}));
             }
 
-            if (!photoNames.length) {
-                return next(badRequests.NotFound({target: 'photo in user gallery'}));
-            }
 
             self.removeImageFile(imageName, CONSTANTS.BUCKETS.IMAGES, function (err) {
                 if (err) {
@@ -526,7 +525,7 @@ var imageHandler = function (db) {
         var newAvatar;
 
         if (!body.newAvatar){
-            return badRequests.NotEnParams({reqParams: 'newAvatar'});
+            return next(badRequests.NotEnParams({reqParams: 'newAvatar'}));
         }
 
         newAvatar = body.newAvatar;
@@ -543,21 +542,20 @@ var imageHandler = function (db) {
 
             if (!imageModel){
 
-                return badRequests.DatabaseError();
+                return next(badRequests.DatabaseError());
 
-            }
-
-            if (imageModel && imageModel.avatar){
-                currentAvatar = imageModel.get('avatar');
             }
 
             gallery = imageModel.get('gallery');
 
+            if (imageModel && imageModel.avatar){
+                currentAvatar = imageModel.get('avatar');
+                gallery.push(currentAvatar);
+            }
+
             index = gallery.indexOf(newAvatar);
 
             gallery.splice(index, 1);
-
-            gallery.push(currentAvatar);
 
             imageModel.update({$set: {avatar: newAvatar, gallery: gallery}}, function(err){
                 if(err){
@@ -617,10 +615,7 @@ var imageHandler = function (db) {
         Image
             .findOne({user: ObjectId(userId)}, function(err, imageModel){
                 var avatarName = '';
-                var photoNames;
                 var avatarUrl = '';
-                var photoUrl;
-                var len;
                 var galleryArray = [];
 
                 if (err){
@@ -637,17 +632,15 @@ var imageHandler = function (db) {
                 }
 
                 if (imageModel.gallery && imageModel.gallery.length){
-                    len = imageModel.gallery.length;
-                    photoNames = imageModel.get('gallery');
 
-                    for (var i = 0; i < len; i++) {
-                        photoUrl = self.computeUrl(photoNames[i], CONSTANTS.BUCKETS.IMAGES);
-                        galleryArray.push(
-                            {
-                                fileName: photoNames[i],
+                    galleryArray = imageModel.gallery.map(function(photoName){
+                        var photoUrl = self.computeUrl(photoName, CONSTANTS.BUCKETS.IMAGES);
+
+                        return {
+                                fileName: photoName,
                                 url: photoUrl
-                            });
-                    }
+                            };
+                    });
                 }
 
                 res.status(200).send(
