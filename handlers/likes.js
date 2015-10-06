@@ -81,10 +81,6 @@ var LikesHandler = function (app, db) {
             return next(badRequests.InvalidValue({value: likedUserId, param: 'id'}));
         }
 
-        if (!likedUserId) {
-            return next(badRequests.NotEnParams({reqParams: 'likeId'}));
-        }
-
         async.waterfall([
 
                 //create or update Like model of user with userId
@@ -171,7 +167,7 @@ var LikesHandler = function (app, db) {
                                 return cb(err);
                             }
 
-                            cb(null);
+                            cb();
                         });
 
                 }
@@ -224,7 +220,7 @@ var LikesHandler = function (app, db) {
 
                 if (!resultModel){
 
-                    likeModel = new Like({user: ObjectId(uId), dislikes:[dislikeId]});
+                    likeModel = new Like({user: ObjectId(uId), likes: [], dislikes:[dislikeId]});
 
                     likeModel
                         .save(function(err){

@@ -37,14 +37,14 @@ var imageHandler = function (db) {
         return (new ObjectId()).toString();
     }
 
-    this.computeUrl = function(imageName, bucket){
+    this.computeUrl = function (imageName, bucket) {
         return imageUploader.getImageUrl(imageName, bucket) + '.png';
     };
 
     this.removeImageFile = function (fileName, folderName, callback) {
 
-        imageUploader.removeImage(fileName, folderName, function(err){
-            if (err){
+        imageUploader.removeImage(fileName, folderName, function (err) {
+            if (err) {
                 return callback(new Error('Can\'t remove file, reason: ' + err));
             }
 
@@ -85,7 +85,7 @@ var imageHandler = function (db) {
         var imageString;
         var imageName;
 
-        if (!body || !body.image){
+        if (!body || !body.image) {
             return next(badRequests.NotEnParams({reqParams: 'image'}));
         }
 
@@ -94,12 +94,12 @@ var imageHandler = function (db) {
         User
             .findOne({_id: uId})
             .populate({path: 'images', select: 'avatar'})
-            .exec(function(err, userModel){
-                if (err){
+            .exec(function (err, userModel) {
+                if (err) {
                     return next(err);
                 }
 
-                if(!userModel || !userModel.images){
+                if (!userModel || !userModel.images) {
                     return next(badRequests.DatabaseError());
                 }
 
@@ -107,14 +107,19 @@ var imageHandler = function (db) {
 
                 async.parallel([
 
-                    function(cb){
+                    function (cb) {
                         imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, cb);
                     },
 
-                    function(cb){
+                    function (cb) {
                         var imageId = userModel.images._id;
 
-                        Image.findOneAndUpdate({_id: imageId}, {$set: {avatar: imageName, user: ObjectId(uId)}}, function (err) {
+                        Image.findOneAndUpdate({_id: imageId}, {
+                            $set: {
+                                avatar: imageName,
+                                user: ObjectId(uId)
+                            }
+                        }, function (err) {
                             if (err) {
                                 return cb(err);
                             }
@@ -123,7 +128,7 @@ var imageHandler = function (db) {
                         });
                     },
 
-                    function(cb){
+                    function (cb) {
                         var oldAvatarName;
 
                         if (!userModel.images.avatar) {
@@ -131,16 +136,16 @@ var imageHandler = function (db) {
                         }
                         oldAvatarName = userModel.images.avatar;
 
-                        self.removeImageFile(oldAvatarName, CONSTANTS.BUCKETS.IMAGES, function(err){
-                            if (err){
+                        self.removeImageFile(oldAvatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
+                            if (err) {
                                 return cb(err);
                             }
                             cb();
                         });
                     }
 
-                ], function(err){
-                    if (err){
+                ], function (err) {
+                    if (err) {
                         return next(err);
                     }
 
@@ -194,7 +199,7 @@ var imageHandler = function (db) {
             }
 
             avatarUrl = self.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
-            
+
             res.status(200).send({
                 'fileName': avatarName,
                 'url': avatarUrl
@@ -242,21 +247,20 @@ var imageHandler = function (db) {
                 return res.status(200).send({success: 'There is no user avatar'});
             }
 
-            self.removeImageFile(avatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
+            imageModel.avatar = ''; //add default imageName maybe
 
+            imageModel.save(function (err) {
                 if (err) {
                     return next(err);
                 }
 
-                imageModel.avatar = ''; //add default imageName maybe
-
-                imageModel.save(function (err) {
+                self.removeImageFile(avatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
                     if (err) {
                         return next(err);
                     }
+
                     res.status(200).send({success: 'Avatar removed successfully'});
                 });
-
             });
         });
     };
@@ -295,7 +299,7 @@ var imageHandler = function (db) {
         var imageId;
         var imageString;
 
-        if (!body || !body.image){
+        if (!body || !body.image) {
             return next(badRequests.NotEnParams({reqParams: 'image'}));
         }
 
@@ -324,9 +328,9 @@ var imageHandler = function (db) {
                             return next(err);
                         }
 
-                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, function(err){
+                        imageUploader.uploadImage(imageString, imageName, CONSTANTS.BUCKETS.IMAGES, function (err) {
 
-                            if (err){
+                            if (err) {
                                 return next(err);
                             }
 
@@ -401,19 +405,19 @@ var imageHandler = function (db) {
                 return next(badRequests.NotFound({target: 'photo with such file name'}));
             }
 
+            photoNames.splice(index, 1);
+            imageModel.gallery = photoNames;
 
-            self.removeImageFile(imageName, CONSTANTS.BUCKETS.IMAGES, function (err) {
+            imageModel.save(function (err) {
                 if (err) {
                     return next(err);
                 }
 
-                photoNames.splice(index, 1);
-                imageModel.gallery = photoNames;
-
-                imageModel.save(function (err) {
+                self.removeImageFile(imageName, CONSTANTS.BUCKETS.IMAGES, function (err) {
                     if (err) {
                         return next(err);
                     }
+
                     res.status(200).send({success: 'Image from gallery removed successfully'});
                 });
             });
@@ -453,7 +457,7 @@ var imageHandler = function (db) {
 
         var uId = req.params.id || req.session.uId;
 
-        if (req.params.id && !CONSTANTS.REG_EXP.OBJECT_ID.test(uId)){
+        if (req.params.id && !CONSTANTS.REG_EXP.OBJECT_ID.test(uId)) {
             return next(badRequests.InvalidValue({value: uId, param: 'id'}));
         }
 
@@ -481,8 +485,8 @@ var imageHandler = function (db) {
             for (var i = 0; i < len; i++) {
                 photoUrl = self.computeUrl(photoNames[i], CONSTANTS.BUCKETS.IMAGES);
                 galleryArray.push({
-                    'fileName':photoNames[i],
-                    'url':photoUrl
+                    'fileName': photoNames[i],
+                    'url': photoUrl
                 });
             }
 
@@ -491,7 +495,7 @@ var imageHandler = function (db) {
         });
     };
 
-    this.changeAvatarFromGallery = function(req, res, next){
+    this.changeAvatarFromGallery = function (req, res, next) {
 
         /**
          * __Type__ __`PUT`__
@@ -524,23 +528,23 @@ var imageHandler = function (db) {
         var index;
         var newAvatar;
 
-        if (!body.newAvatar){
+        if (!body.newAvatar) {
             return next(badRequests.NotEnParams({reqParams: 'newAvatar'}));
         }
 
         newAvatar = body.newAvatar;
 
-        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(newAvatar)){
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(newAvatar)) {
             return next(badRequests.InvalidValue({value: newAvatar, param: 'newAvatar'}));
         }
 
-        Image.findOne({user: uId}, function(err, imageModel){
+        Image.findOne({user: uId}, function (err, imageModel) {
 
-            if (err){
+            if (err) {
                 return next(err);
             }
 
-            if (!imageModel){
+            if (!imageModel) {
 
                 return next(badRequests.DatabaseError());
 
@@ -548,7 +552,7 @@ var imageHandler = function (db) {
 
             gallery = imageModel.get('gallery');
 
-            if (imageModel && imageModel.avatar){
+            if (imageModel && imageModel.avatar) {
                 currentAvatar = imageModel.get('avatar');
                 gallery.push(currentAvatar);
             }
@@ -557,17 +561,17 @@ var imageHandler = function (db) {
 
             gallery.splice(index, 1);
 
-            imageModel.update({$set: {avatar: newAvatar, gallery: gallery}}, function(err){
-                if(err){
+            imageModel.update({$set: {avatar: newAvatar, gallery: gallery}}, function (err) {
+                if (err) {
                     return next(err);
                 }
 
-               res.status(200).send({success: 'Avatar changed successfully'});
+                res.status(200).send({success: 'Avatar changed successfully'});
             });
         });
     };
 
-    this.getAvatarAndGallery = function(req, res, next){
+    this.getAvatarAndGallery = function (req, res, next) {
 
         /**
          * __Type__ __`GET`__
@@ -613,40 +617,39 @@ var imageHandler = function (db) {
         var userId = req.session.uId;
 
         Image
-            .findOne({user: ObjectId(userId)}, function(err, imageModel){
+            .findOne({user: ObjectId(userId)}, function (err, imageModel) {
                 var avatarName = '';
                 var avatarUrl = '';
                 var galleryArray = [];
 
-                if (err){
+                if (err) {
                     return next(err);
                 }
 
-                if (!imageModel){
+                if (!imageModel) {
                     return next(badRequests.NotFound({target: 'photos'}));
                 }
 
-                if (imageModel.avatar){
+                if (imageModel.avatar) {
                     avatarName = imageModel.get('avatar');
                     avatarUrl = self.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
                 }
 
-                if (imageModel.gallery && imageModel.gallery.length){
+                if (imageModel.gallery && imageModel.gallery.length) {
 
-                    galleryArray = imageModel.gallery.map(function(photoName){
+                    galleryArray = imageModel.gallery.map(function (photoName) {
                         var photoUrl = self.computeUrl(photoName, CONSTANTS.BUCKETS.IMAGES);
 
                         return {
-                                fileName: photoName,
-                                url: photoUrl
-                            };
+                            fileName: photoName,
+                            url: photoUrl
+                        };
                     });
                 }
 
                 res.status(200).send(
                     {
-                        avatar:
-                        {
+                        avatar: {
                             fileName: avatarName,
                             url: avatarUrl
                         },
