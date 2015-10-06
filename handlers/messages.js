@@ -427,7 +427,6 @@ var MessageHandler = function (app, db) {
         var io = app.get('io');
 
         io.to(uId).emit('chat message', msg);
-
         res.status(200).send({success: "Message sent successfully"});
 
     }

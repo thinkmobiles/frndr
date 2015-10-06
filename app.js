@@ -38,10 +38,10 @@ module.exports = function () {
     //var Io = require('./helpers/sockets');
     //var io = Io(server);
     var io = require('socket.io')(
-        server,
+        server/*,
         {
             transports: ['websocket']
-        }
+        }*/
     );
     var SocketEvents = require('./helpers/socketEvents');
     var socketEvents = SocketEvents(io);
