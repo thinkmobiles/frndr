@@ -342,6 +342,41 @@ var UserHandler = function (app, db) {
 
                     async.parallel([
 
+                            //remove friend from other users
+                            function(cb){
+                                User
+                                    .find({friends: {$in: [userId]}}, function(err, userModels){
+                                        if (err){
+                                            return cb(err);
+                                        }
+
+                                        if (!userModels.length){
+                                            return cb();
+                                        }
+
+                                        async.each(userModels,
+
+                                            function(userModel, eachCb){
+
+                                                userModel.update({$pull: {friends: userId}}, function(err){
+                                                    if (err){
+                                                        return eachCb(err);
+                                                    }
+
+                                                    eachCb();
+                                                });
+                                            },
+
+                                            function(err){
+                                                if (err){
+                                                    return cb(err);
+                                                }
+
+                                                cb();
+                                            });
+                                    });
+                            },
+
                             //remove PushToken model
                             function (cb) {
                                 PushTokens.remove({userId: userId}, function (err) {
@@ -652,18 +687,22 @@ var UserHandler = function (app, db) {
          * @example Response example:
          *
          * [
-         *   {
-         *      "friendId": "55ffc48dcc6f0ec80b4c0522",
-         *      "newFriend": "false",
-         *      "message": "123456789",
-         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/55f91b11233e6ae311af1ca1.png"
-         *   },
-         *   {
-         *      "friendId": "55ffc48dcc6f0ec80b4c0521",
-         *      "newFriend": "true",
+         *  {
+         *      "name": "Vasya",
+         *      "avatar": "",
+         *      "friendId": "5614d7f92513325c1c5fbd86",
+         *      "newFriend": false,
+         *      "message": "some message",
+         *      "date": "2015-10-07T08:33:36.187Z"
+         *  },
+         *  {
+         *      "name": "",
+         *      "avatar": "http://192.168.88.47:8859/uploads/development/images/56128ef4a4dce4a001e17a49.png",
+         *      "friendId": "560e908d70578cec1c8641fc",
+         *      "newFriend": true,
          *      "message": "New friend. Say Hello.",
-         *      "avatar": ""
-         *   }
+         *      "date": ""
+         *  }
          * ]
          *
          * @method getFriendList
@@ -725,6 +764,7 @@ var UserHandler = function (app, db) {
                         function (err, messageModelsArray) {
                             var msg;
                             var newFriend = false;
+                            var date;
 
                             if (err) {
                                 return cb(err);
@@ -734,40 +774,60 @@ var UserHandler = function (app, db) {
                             if (!messageModelsArray.length) {
                                 msg = 'New friend. Say Hello.';
                                 newFriend = true;
+                                date = '';
                             } else {
                                 msg = messageModelsArray[0].get('text');
+                                date = messageModelsArray[0].get('date');
                             }
 
-                            Image.findOne({user: ObjectId(friendId)}, function (err, imageModel) {
-                                var avatarName;
-                                var avatarUrl;
-                                var resultObj = {};
+                            User
+                                .findOne({_id: ObjectId(friendId)})
+                                .populate({path: 'images', select: '-_id avatar'})
+                                .exec(function (err, userModel) {
+                                    var avatarName;
+                                    var avatarUrl;
+                                    var resultObj = {};
+                                    var imageModel;
 
-                                if (err) {
-                                    return cb(err);
-                                }
-
-                                if (imageModel) {
-                                    avatarName = imageModel.get('avatar');
-
-                                    if (avatarName === ''){
-                                        resultObj.avatar = '';
-                                    } else {
-                                        avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
-                                        resultObj.avatar = avatarUrl;
+                                    if (err) {
+                                        return cb(err);
                                     }
 
-                                } else {
-                                    resultObj.avatar = '';
-                                }
+                                    if (!userModel || !userModel.images){
+                                        return cb(badRequests.DatabaseError())
+                                    }
 
-                                resultObj.friendId = friendId;
-                                resultObj.newFriend = newFriend;
-                                resultObj.message = msg;
+                                    if (!userModel.profile || !userModel.profile.name){
+                                        resultObj.name = '';
+                                    } else {
+                                        resultObj.name = userModel.profile.name
+                                    }
 
-                                resultArray.push(resultObj);
-                                cb();
-                            });
+
+                                    imageModel = userModel.images;
+
+                                    if (imageModel) {
+                                        avatarName = imageModel.get('avatar');
+
+                                        if (!avatarName){
+                                            resultObj.avatar = '';
+                                        } else {
+                                            avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
+                                            resultObj.avatar = avatarUrl;
+                                        }
+
+                                    } else {
+                                        resultObj.avatar = '';
+                                    }
+
+                                    resultObj.friendId = friendId;
+                                    resultObj.newFriend = newFriend;
+                                    resultObj.message = msg;
+                                    resultObj.date = date;
+
+                                    resultArray.push(resultObj);
+                                    cb();
+                                });
 
                         })
                 },
