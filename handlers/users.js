@@ -194,7 +194,8 @@ var UserHandler = function (app, db) {
          *
          * {
          *    "pushToken": "fsdfsf",
-         *    "os": "APPLE"
+         *    "os": "APPLE",
+         *    "deviceId":"hjkfdsjskjhfeb"
          *  }
          *
          * @example Request example:
@@ -202,6 +203,7 @@ var UserHandler = function (app, db) {
          *
          * @param {string} pushToken - Token for sending Push Notifications
          * @param {string} os - Type of device operation system
+         * @param {string} deviceId - Unique device id
          *
          * @method addPushToken
          * @instance
