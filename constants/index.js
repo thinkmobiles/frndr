@@ -31,7 +31,7 @@ module.exports = {
         FEMALE_WITH_BABY: 'Single Mother'
     },
     LIMIT: {
-        MESSAGES: 5,
+        MESSAGES: 15,
         FRIENDS: 8
     },
     REG_EXP:{
