@@ -6,10 +6,8 @@ module.exports = function (db) {
     var ObjectId = mongoose.Schema.Types.ObjectId;
 
     var PushTokens = new Schema({
-        user: {
-            type: ObjectId,
-            ref: 'User'
-        },
+        userId: String,
+        deviceId: String,
         token: String,
         os: {type: String, match: /APPLE|GOOGLE|WINDOWS/i, default: 'APPLE'}
     }, {

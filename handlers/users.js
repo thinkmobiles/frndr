@@ -210,11 +210,11 @@ var UserHandler = function (app, db) {
         var body = req.body;
         var userId = req.session.uId;
 
-        if (!body || !body.pushToken || !body.os) {
-            return next(badRequests.NotEnParams({reqParams: 'pushToken and os'}));
+        if (!body || !body.pushToken || !body.os || !body.deviceId) {
+            return next(badRequests.NotEnParams({reqParams: 'pushToken and os and deviceId'}));
         }
 
-        userHelper.addPushToken(userId, body.pushToken, body.os, function (err) {
+        userHelper.addPushToken(userId, body.deviceId, body.pushToken, body.os, function (err) {
 
             if (err) {
                 return next(err);
@@ -344,7 +344,7 @@ var UserHandler = function (app, db) {
 
                             //remove PushToken model
                             function (cb) {
-                                PushTokens.remove({user: objectUserId}, function (err) {
+                                PushTokens.remove({userId: userId}, function (err) {
                                     if (err) {
                                         return cb(err);
                                     }

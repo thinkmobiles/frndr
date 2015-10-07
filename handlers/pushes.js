@@ -1,7 +1,6 @@
 
 var path = require('path');
 var apn = require('../helpers/apns')(path.join('config/DevelopmentFrndrAPNS.p12'));
-var badRequests = require('../helpers/badRequests');
 
 module.exports = function(db){
 
@@ -9,34 +8,41 @@ module.exports = function(db){
 
     function sendPushNotification(userId, message, options, callback){
 
-        var pushToken;
-
         if (!callback && typeof options === 'function'){
             callback = options;
             options = {};
         }
 
         PushToken
-            .findOne({user: userId}, {token: 1, os: 1})
-            .exec(function(err, resModel){
+            .find({userId: userId}, {token: 1, os: 1})
+            .exec(function(err, resModels){
 
                 if (err){
                     return callback(err);
                 }
 
-                if(!resModel){
+                if(!resModels.length){
                    return callback(null);
                 }
 
-                pushToken = resModel.token;
+                async.each(resModels,
 
-                apn.sendPush(pushToken, message, options);
+                    function(pushModel, cb){
 
-                callback(null);
+                        var pushToken = pushModel.get('token');
 
+                        apn.sendPush(pushToken, message, options);
+                        cb(null);
+
+                    }, function(err){
+
+                        if (err){
+                            return callback(err);
+                        }
+
+                        callback(null);
+                    });
             });
-
-
     }
 
     return {

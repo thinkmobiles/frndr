@@ -15,6 +15,7 @@ var MessageHandler = function (app, db) {
     var pusher = PushHandler(db);
     var io = app.get('io');
     var Message = db.model('Message');
+    var User = db.model('User');
     var ObjectId = mongoose.Types.ObjectId;
     var self = this;
 
@@ -107,6 +108,7 @@ var MessageHandler = function (app, db) {
         var chatId;
         var msg;
         var friendId;
+        var blockList;
 
         if (!options || !options.message || !options.friendId || !options.message.length) {
             return next(badRequests.NotEnParams({reqParams: 'message and friendId'}));
@@ -128,31 +130,55 @@ var MessageHandler = function (app, db) {
             show: [userId, friendId]
         });
 
-        messageModel
-            .save(function (err) {
-                if (err) {
+        User
+            .findOne({_id: ObjectId(friendId)}, {blockList: 1}, function(err, resultUser){
+
+                if (err){
                     return next(err);
                 }
 
-                io.to(userId).emit('chat message', {ownerId: userId, friendId: friendId, message: msg});
-                io.to(friendId).emit('chat message', {ownerId: userId, friendId: userId, message: msg});
+                if(!resultUser){
+                    return next(badRequests.DatabaseError());
+                }
 
-                /*async
-                    .parallel([
-                        async.apply(pusher.sendPushNotification, userId, msg),
-                        async.apply(pusher.sendPushNotification, friendId, msg)
-                    ], function(err){
+                blockList = resultUser.get('blockList');
 
-                        if (err){
+                if (blockList.indexOf(userId) !== -1){
+                    err = new Error('This user blocked You');
+                    err.status = 400;
+
+                    return next(err);
+                }
+
+                messageModel
+                    .save(function (err) {
+                        if (err) {
                             return next(err);
                         }
 
+                        io.to(userId).emit('chat message', {ownerId: userId, friendId: friendId, message: msg});
+                        io.to(friendId).emit('chat message', {ownerId: userId, friendId: userId, message: msg});
+
+                        /*async
+                         .parallel([
+                         async.apply(pusher.sendPushNotification, userId, msg),
+                         async.apply(pusher.sendPushNotification, friendId, msg)
+                         ], function(err){
+
+                         if (err){
+                         return next(err);
+                         }
+
+                         res.status(200).send({success: 'Message send successfully'});
+
+                         });*/
+
                         res.status(200).send({success: 'Message send successfully'});
+                    });
 
-                    });*/
-
-                res.status(200).send({success: 'Message send successfully'});
             });
+
+
     };
 
     this.clearMessage = function (req, res, next) {
@@ -424,6 +450,8 @@ var MessageHandler = function (app, db) {
         res.status(200).send({success: 'Push not. sent successfully'});
 
     };
+
+    // TODO remove in production
 
     this.testSocket = function(req, res, next){
 

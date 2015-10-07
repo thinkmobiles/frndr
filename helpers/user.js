@@ -184,12 +184,12 @@ module.exports = function (db) {
             });
     }
 
-    function addPushToken(userId, pushToken, os, callback){
+    function addPushToken(userId, deviceId, pushToken, os, callback){
 
         var pushTokenModel;
 
         PushTokens
-            .findOne({user: userId}, function(err, resultModel){
+            .findOne({userId: userId, deviceId: deviceId}, function(err, resultModel){
 
                 if (err){
                     return callback(err);
@@ -197,7 +197,7 @@ module.exports = function (db) {
 
                 if (!resultModel){
 
-                    pushTokenModel = new PushTokens({user: userId, token: pushToken, os: os});
+                    pushTokenModel = new PushTokens({userId: userId, deviceId: deviceId, token: pushToken, os: os});
 
                     pushTokenModel
                         .save(function(err){
