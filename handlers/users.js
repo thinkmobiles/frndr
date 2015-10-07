@@ -699,7 +699,7 @@ var UserHandler = function (app, db) {
          *  },
          *  {
          *      "name": "",
-         *      "avatar": "http://192.168.88.47:8859/uploads/development/images/56128ef4a4dce4a001e17a49.png",
+         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/56128ef4a4dce4a001e17a49.png",
          *      "friendId": "560e908d70578cec1c8641fc",
          *      "newFriend": true,
          *      "message": "New friend. Say Hello.",
