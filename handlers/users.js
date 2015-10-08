@@ -264,9 +264,9 @@ var UserHandler = function (app, db) {
          *                      "box",
          *                      "cars"
          *                    ],
-         *          "sexual": "straight",
-         *          "relStatus": "single",
-         *          "sex": "M"
+         *          "sexual": "Straight",
+         *          "relStatus": "Single",
+         *          "sex": "Male"
          *          }
          *       }
          *
@@ -512,14 +512,14 @@ var UserHandler = function (app, db) {
          *      "profile": {
          *          "name": "Petrovich",
          *          "age": "25",
-         *          "relStatus": "single",
+         *          "relStatus": "Single",
          *          "jobTitle": "Doctor",
-         *          "smoker": "true",
-         *          "sexual": "straight",
+         *          "smoker": true,
+         *          "sexual": "Straight",
          *          "things": ["tennis", "box", "cars"],
          *          "bio": "Some biography",
-         *          "visible": "true",
-         *          "sex": "M"
+         *          "visible": true,
+         *          "sex": "Male"
          *      }
          * }
          *
@@ -640,7 +640,7 @@ var UserHandler = function (app, db) {
          *      "name": "Petrovich",
          *      "age": 25,
          *      "distance": 0,
-         *      "sexual": "straight",
+         *      "sexual": "Straight",
          *      "jobTitle": "Doctor",
          *      "smoker": false,
          *      "likes": [
@@ -948,9 +948,9 @@ var UserHandler = function (app, db) {
          *              "box",
          *              "cars"
          *          ],
-         *      "sexual": "straight",
-         *      "relStatus": "single",
-         *      "sex": "M"
+         *      "sexual": "Straight",
+         *      "relStatus": "Single",
+         *      "sex": "Male"
          *      }
          *  }
          *
