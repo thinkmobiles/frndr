@@ -99,7 +99,7 @@ var SearchSettingsHandler = function (db) {
          *      "max": 40,
          *      "min": 25
          *   },
-         *   "sexual": "any",
+         *   "sexual": "Any",
          *   "smoker": false,
          *   "relationship": [],
          *   "distance": 20
@@ -148,7 +148,7 @@ var SearchSettingsHandler = function (db) {
          *      "max": 40,
          *      "min": 25
          *   },
-         *   "sexual": "any",
+         *   "sexual": "Any",
          *   "smoker": false,
          *   "relationship": [],
          *   "distance": 20

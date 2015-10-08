@@ -231,7 +231,6 @@ module.exports = function (db) {
 
                 } else {
 
-                    //if (!(os === 'APPLE' || os === 'GOOGLE' || os === 'WINDOWS')) {
                     if (!osRegExp.test(os)) {
                         return callback(badRequests.InvalidValue({value: os, param: 'os'}));
                     }

@@ -442,6 +442,8 @@ var MessageHandler = function (app, db) {
         });
     };
 
+    // TODO remove in production
+
     this.sendPush = function(req, res, next){
 
 
@@ -453,8 +455,6 @@ var MessageHandler = function (app, db) {
         res.status(200).send({success: 'Push not. sent successfully'});
 
     };
-
-    // TODO remove in production
 
     this.testSocket = function(req, res, next){
 
