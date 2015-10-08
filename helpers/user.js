@@ -73,7 +73,7 @@ module.exports = function (db) {
                 userModel.profile.jobTitle = profile.jobTitle;
             }
 
-            if (profile.smoker){
+            if (profile.hasOwnProperty('smoker')){
 
                 if (profile.smoker !== true && profile.smoker !== false) {
                     return callback(badRequests.InvalidValue({value: profile.smoker, param: 'smoker'}));
@@ -99,11 +99,10 @@ module.exports = function (db) {
                 userModel.profile.bio = profile.bio;
             }
 
-            if (profile.visible){
+            if (profile.hasOwnProperty('visible')){
 
                 if (profile.visible !== true && profile.visible !== false) {
                     return callback(badRequests.InvalidValue({value: profile.visible, param: 'visible'}));
-
                 }
 
                 userModel.profile.visible = profile.visible;

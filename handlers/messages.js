@@ -353,7 +353,7 @@ var MessageHandler = function (app, db) {
          * This __method__ allows to get chat __Messages__
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/messages/55fbcb7cc06791dc1dad4645/0
+         *         http://projects.thinkmobiles.com:8859/messages/55fbcb7cc06791dc1dad4645/1
          *
          *
          * @example Response example:

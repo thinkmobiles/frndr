@@ -45,7 +45,7 @@ var SearchSettingsHandler = function (db) {
             saveData.relationship = relation;
         }
 
-        if (options.smoker){
+        if (options.hasOwnProperty('smoker')){
             if (options.smoker !== true && options.smoker !== false) {
                 return callback(badRequests.InvalidValue({value: options.smoker, param: 'smoker'}));
             }

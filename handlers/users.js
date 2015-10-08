@@ -577,7 +577,7 @@ var UserHandler = function (app, db) {
         var userId = req.session.uId;
         var options = req.body;
 
-        if (!options || !(options.newFriends || options.newMessages)) {
+        if (!options || !(options.hasOwnProperty('newFriends') || options.hasOwnProperty('newMessages'))) {
             return next(badRequests.NotEnParams({reqParams: 'newFriends or newMessages'}));
         }
 
@@ -590,7 +590,7 @@ var UserHandler = function (app, db) {
 
             notification = userModel.get('notification');
 
-            if (options.newFriends){
+            if (options.hasOwnProperty('newFriends')){
 
                 if (options.newFriends !== true && options.newFriends !== false) {
                     return next(badRequests.InvalidValue({value: options.newFriends, param: 'newFriends'}));
@@ -599,7 +599,7 @@ var UserHandler = function (app, db) {
                 notification.newFriends = options.newFriends;
             }
 
-            if (options.newMessages){
+            if (options.hasOwnProperty('newMessages')){
 
                 if (options.newMessages !== true && options.newMessages !== false) {
                     return next(badRequests.InvalidValue({value: options.newMessages, param: 'newMessages'}));
