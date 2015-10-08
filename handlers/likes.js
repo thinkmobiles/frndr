@@ -12,6 +12,8 @@ var mongoose = require('mongoose');
 
 var LikesHandler = function (app, db) {
 
+    'use strict';
+
     //var push = PushHandler(db);
     var Like = db.model('Like');
     var User = db.model('User');

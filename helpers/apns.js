@@ -1,6 +1,7 @@
 
 module.exports = (function () {
-    "use strict";
+
+    'use strict';
 
     var apn = require('apn');
     var isProduction = process.env.NODE_ENV === 'production'; //false;

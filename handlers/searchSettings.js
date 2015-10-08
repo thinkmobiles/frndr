@@ -18,6 +18,9 @@ var relationShipString = '^' + CONSTANTS.SEARCH_REL_STATUSES.COUPLE + '$|^' + CO
 var relationShipRegExp = new RegExp(relationShipString);
 
 var SearchSettingsHandler = function (db) {
+
+    'use strict';
+
     var SearchSettings = db.model('SearchSettings');
     var ObjectId = mongoose.Types.ObjectId;
 

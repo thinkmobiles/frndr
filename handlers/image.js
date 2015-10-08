@@ -27,6 +27,9 @@ if (process.env.UPLOADER_TYPE === 'AmazonS3') {
 }
 
 var imageHandler = function (db) {
+
+    'use strict';
+
     var Image = db.model('Image');
     var User = db.model('User');
     var self = this;

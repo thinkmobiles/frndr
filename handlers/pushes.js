@@ -4,6 +4,8 @@ var apn = require('../helpers/apns')(path.join('config/DevelopmentFrndrAPNS.p12'
 
 module.exports = function(db){
 
+    'use strict';
+
     var PushToken = db.model('PushTokens');
 
     function sendPushNotification(userId, message, options, callback){

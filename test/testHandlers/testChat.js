@@ -4,6 +4,9 @@ var expect = require('chai').expect;
 var async = require('async');
 
 module.exports = function(db){
+
+    'use strict';
+
     var Message = db.model('Message');
     var User = db.model('User');
 
@@ -25,63 +28,53 @@ module.exports = function(db){
 
     describe('Chat test', function(){
 
-        it('SignIn User1', function (done){
+        before('SignIn users', function(done){
+            var url = '/signIn/';
 
-            var url = '/signIn';
+            async
+                .series([
+                    function(cb){
+                        agent
+                            .post(url)
+                            .send(user1)
+                            .end(function(err, res){
 
-            agent
-                .post(url)
-                .send(user1)
-                .expect(200, function(err){
+                                if (err){
+                                    return cb(err);
+                                }
 
-                    if (err) {
+                                uId1 = res.body.userId;
+
+                                cb(null);
+
+                            });
+                    },
+
+                    function(cb){
+                        agent
+                            .post(url)
+                            .send(user2)
+                            .end(function(err, res){
+
+                                if (err){
+                                    return cb(err);
+                                }
+
+                                uId2 = res.body.userId;
+
+                                cb(null);
+
+                            });
+                    }
+                ], function(err){
+
+                    if (err){
                         return done(err);
                     }
 
-                    User
-                        .findOne({fbId: user1.fbId}, function(err, result){
-
-                            if (err){
-                                return done(err);
-                            }
-
-                            uId1 = result._id;
-
-                            done(null);
-
-                        });
+                    done(null);
 
                 });
-
-        });
-
-        it('SignIn User2', function(done){
-
-            var url = '/signIn';
-
-            agent
-                .post(url)
-                .send(user2)
-                .expect(200, function(err){
-
-                    if (err) {
-                        return done(err);
-                    }
-
-                    User
-                        .findOne({fbId: user2.fbId}, function(err, result){
-
-                            if (err){
-                                return done(err);
-                            }
-
-                            uId2 = result._id;
-
-                            done(null);
-
-                        });
-                });
-
         });
 
         it('User2 send message to User1', function(done){
@@ -107,6 +100,170 @@ module.exports = function(db){
                 });
 
         });
+
+        it('User2 get chat list', function(done){
+
+            var url = '/messages/' + uId1.toString();
+            var body;
+
+            agent
+                .get(url)
+                .expect(200, function(err, res){
+
+                    if (err){
+
+                        return done(err);
+
+                    }
+
+                    body = res.body;
+
+                    expect(body).to.instanceof(Array);
+                    expect(body[0]).to.instanceof(Object);
+                    expect(body[0]).to.have.property('_id');
+                    expect(body[0]).to.have.property('owner');
+                    expect(body[0]).to.have.property('text');
+                    expect(body[0]).to.have.property('date');
+
+                    done();
+
+                });
+
+        });
+
+        it('User2 clear chat history', function(done){
+
+            var url = '/messages';
+
+            agent
+                .delete(url)
+                .send({'friendId': uId1.toString()})
+                .expect(200, function(err){
+
+                    if (err){
+                        return done(err);
+                    }
+
+                    done(null);
+
+                });
+
+        });
+
+        it('User2 get chat list', function(done){
+
+            var url = '/messages/' + uId1.toString();
+            var body;
+
+            agent
+                .get(url)
+                .expect(200, function(err, res){
+
+                    if (err){
+
+                        return done(err);
+
+                    }
+
+                    body = res.body;
+
+                    expect(body).to.instanceof(Array);
+                    expect(body.length).to.equals(0);
+
+                    done();
+
+                });
+
+
+        });
+
+        it('signIn user1', function(done){
+            var url = '/signIn';
+
+            agent
+                .post(url)
+                .send(user1)
+                .expect(200, function(err){
+
+                    if (err){
+                        return done(err);
+                    }
+
+                    done(null);
+
+                });
+        });
+
+        it('User1 get chat list', function(done){
+
+            var url = '/messages/' + uId2.toString();
+            var body;
+
+            agent
+                .get(url)
+                .expect(200, function(err, res){
+
+                    if (err){
+
+                        return done(err);
+
+                    }
+
+                    body = res.body;
+
+                    expect(body).to.instanceof(Array);
+                    expect(body[0]).to.instanceof(Object);
+                    expect(body[0]).to.have.property('_id');
+                    expect(body[0]).to.have.property('owner');
+                    expect(body[0]).to.have.property('text');
+                    expect(body[0]).to.have.property('date');
+
+                    done();
+
+                });
+
+        });
+
+        it('User1 clear all chat history', function(done){
+
+            var url = '/messages/all';
+
+            agent
+                .delete(url)
+                .expect(200, function(err){
+                    if (err){
+                        return done(err);
+                    }
+
+                    done(null);
+                });
+
+        });
+
+        it('User1 get chat history with friend User2', function(done){
+
+            var url = '/messages/' + uId2.toString();
+            var body;
+
+            agent
+                .get(url)
+                .expect(200, function(err, res){
+
+                    if (err){
+                        return done(err);
+                    }
+
+                    body = res.body;
+
+                    expect(body).to.instanceof(Array);
+                    expect(body.length).to.equals(0);
+
+                    done(null);
+
+                });
+
+        });
+
 
     });
 

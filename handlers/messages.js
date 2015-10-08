@@ -12,6 +12,9 @@ var mongoose = require('mongoose');
 var PushHandler = require('./pushes');
 
 var MessageHandler = function (app, db) {
+
+    'use strict';
+
     var pusher = PushHandler(db);
     var io = app.get('io');
     var Message = db.model('Message');

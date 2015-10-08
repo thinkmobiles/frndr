@@ -6,7 +6,10 @@ var async = require('async');
 var _ = require('lodash');
 var CONSTANTS = require('../../constants');
 
-module.exports = function (db, defaults) {
+module.exports = function (db) {
+
+    'use strict';
+
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
     var Like = db.model('Like');

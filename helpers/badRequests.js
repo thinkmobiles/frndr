@@ -1,6 +1,9 @@
-'use strict';
+
 
 var BadRequestModule = function () {
+
+    'use strict';
+
     var DEFAULT_ERROR_NAME = 'Error';
     var DEFAULT_ERROR_MESSAGE = 'error';
     var DEFAULT_ERROR_STATUS = 400;

@@ -1,5 +1,7 @@
 module.exports = function () {
 
+    'use strict';
+
     var express = require('express');
     var app = express();
     var path = require('path');
@@ -12,7 +14,6 @@ module.exports = function () {
     var mainDb;
     var session = require('express-session');
     var MongoStore = require('connect-mongo')(session);
-    //var cookieParser = require('cookie-parser');
 
     if (!process.env.NODE_ENV) {
         //TODO change NODE_ENV for production server
@@ -35,19 +36,13 @@ module.exports = function () {
     app.set('port', process.env.PORT || 8859);
 
     //=====socket.io==========================
-    //var Io = require('./helpers/sockets');
-    //var io = Io(server);
-    var io = require('socket.io')(
-        server/*,
-        {
-            transports: ['websocket']
-        }*/
-    );
-    var SocketEvents = require('./helpers/socketEvents');
-    var socketEvents = SocketEvents(io);
-    app.set('io', io);
+    var io = require('socket.io')(server);
 
+    require('./helpers/socketEvents')(io);
+
+    app.set('io', io);
     //=========================================
+
     app.use(express.static(__dirname + '/public'));
     app.use(logger('dev'));
     app.use(bodyParser.json({strict: false, limit: 1024 * 1024 * 200}));

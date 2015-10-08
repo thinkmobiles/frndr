@@ -1,6 +1,9 @@
 var async = require('async');
 
 var DbHandler = function (db) {
+
+    'use strict';
+
     var User = db.model('User');
     var Like = db.model('Like');
     var Image = db.model('Image');

@@ -15,6 +15,9 @@ var MessageHandler = require('./messages');
 
 
 var UserHandler = function (app, db) {
+
+    'use strict';
+
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');

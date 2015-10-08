@@ -20,6 +20,8 @@ var sexRegExp = new RegExp(sexString);
 
 module.exports = function (db) {
 
+    'use strict';
+
     var User = db.model('User');
     var PushTokens = db.model('PushTokens');
     var SearchSettings = db.model('SearchSettings');

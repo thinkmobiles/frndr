@@ -1,6 +1,8 @@
 
 var Session = function () {
 
+    'use strict';
+
     this.register = function ( req, res, userId, haveAvatar, firstLogin ) {
         req.session.loggedIn = true;
         req.session.uId = userId;
