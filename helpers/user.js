@@ -75,7 +75,7 @@ module.exports = function (db) {
 
             if (profile.hasOwnProperty('smoker')){
 
-                if (profile.smoker !== true && profile.smoker !== false) {
+                if (typeof profile.smoker !== 'boolean') {
                     return callback(badRequests.InvalidValue({value: profile.smoker, param: 'smoker'}));
                 }
 
@@ -101,7 +101,7 @@ module.exports = function (db) {
 
             if (profile.hasOwnProperty('visible')){
 
-                if (profile.visible !== true && profile.visible !== false) {
+                if (typeof profile.visible !== 'boolean') {
                     return callback(badRequests.InvalidValue({value: profile.visible, param: 'visible'}));
                 }
 
