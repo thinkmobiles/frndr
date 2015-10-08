@@ -37,16 +37,17 @@ var SearchSettingsHandler = function (db) {
                 if (!relationShipRegExp.test(relation[i])){
                     return callback(badRequests.InvalidValue({value: relation[i], param: 'relationship'}));
                 }
-
             }
 
             saveData.relationship = relation;
         }
 
-        if ((options.smoker === true) || (options.smoker === false)) {
+        if (options.smoker){
+            if (options.smoker !== true && options.smoker !== false) {
+                return callback(badRequests.InvalidValue({value: options.smoker, param: 'smoker'}));
+            }
+
             saveData.smoker = options.smoker;
-        } else {
-            return callback(badRequests.InvalidValue({value: options.smoker, param: 'smoker'}));
         }
 
         if (options.sexual) {
@@ -58,14 +59,16 @@ var SearchSettingsHandler = function (db) {
             saveData.sexual = options.sexual;
         }
 
-        if (options.ageRange && options.ageRange.min && !isNaN(options.ageRange.min) &&
-            (options.ageRange.min >= CONSTANTS.AGE.MIN_AGE) && (options.ageRange.min <= CONSTANTS.AGE.MAX_AGE) &&
-            options.ageRange.max && !isNaN(options.ageRange.max) &&
-            (options.ageRange.max >= CONSTANTS.AGE.MIN_AGE) && (options.ageRange.max <= CONSTANTS.AGE.MAX_AGE)) {
+        if (options.ageRange){
+            if (options.ageRange.min && !isNaN(options.ageRange.min) &&
+                (options.ageRange.min >= CONSTANTS.AGE.MIN_AGE) && (options.ageRange.min <= CONSTANTS.AGE.MAX_AGE) &&
+                options.ageRange.max && !isNaN(options.ageRange.max) &&
+                (options.ageRange.max >= CONSTANTS.AGE.MIN_AGE) && (options.ageRange.max <= CONSTANTS.AGE.MAX_AGE)) {
 
-            saveData.ageRange = options.ageRange;
-        } else {
-            return callback(badRequests.InvalidValue({value: options.ageRange.min + ' or ' + options.ageRange.max, param: 'ageRange.min or ageRange.max'}));
+                saveData.ageRange = options.ageRange;
+            } else {
+                return callback(badRequests.InvalidValue({value: options.ageRange.min + ' or ' + options.ageRange.max, param: 'ageRange.min or ageRange.max'}));
+            }
         }
 
         return callback(null, saveData);

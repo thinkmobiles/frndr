@@ -49,10 +49,13 @@ module.exports = function (db) {
                 userModel.profile.name = profile.name;
             }
 
-            if (profile.age && !isNaN(profile.age) && (profile.age <= CONSTANTS.AGE.MAX_AGE && profile.age >= CONSTANTS.AGE.MIN_AGE)) {
+            if (profile.age){
+
+                if (isNaN(profile.age) || profile.age > CONSTANTS.AGE.MAX_AGE || profile.age < CONSTANTS.AGE.MIN_AGE) {
+                    return callback(badRequests.InvalidValue({value: profile.age, param: 'age'}));
+                }
+
                 userModel.profile.age = profile.age;
-            } else {
-                return callback(badRequests.InvalidValue({value: profile.age, param: 'age'}));
             }
 
             if (profile.relStatus) {
@@ -68,10 +71,13 @@ module.exports = function (db) {
                 userModel.profile.jobTitle = profile.jobTitle;
             }
 
-            if ((profile.smoker === true) || (profile.smoker === false)) {
+            if (profile.smoker){
+
+                if (profile.smoker !== true && profile.smoker !== false) {
+                    return callback(badRequests.InvalidValue({value: profile.smoker, param: 'smoker'}));
+                }
+
                 userModel.profile.smoker = profile.smoker;
-            } else {
-                return callback(badRequests.InvalidValue({value: profile.smoker, param: 'smoker'}));
             }
 
             if (profile.sexual) {
@@ -91,10 +97,14 @@ module.exports = function (db) {
                 userModel.profile.bio = profile.bio;
             }
 
-            if ((profile.visible === true) || (profile.visible === false)) {
+            if (profile.visible){
+
+                if (profile.visible !== true && profile.visible !== false) {
+                    return callback(badRequests.InvalidValue({value: profile.visible, param: 'visible'}));
+
+                }
+
                 userModel.profile.visible = profile.visible;
-            } else {
-                return callback(badRequests.InvalidValue({value: profile.visible, param: 'visible'}));
             }
 
             if (profile.sex) {
