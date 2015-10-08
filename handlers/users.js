@@ -588,19 +588,21 @@ var UserHandler = function (app, db) {
             notification = userModel.get('notification');
 
             if (options.newFriends){
-                if (options.newFriends === true || options.newFriends === false) {
-                    notification.newFriends = options.newFriends;
-                } else {
+
+                if (options.newFriends !== true && options.newFriends !== false) {
                     return next(badRequests.InvalidValue({value: options.newFriends, param: 'newFriends'}));
                 }
+
+                notification.newFriends = options.newFriends;
             }
 
             if (options.newMessages){
-                if (options.newMessages === true || options.newMessages === false) {
-                    notification.newMessages = options.newMessages;
-                } else {
+
+                if (options.newMessages !== true && options.newMessages !== false) {
                     return next(badRequests.InvalidValue({value: options.newMessages, param: 'newMessages'}));
                 }
+
+                notification.newMessages = options.newMessages;
             }
 
             userModel.notification = notification;
@@ -807,12 +809,11 @@ var UserHandler = function (app, db) {
                                         return cb(badRequests.DatabaseError())
                                     }
 
-                                    if (!userModel.profile || !userModel.profile.name){
-                                        resultObj.name = '';
-                                    } else {
+                                    if (userModel.profile && userModel.profile.name){
                                         resultObj.name = userModel.profile.name
+                                    } else {
+                                        resultObj.name = '';
                                     }
-
 
                                     imageModel = userModel.images;
 
@@ -972,11 +973,11 @@ var UserHandler = function (app, db) {
                 var friendModelJSON;
                 var avatarName = '';
                 var avatarUrl = '';
-                var photoUrl;
                 var photoNames;
                 var galleryArray = [];
                 var images;
                 var friends;
+                var error;
 
                 if (err) {
                     return next(err);
@@ -990,7 +991,10 @@ var UserHandler = function (app, db) {
                 friends = friendModelJSON.friends;
 
                 if (friends.indexOf(userId) === -1){
-                    return next(badRequests.AccessError({message: 'This user is not your friend'}));
+                    error = new Error('This user is not your friend');
+                    error.status = 400;
+
+                    return next(error);
                 }
 
                 delete friendModelJSON.friends;
@@ -1011,7 +1015,7 @@ var UserHandler = function (app, db) {
                     photoNames = images.gallery;
 
                     galleryArray = photoNames.map(function (photoName) {
-                        photoUrl = imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.IMAGES);
+                        var photoUrl = imageHandler.computeUrl(photoName, CONSTANTS.BUCKETS.IMAGES);
 
                         return {
                             fileName: photoName,
