@@ -344,7 +344,7 @@ var UserHandler = function (app, db) {
 
                     async.parallel([
 
-                            //remove friend from other users
+                            //remove user from friend list of other users
                             function(cb){
                                 User
                                     .find({friends: {$in: [userId]}}, function(err, userModels){
@@ -563,8 +563,8 @@ var UserHandler = function (app, db) {
          * @example Body example:
          *
          * {
-         *  "newFriends":"true",
-         *  "newMessages":"false"
+         *  "newFriends": true,
+         *  "newMessages": false
          * }
          *
          * @method updateNotificationsSettings
@@ -574,7 +574,7 @@ var UserHandler = function (app, db) {
         var userId = req.session.uId;
         var options = req.body;
 
-        if (!options || (!(options.newFriends || (options.newFriends === false)) && !(options.newMessages || (options.newMessages === false)))) {
+        if (!options || !(options.newFriends || options.newMessages)) {
             return next(badRequests.NotEnParams({reqParams: 'newFriends or newMessages'}));
         }
 
@@ -587,12 +587,20 @@ var UserHandler = function (app, db) {
 
             notification = userModel.get('notification');
 
-            if (options.newFriends || (options.newFriends === false)) {
-                notification.newFriends = options.newFriends;
+            if (options.newFriends){
+                if (options.newFriends === true || options.newFriends === false) {
+                    notification.newFriends = options.newFriends;
+                } else {
+                    return next(badRequests.InvalidValue({value: options.newFriends, param: 'newFriends'}));
+                }
             }
 
-            if (options.newMessages || (options.newMessages === false)) {
-                notification.newMessages = options.newMessages;
+            if (options.newMessages){
+                if (options.newMessages === true || options.newMessages === false) {
+                    notification.newMessages = options.newMessages;
+                } else {
+                    return next(badRequests.InvalidValue({value: options.newMessages, param: 'newMessages'}));
+                }
             }
 
             userModel.notification = notification;

@@ -11,10 +11,10 @@ var mongoose = require('mongoose');
 var CONSTANTS = require('../constants');
 var _ = require('lodash');
 
-var sexualString = CONSTANTS.SEXUAL.ANY + '|' + CONSTANTS.SEXUAL.STRAIGHT + '|' + CONSTANTS.SEXUAL.BISEXUAL + '|' + CONSTANTS.SEXUAL.LESBIAN;
+var sexualString = '^' + CONSTANTS.SEXUAL.ANY + '$|^' + CONSTANTS.SEXUAL.STRAIGHT + '$|^' + CONSTANTS.SEXUAL.BISEXUAL + '$|^' + CONSTANTS.SEXUAL.LESBIAN + '$';
 var sexualRegExp = new RegExp(sexualString);
 
-var relationShipString = CONSTANTS.SEARCH_REL_STATUSES.COUPLE + '|' + CONSTANTS.SEARCH_REL_STATUSES.FAMILY + '|' + CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY + '|' + CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY + '|' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE + '|' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE;
+var relationShipString = '^' + CONSTANTS.SEARCH_REL_STATUSES.COUPLE + '$|^' + CONSTANTS.SEARCH_REL_STATUSES.FAMILY + '$|^' + CONSTANTS.SEARCH_REL_STATUSES.FEMALE_WITH_BABY + '$|^' + CONSTANTS.SEARCH_REL_STATUSES.MALE_WITH_BABY + '$|^' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_FEMALE + '$|^' + CONSTANTS.SEARCH_REL_STATUSES.SINGLE_MALE + '$';
 var relationShipRegExp = new RegExp(relationShipString);
 
 var SearchSettingsHandler = function (db) {
@@ -35,31 +35,37 @@ var SearchSettingsHandler = function (db) {
 
             for ( var i = relation.length; i--; ){
                 if (!relationShipRegExp.test(relation[i])){
-                    return callback(badRequests.InvalidValue({value: 'relationship'}));
+                    return callback(badRequests.InvalidValue({value: relation[i], param: 'relationship'}));
                 }
 
             }
 
-            saveData.relationship = options.relationship;
+            saveData.relationship = relation;
         }
 
         if ((options.smoker === true) || (options.smoker === false)) {
             saveData.smoker = options.smoker;
+        } else {
+            return callback(badRequests.InvalidValue({value: options.smoker, param: 'smoker'}));
         }
 
         if (options.sexual) {
 
             if (!sexualRegExp.test(options.sexual)){
-                return callback(badRequests.InvalidValue({value: 'sexual'}));
+                return callback(badRequests.InvalidValue({value: options.sexual, param: 'sexual'}));
             }
 
             saveData.sexual = options.sexual;
         }
 
         if (options.ageRange && options.ageRange.min && !isNaN(options.ageRange.min) &&
-            options.ageRange.max && !isNaN(options.ageRange.max)) {
+            (options.ageRange.min >= CONSTANTS.AGE.MIN_AGE) && (options.ageRange.min <= CONSTANTS.AGE.MAX_AGE) &&
+            options.ageRange.max && !isNaN(options.ageRange.max) &&
+            (options.ageRange.max >= CONSTANTS.AGE.MIN_AGE) && (options.ageRange.max <= CONSTANTS.AGE.MAX_AGE)) {
 
             saveData.ageRange = options.ageRange;
+        } else {
+            return callback(badRequests.InvalidValue({value: options.ageRange.min + ' or ' + options.ageRange.max, param: 'ageRange.min or ageRange.max'}));
         }
 
         return callback(null, saveData);

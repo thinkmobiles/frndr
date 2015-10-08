@@ -14,7 +14,7 @@ module.exports = function (db) {
             age: Number,
             sex: {
                 type: String,
-                match: /Male|Female/i,
+                match: /^Male$|^Female$/,
                 default: CONSTANTS.SEX.MALE
             },
             relStatus: {
@@ -49,7 +49,7 @@ module.exports = function (db) {
         loc: {
             type: {
                 type: String,
-                match: /Point\b/,
+                match: /^Point$/,
                 default: 'Point'
             },
             coordinates: [Number]

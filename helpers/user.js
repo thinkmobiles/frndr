@@ -8,13 +8,14 @@ var _ = require('lodash');
 var geo = require('geolib');
 var ObjectId = mongoose.Types.ObjectId;
 
-var sexualString = CONSTANTS.SEXUAL.ANY + '|' + CONSTANTS.SEXUAL.STRAIGHT + '|' + CONSTANTS.SEXUAL.BISEXUAL + '|' + CONSTANTS.SEXUAL.LESBIAN;
+var sexualString = '^' + CONSTANTS.SEXUAL.ANY + '$|^' + CONSTANTS.SEXUAL.STRAIGHT + '$|^' + CONSTANTS.SEXUAL.BISEXUAL + '$|^' + CONSTANTS.SEXUAL.LESBIAN + '$';
 var sexualRegExp = new RegExp(sexualString);
+var osRegExp = new RegExp('^APPLE$|^GOOGLE$|^WINDOWS$');
 
-var relationStatusString = CONSTANTS.REL_STATUSES.COUPLE + '|' + CONSTANTS.REL_STATUSES.FAMILY + '|' + CONSTANTS.REL_STATUSES.SINGLE + '|' + CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY;
+var relationStatusString = '^' + CONSTANTS.REL_STATUSES.COUPLE + '$|^' + CONSTANTS.REL_STATUSES.FAMILY + '$|^' + CONSTANTS.REL_STATUSES.SINGLE + '$|^' + CONSTANTS.REL_STATUSES.SINGLE_WITH_BABY + '$';
 var relationStatusRegExp = new RegExp(relationStatusString);
 
-var sexString = CONSTANTS.SEX.MALE + '|' + CONSTANTS.SEX.FEMALE;
+var sexString = '^' + CONSTANTS.SEX.MALE + '$|^' + CONSTANTS.SEX.FEMALE + '$';
 var sexRegExp = new RegExp(sexString);
 
 module.exports = function (db) {
@@ -50,6 +51,8 @@ module.exports = function (db) {
 
             if (profile.age && !isNaN(profile.age) && (profile.age <= CONSTANTS.AGE.MAX_AGE && profile.age >= CONSTANTS.AGE.MIN_AGE)) {
                 userModel.profile.age = profile.age;
+            } else {
+                return callback(badRequests.InvalidValue({value: profile.age, param: 'age'}));
             }
 
             if (profile.relStatus) {
@@ -67,6 +70,8 @@ module.exports = function (db) {
 
             if ((profile.smoker === true) || (profile.smoker === false)) {
                 userModel.profile.smoker = profile.smoker;
+            } else {
+                return callback(badRequests.InvalidValue({value: profile.smoker, param: 'smoker'}));
             }
 
             if (profile.sexual) {
@@ -88,6 +93,8 @@ module.exports = function (db) {
 
             if ((profile.visible === true) || (profile.visible === false)) {
                 userModel.profile.visible = profile.visible;
+            } else {
+                return callback(badRequests.InvalidValue({value: profile.visible, param: 'visible'}));
             }
 
             if (profile.sex) {
@@ -212,7 +219,8 @@ module.exports = function (db) {
 
                 } else {
 
-                    if (!(os === 'APPLE' || os === 'GOOGLE' || os === 'WINDOWS')) {
+                    //if (!(os === 'APPLE' || os === 'GOOGLE' || os === 'WINDOWS')) {
+                    if (!osRegExp.test(os)) {
                         return callback(badRequests.InvalidValue({value: os, param: 'os'}));
                     }
 
