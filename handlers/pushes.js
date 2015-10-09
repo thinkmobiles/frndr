@@ -1,6 +1,7 @@
 
 var path = require('path');
 var apn = require('../helpers/apns')(path.join('config/DevelopmentFrndrAPNS.p12'));
+var async = require('async');
 
 module.exports = function(db){
 
