@@ -20,14 +20,21 @@ var LikesHandler = function (app, db) {
     var ObjectId = mongoose.Types.ObjectId;
 
 
-    function addToFriend(userId, friendId, callback){
+    function addToFriend(userId, friendId, callback) {
         var message = 'You have new friend';
+        var contactModel;
 
         async
             .series([
-                function(cb){
-                    User
-                        .findOneAndUpdate({_id: ObjectId(userId)}, {$addToSet: {friends: friendId}}, function (err) {
+                function (cb) {
+                    contactModel = new Contact(
+                        {
+                            userId: userId,
+                            friendId: friendId
+                        });
+
+                    contactModel
+                        .save(function (err) {
                             if (err) {
                                 return cb(err);
                             }
@@ -36,19 +43,19 @@ var LikesHandler = function (app, db) {
                         });
                 }/*,
 
-                function(cb){
-                    push.sendPushNotification(userId, message, function(err){
-                        if (err){
-                            return cb(err);
-                        }
+                 function(cb){
+                 push.sendPushNotification(userId, message, function(err){
+                 if (err){
+                 return cb(err);
+                 }
 
-                        cb();
-                    });
-                }*/
+                 cb();
+                 });
+                 }*/
 
             ],
-            function(err){
-                if (err){
+            function (err) {
+                if (err) {
                     return callback(err);
                 }
 
@@ -79,7 +86,7 @@ var LikesHandler = function (app, db) {
         var userId = req.session.uId;
         var likedUserId = req.params.id;
 
-        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(likedUserId)){
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(likedUserId)) {
             return next(badRequests.InvalidValue({value: likedUserId, param: 'id'}));
         }
 
@@ -164,8 +171,8 @@ var LikesHandler = function (app, db) {
                         .parallel([
                             async.apply(addToFriend, userId, likedUserId),
                             async.apply(addToFriend, likedUserId, userId)
-                        ], function(err){
-                            if (err){
+                        ], function (err) {
+                            if (err) {
                                 return cb(err);
                             }
 
@@ -184,7 +191,7 @@ var LikesHandler = function (app, db) {
             });
     };
 
-    this.dislikesUserById = function(req, res, next){
+    this.dislikesUserById = function (req, res, next) {
 
         /**
          * __Type__ __`GET`__
@@ -207,27 +214,27 @@ var LikesHandler = function (app, db) {
         var uId = req.session.uId;
         var dislikeId = req.params.id;
 
-        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(dislikeId)){
+        if (!CONSTANTS.REG_EXP.OBJECT_ID.test(dislikeId)) {
             return next(badRequests.InvalidValue({value: dislikeId, param: 'id'}));
         }
 
         Like
             .findOne({user: ObjectId(uId)})
-            .exec(function(err, resultModel){
+            .exec(function (err, resultModel) {
                 var likeModel;
 
-                if (err){
+                if (err) {
                     return next(err);
                 }
 
-                if (!resultModel){
+                if (!resultModel) {
 
-                    likeModel = new Like({user: ObjectId(uId), likes: [], dislikes:[dislikeId]});
+                    likeModel = new Like({user: ObjectId(uId), likes: [], dislikes: [dislikeId]});
 
                     likeModel
-                        .save(function(err){
+                        .save(function (err) {
 
-                            if (err){
+                            if (err) {
                                 return next(err);
                             }
 
@@ -237,9 +244,9 @@ var LikesHandler = function (app, db) {
 
                 } else {
 
-                    resultModel.update({$addToSet: {dislikes: dislikeId}}, function(err){
+                    resultModel.update({$addToSet: {dislikes: dislikeId}}, function (err) {
 
-                        if (err){
+                        if (err) {
                             return next(err);
                         }
 

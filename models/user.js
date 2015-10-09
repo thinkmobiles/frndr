@@ -44,7 +44,6 @@ module.exports = function (db) {
                 default: true
             }
         },
-        friends: [String],
         blockList: [String],
         loc: {
             type: {
