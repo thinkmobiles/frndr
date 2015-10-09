@@ -313,6 +313,236 @@ module.exports = function (db) {
 
         });
 
+        it('Update only user coordinates', function (done) {
+            var updateObj = {
+                coordinates: newCoordinates1
+            };
+
+            var url = '/users';
+
+            userAgent
+                .put(url)
+                .send(updateObj)
+                .expect(200, function (err) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id: uId1}, function (err, resultUser) {
+
+                            if (err) {
+                                return done(err);
+                            }
+
+                            expect(resultUser).to.instanceOf(Object);
+                            expect(resultUser.loc.coordinates[0]).to.equals(newCoordinates1[0]);
+                            expect(resultUser.loc.coordinates[1]).to.equals(newCoordinates1[1]);
+
+                            done();
+                        });
+                });
+        });
+
+        it('Update user: bad age parameter', function (done) {
+            var updateObj = {
+                profile: {
+                    age: 450
+                }
+            };
+
+            var url = '/users';
+
+            userAgent
+                .put(url)
+                .send(updateObj)
+                .expect(400, function (err) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id: uId1}, function (err, resultUser) {
+
+                            if (err) {
+                                return done(err);
+                            }
+
+                            expect(resultUser).to.instanceOf(Object);
+                            expect(resultUser.profile.age).to.not.equals(450);
+
+                            done();
+                        });
+                });
+        });
+
+        it('Update user: bad smoker parameter', function (done) {
+            var updateObj = {
+                profile: {
+                    smoker: 'false'
+                }
+            };
+
+            var url = '/users';
+
+            userAgent
+                .put(url)
+                .send(updateObj)
+                .expect(400, function (err) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id: uId1}, function (err, resultUser) {
+
+                            if (err) {
+                                return done(err);
+                            }
+
+                            expect(resultUser).to.instanceOf(Object);
+                            expect(resultUser.profile.smoker).to.not.equals('false');
+
+                            done();
+                        });
+                });
+        });
+
+        it('Update user: bad sex parameter', function (done) {
+            var updateObj = {
+                profile: {
+                    sex: 'M'
+                }
+            };
+
+            var url = '/users';
+
+            userAgent
+                .put(url)
+                .send(updateObj)
+                .expect(400, function (err) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id: uId1}, function (err, resultUser) {
+
+                            if (err) {
+                                return done(err);
+                            }
+
+                            expect(resultUser).to.instanceOf(Object);
+                            expect(resultUser.profile.sex).to.not.equals('M');
+
+                            done();
+                        });
+                });
+        });
+
+        it('Update user: bad sexual parameter', function (done) {
+            var updateObj = {
+                profile: {
+                    sexual: 'Straight123'
+                }
+            };
+
+            var url = '/users';
+
+            userAgent
+                .put(url)
+                .send(updateObj)
+                .expect(400, function (err) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id: uId1}, function (err, resultUser) {
+
+                            if (err) {
+                                return done(err);
+                            }
+
+                            expect(resultUser).to.instanceOf(Object);
+                            expect(resultUser.profile.sexual).to.not.equals('Straight123');
+
+                            done();
+                        });
+                });
+        });
+
+        it('Update user: bad relStatus parameter', function (done) {
+            var updateObj = {
+                profile: {
+                    relStatus: 'Single123'
+                }
+            };
+
+            var url = '/users';
+
+            userAgent
+                .put(url)
+                .send(updateObj)
+                .expect(400, function (err) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id: uId1}, function (err, resultUser) {
+
+                            if (err) {
+                                return done(err);
+                            }
+
+                            expect(resultUser).to.instanceOf(Object);
+                            expect(resultUser.profile.relStatus).to.not.equals('Single123');
+
+                            done();
+                        });
+                });
+        });
+
+        it('Update user: bad visible parameter', function (done) {
+            var updateObj = {
+                profile: {
+                    visible: 'true'
+                }
+            };
+
+            var url = '/users';
+
+            userAgent
+                .put(url)
+                .send(updateObj)
+                .expect(400, function (err) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User
+                        .findOne({_id: uId1}, function (err, resultUser) {
+
+                            if (err) {
+                                return done(err);
+                            }
+
+                            expect(resultUser).to.instanceOf(Object);
+                            expect(resultUser.profile.visible).to.not.equals('true');
+
+                            done();
+                        });
+                });
+        });
+
         it('User1 likes User2', function (done) {
             var model;
             var url = '/users/like/' + uId2.toString();
