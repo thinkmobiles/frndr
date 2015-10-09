@@ -162,19 +162,13 @@ var MessageHandler = function (app, db) {
                         io.to(userId).emit('chat message', {ownerId: userId, friendId: friendId, message: msg});
                         io.to(friendId).emit('chat message', {ownerId: userId, friendId: userId, message: msg});
 
-                        /*async
-                         .parallel([
-                         async.apply(pusher.sendPushNotification, userId, msg),
-                         async.apply(pusher.sendPushNotification, friendId, msg)
-                         ], function(err){
+                        /*pusher.sendPushNotification(friendId, msg, function(err){
+                            if (err){
+                                return next(err);
+                            }
 
-                         if (err){
-                         return next(err);
-                         }
-
-                         res.status(200).send({success: 'Message send successfully'});
-
-                         });*/
+                            res.status(200).send({success: 'Message send successfully'});
+                        });*/
 
                         res.status(200).send({success: 'Message send successfully'});
                     });

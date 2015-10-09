@@ -9,14 +9,13 @@ var socketEvents = function (io) {
         socket.emit('connectedToServer', {success: true});
 
         socket.on('authorize', function (userId){
-            console.log('>>> User with userId: ' + userId + ' connected to socket');
+            console.log('>>> User with userId: ' + userId + ' connected to socket ' + socket.id);
             socket.join(userId);
         });
 
-        socket.on('logout', function(){
-            socket.disconnect();
+        socket.on('disconnect', function(){
+            console.log('>>> socket ' + socket.id + ' disconnected');
         });
-
     });
 };
 
