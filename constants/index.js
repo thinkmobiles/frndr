@@ -32,7 +32,8 @@ module.exports = {
     },
     LIMIT: {
         MESSAGES: 15,
-        FRIENDS: 8
+        FRIENDS: 8,
+        FIND_USERS: 10
     },
     REG_EXP:{
         OBJECT_ID: new RegExp('(^[0-9a-fA-F]{24}$)')

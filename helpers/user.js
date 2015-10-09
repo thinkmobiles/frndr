@@ -351,7 +351,7 @@ module.exports = function (db) {
         var findObj;
         var projectionObj;
         var notIObj;
-        var limit = 10;
+        var limit = CONSTANTS.LIMIT.FIND_USERS;
         var foundedUsers = [];
         var userObj;
         var gallery;
