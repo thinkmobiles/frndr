@@ -30,7 +30,7 @@ module.exports = function (app, db) {
             if (status === 404 || status === 401) {
                 logWriter.log('', err.message + '\n' + err.stack);
             }
-            res.status(status);
+            res.status(status).send({message: err.message});
         } else {
             if (status !== 401) {
                 logWriter.log('', err.message + '\n' + err.stack);
