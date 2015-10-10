@@ -24,6 +24,7 @@ var UserHandler = function (app, db) {
     var Like = db.model('Like');
     var Image = db.model('Image');
     var Message = db.model('Message');
+    var Contact = db.model('Contact');
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(db);
     var ObjectId = mongoose.Types.ObjectId;
@@ -727,136 +728,146 @@ var UserHandler = function (app, db) {
         var userId = req.session.uId;
         var pageCount = req.params.page || 1;
         var resultArray = [];
+        var indexFrom;
+        var indexTo;
 
         if (isNaN(pageCount) || pageCount < 1) {
             return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
         }
 
-        userHelper.getUserById(userId, function (err, userModel) {
-            var friends;
-            var indexFrom = 0;
-            var indexTo;
+        Contact
+            .find({userId: userId}, function(err, friends){
 
-            if (err) {
-                return next(err);
-            }
+                if (err){
+                    return next(err);
+                }
 
-            friends = userModel.get('friends');
+                if (friends.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
+                    indexFrom = friends.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
+                    indexTo = CONSTANTS.LIMIT.FRIENDS;
 
-            if (friends.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
-                indexFrom = friends.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
-                indexTo = CONSTANTS.LIMIT.FRIENDS;
+                } else {
+                    indexTo = friends.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
+                }
 
-            } else {
-                indexTo = friends.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
-            }
+                friends = friends.splice(indexFrom, indexTo);
 
-            friends = friends.splice(indexFrom, indexTo);
+                async.eachSeries(friends,
 
-            async.eachSeries(friends,
+                    function (friend, cb) {
+                        var friendId = friend.friendId;
 
-                function (friendId, cb) {
-                    var chatId = messageHandler.computeChatId(userId, friendId);
+                        var chatId = messageHandler.computeChatId(userId, friendId);
 
-                    Message.find(
-                        {
-                            $and: [
-                                {chatId: chatId},
-                                {show: {$in: [userId]}}
+                        Message.find(
+                            {
+                                $and: [
+                                    {chatId: chatId},
+                                    {show: {$in: [userId]}}
 
-                            ]
-                        },
-
-                        {__v: 0, chatId: 0, show: 0},
-
-                        {
-                            sort: {
-                                date: -1
+                                ]
                             },
-                            limit: 1
-                        },
 
-                        function (err, messageModelsArray) {
-                            var msg;
-                            var newFriend = false;
-                            var date;
+                            {__v: 0, chatId: 0, show: 0},
 
-                            if (err) {
-                                return cb(err);
-                            }
+                            {
+                                sort: {
+                                    date: -1
+                                },
+                                limit: 1
+                            },
 
-                            //TODO: change for old friend when cleared chat history
-                            if (!messageModelsArray.length) {
-                                msg = 'New friend. Say Hello.';
-                                newFriend = true;
-                                date = '';
-                            } else {
-                                msg = messageModelsArray[0].get('text');
-                                date = messageModelsArray[0].get('date');
-                            }
+                            function (err, messageModelsArray) {
+                                var msg;
+                                var newFriend = false;
+                                var date;
+                                var owner;
 
-                            User
-                                .findOne({_id: ObjectId(friendId)})
-                                .populate({path: 'images', select: '-_id avatar'})
-                                .exec(function (err, userModel) {
-                                    var avatarName;
-                                    var avatarUrl;
-                                    var resultObj = {};
-                                    var imageModel;
+                                if (err) {
+                                    return cb(err);
+                                }
 
-                                    if (err) {
-                                        return cb(err);
-                                    }
+                                //TODO: change for old friend when cleared chat history
+                                if (!messageModelsArray.length) {
+                                    msg = 'New friend. Say Hello.';
+                                    newFriend = true;
+                                    date = '';
+                                } else {
+                                    msg = messageModelsArray[0].get('text');
+                                    owner = messageModelsArray[0].get('owner');
+                                    date = messageModelsArray[0].get('date');
+                                }
 
-                                    if (!userModel || !userModel.images){
-                                        return cb(badRequests.DatabaseError())
-                                    }
+                                User
+                                    .findOne({_id: ObjectId(friendId)})
+                                    .populate({path: 'images', select: '-_id avatar'})
+                                    .exec(function (err, userModel) {
+                                        var avatarName;
+                                        var avatarUrl;
+                                        var resultObj = {};
+                                        var imageModel;
+                                        var haveNewMsg = false;
 
-                                    if (userModel.profile && userModel.profile.name){
-                                        resultObj.name = userModel.profile.name
-                                    } else {
-                                        resultObj.name = '';
-                                    }
-
-                                    imageModel = userModel.images;
-
-                                    if (imageModel) {
-                                        avatarName = imageModel.get('avatar');
-
-                                        if (!avatarName){
-                                            resultObj.avatar = '';
-                                        } else {
-                                            avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
-                                            resultObj.avatar = avatarUrl;
+                                        if (err) {
+                                            return cb(err);
                                         }
 
-                                    } else {
-                                        resultObj.avatar = '';
-                                    }
+                                        if (!userModel || !userModel.images){
+                                            return cb(badRequests.DatabaseError())
+                                        }
 
-                                    resultObj.friendId = friendId;
-                                    resultObj.newFriend = newFriend;
-                                    resultObj.message = msg;
-                                    resultObj.date = date;
+                                        if (userModel.profile && userModel.profile.name){
+                                            resultObj.name = userModel.profile.name
+                                        } else {
+                                            resultObj.name = '';
+                                        }
 
-                                    resultArray.push(resultObj);
-                                    cb();
-                                });
+                                        imageModel = userModel.images;
 
-                        })
-                },
+                                        if (imageModel) {
+                                            avatarName = imageModel.get('avatar');
 
-                function (err) {
-                    if (err) {
-                        return next(err);
-                    }
+                                            if (!avatarName){
+                                                resultObj.avatar = '';
+                                            } else {
+                                                avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
+                                                resultObj.avatar = avatarUrl;
+                                            }
 
-                    resultArray.reverse(); //new friend at start of array
+                                        } else {
+                                            resultObj.avatar = '';
+                                        }
 
-                    res.status(200).send(resultArray);
-                });
+                                        if (date > friend.lastReadDate){
+                                            haveNewMsg = true;
+                                        }
 
-        });
+                                        resultObj.friendId = friendId;
+                                        resultObj.newFriend = newFriend;
+                                        resultObj.message = msg;
+                                        resultObj.date = date;
+                                        resultObj.haveNewMsg = haveNewMsg;
+                                        resultObj.owner = owner;
+
+                                        resultArray.push(resultObj);
+                                        cb();
+                                    });
+
+                            })
+                    },
+
+                    function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        resultArray.reverse(); //new friend at start of array
+
+                        res.status(200).send(resultArray);
+                    });
+
+            });
+
     };
 
     this.blockFriend = function (req, res, next) {

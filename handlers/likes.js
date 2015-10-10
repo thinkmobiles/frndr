@@ -17,6 +17,7 @@ var LikesHandler = function (app, db) {
     //var push = PushHandler(db);
     var Like = db.model('Like');
     var User = db.model('User');
+    var Contact = db.model('Contact');
     var ObjectId = mongoose.Types.ObjectId;
 
 
@@ -39,19 +40,21 @@ var LikesHandler = function (app, db) {
                                 return cb(err);
                             }
 
-                            cb();
+                            cb(null);
                         });
-                }/*,
+                },
 
-                 function(cb){
-                 push.sendPushNotification(userId, message, function(err){
-                 if (err){
-                 return cb(err);
-                 }
+                function (cb) {
+                    /*push.sendPushNotification(userId, message, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
 
-                 cb();
-                 });
-                 }*/
+                        cb(null);
+                    });*/
+
+                    cb(null);
+                }
 
             ],
             function (err) {
@@ -59,7 +62,7 @@ var LikesHandler = function (app, db) {
                     return callback(err);
                 }
 
-                callback();
+                callback(null);
             });
     }
 
@@ -164,7 +167,7 @@ var LikesHandler = function (app, db) {
                 //add to friends
                 function (canBeFriends, cb) {
                     if (!canBeFriends) {
-                        return cb();
+                        return cb(null);
                     }
 
                     async
@@ -176,7 +179,7 @@ var LikesHandler = function (app, db) {
                                 return cb(err);
                             }
 
-                            cb();
+                            cb(null);
                         });
 
                 }

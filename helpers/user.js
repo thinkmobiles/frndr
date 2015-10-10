@@ -27,6 +27,7 @@ module.exports = function (db) {
     var SearchSettings = db.model('SearchSettings');
     var Image = db.model('Image');
     var Like = db.model('Like');
+    var Contact = db.model('Contact');
     var imageHandler = new ImageHandler(db);
 
     function prepareModelToSave(userModel, options, callback) {
@@ -364,7 +365,7 @@ module.exports = function (db) {
         var disLikeObj = {};
 
         SearchSettings.findOne({user: userId}, {_id: 0, __v: 0})
-            .populate({path: 'user', select: 'loc friends blockList'})
+            .populate({path: 'user', select: 'loc blockList'})
             .exec(function(err, resultUser){
 
                 if (err){
@@ -596,7 +597,37 @@ module.exports = function (db) {
 
     function addToBlockListById (userId, blockedId, callback){
 
-        getUserById(userId, function (err, userModel) {
+        Contact
+            .findOne({userId: userId, friendId: blockedId}, function(err, result){
+
+                if (err){
+                    return callback(err);
+                }
+
+                if (result){
+                    result.remove(function(err){
+
+                        if (err){
+                            return callback(err);
+                        }
+
+                        User
+                            .findOneAndUpdate({_id: userId}, {$addToSet: {blockList: blockedId}}, function(err){
+
+                                if (err){
+                                    return callback(err);
+                                }
+
+                                callback(null);
+
+                            });
+
+                    });
+                }
+
+            });
+
+        /*getUserById(userId, function (err, userModel) {
             var index;
             var friendList;
 
@@ -624,7 +655,7 @@ module.exports = function (db) {
 
                     callback(null, userModel);
                 });
-        })
+        });*/
     }
 
     return {

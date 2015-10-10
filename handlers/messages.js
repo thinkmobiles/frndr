@@ -19,6 +19,7 @@ var MessageHandler = function (app, db) {
     var io = app.get('io');
     var Message = db.model('Message');
     var User = db.model('User');
+    var Contact = db.model('Contact');
     var ObjectId = mongoose.Types.ObjectId;
     var self = this;
 
@@ -385,24 +386,47 @@ var MessageHandler = function (app, db) {
         pageCount = (pageCount -1) * CONSTANTS.LIMIT.MESSAGES;
         chatId = self.computeChatId(userId, friendId);
 
-        Message
-            .find({chatId: chatId, show: {$in: [userId]}}, {__v: 0, chatId: 0, show: 0}, {
-                sort: {
-                    date: -1
-                },
-                skip: pageCount,
-                limit: CONSTANTS.LIMIT.MESSAGES
-            },
+        async
+            .parallel([
+                function(cb){
+                    Message
+                        .find({chatId: chatId, show: {$in: [userId]}}, {__v: 0, chatId: 0, show: 0}, {
+                            sort: {
+                                date: -1
+                            },
+                            skip: pageCount,
+                            limit: CONSTANTS.LIMIT.MESSAGES
+                        },
 
-            function (err, messagesModels) {
-                if (err) {
+                        function (err, messagesModels) {
+                            if (err) {
+                                return cb(err);
+                            }
+                            messagesModels.reverse(); //newest messages at the end of array
+
+                            cb(null, messagesModels);
+                        });
+                },
+                function(cb){
+                    Contact
+                        .update({userId: userId, friendId: friendId}, {$set: {lastReadDate: Date.now()}}, function(err){
+
+                            if (err){
+                                return cb(err);
+                            }
+
+                            cb(null);
+                        });
+                }
+            ], function(err, result){
+
+                if (err){
                     return next(err);
                 }
-                messagesModels.reverse(); //newest messages at the end of array
 
-                res.status(200).send(messagesModels);
+                res.status(200).send(result[0]);
+
             });
-
     };
 
     this.clearAllMessages = function (req, res, next) {
