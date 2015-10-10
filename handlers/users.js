@@ -290,7 +290,6 @@ var UserHandler = function (app, db) {
             {
                 fbId: 0,
                 __v: 0,
-                friends: 0,
                 blockList: 0,
                 loc: 0,
                 images: 0
@@ -350,8 +349,8 @@ var UserHandler = function (app, db) {
 
                             //remove user from friend list of other users
                             function(cb){
-                                User
-                                    .find({friends: {$in: [userId]}}, function(err, userModels){
+                                Contact
+                                    .find({friendId: userId}, function(err, userModels){
                                         if (err){
                                             return cb(err);
                                         }
@@ -364,7 +363,7 @@ var UserHandler = function (app, db) {
 
                                             function(userModel, eachCb){
 
-                                                userModel.update({$pull: {friends: userId}}, function(err){
+                                                userModel.remove(function(err){
                                                     if (err){
                                                         return eachCb(err);
                                                     }
@@ -1002,16 +1001,6 @@ var UserHandler = function (app, db) {
                 }
 
                 friendModelJSON = friendModel.toJSON();
-                friends = friendModelJSON.friends;
-
-                if (friends.indexOf(userId) === -1){
-                    error = new Error('This user is not your friend');
-                    error.status = 400;
-
-                    return next(error);
-                }
-
-                delete friendModelJSON.friends;
 
                 images = friendModelJSON.images;
 
