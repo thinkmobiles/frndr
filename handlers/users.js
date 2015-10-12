@@ -336,6 +336,10 @@ var UserHandler = function (app, db) {
                     return next(err);
                 }
 
+                if (!resultModel){
+                    return next(badRequests.NotFound({target: 'User'}));
+                }
+
                 imageId = resultModel.images;
 
                 userHelper.deleteUserById(userId, function (err) {
@@ -671,13 +675,13 @@ var UserHandler = function (app, db) {
             return next(badRequests.InvalidValue({value: page, param: 'page'}));
         }
 
-        userHelper.getAllUsersBySearchSettings(uId, page, function (err, user) {
+        userHelper.getAllUsersBySearchSettings(uId, page, function (err, users) {
 
             if (err) {
                 return next(err);
             }
 
-            res.status(200).send(user);
+            res.status(200).send(users);
 
         });
 
@@ -729,7 +733,7 @@ var UserHandler = function (app, db) {
         var userId = req.session.uId;
         var pageCount = req.params.page || 1;
         var resultArray = [];
-        var indexFrom;
+        var indexFrom = 0;
         var indexTo;
 
         if (isNaN(pageCount) || pageCount < 1) {
