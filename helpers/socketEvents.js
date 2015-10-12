@@ -19,8 +19,6 @@ var socketEvents = function (app) {
         });
 
         socket.on('read', function(data){
-            console.log('User read message');
-
             var userId = data.userId;
             var friendId = data.friendId;
 
@@ -30,7 +28,7 @@ var socketEvents = function (app) {
                         return console.log(err);
                     }
 
-
+                    console.log('>>> message read successfull');
                 });
 
         });

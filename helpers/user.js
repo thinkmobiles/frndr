@@ -576,7 +576,7 @@ module.exports = function (db) {
                                                 distance: distance,
                                                 sexual: user.profile.sexual,
                                                 jobTitle: user.profile.jobTitle || '',
-                                                smoker: user.profile.smoker || '',
+                                                smoker: user.profile.smoker,
                                                 likes: user.profile.things,
                                                 relStatus: user.relStatus,
                                                 bio: user.profile.bio || '',
