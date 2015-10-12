@@ -350,7 +350,7 @@ var UserHandler = function (app, db) {
                             //remove user from friend list of other users
                             function(cb){
                                 Contact
-                                    .find({friendId: userId}, function(err, userModels){
+                                    .find({$or: [{userId: userId}, {friendId: userId}]}, function(err, userModels){
                                         if (err){
                                             return cb(err);
                                         }
@@ -735,26 +735,26 @@ var UserHandler = function (app, db) {
         }
 
         Contact
-            .find({userId: userId}, function(err, friends){
+            .find({userId: userId}, function(err, friendsModels){
 
                 if (err){
                     return next(err);
                 }
 
-                if (friends.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
-                    indexFrom = friends.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
+                if (friendsModels.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
+                    indexFrom = friendsModels.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
                     indexTo = CONSTANTS.LIMIT.FRIENDS;
 
                 } else {
-                    indexTo = friends.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
+                    indexTo = friendsModels.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
                 }
 
-                friends = friends.splice(indexFrom, indexTo);
+                friendsModels = friendsModels.splice(indexFrom, indexTo);
 
-                async.eachSeries(friends,
+                async.eachSeries(friendsModels,
 
-                    function (friend, cb) {
-                        var friendId = friend.friendId;
+                    function (friendModel, cb) {
+                        var friendId = friendModel.friendId;
 
                         var chatId = messageHandler.computeChatId(userId, friendId);
 
@@ -837,7 +837,7 @@ var UserHandler = function (app, db) {
                                             resultObj.avatar = '';
                                         }
 
-                                        if (date > friend.lastReadDate && friendId === owner){
+                                        if (date > friendModel.lastReadDate && friendId === owner){
                                             haveNewMsg = true;
                                         }
 
