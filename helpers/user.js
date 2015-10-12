@@ -634,35 +634,6 @@ module.exports = function (db) {
 
             });
 
-        /*getUserById(userId, function (err, userModel) {
-            var index;
-            var friendList;
-
-            if (err) {
-                return callback(err);
-            }
-
-            if (userModel.blockList.indexOf(blockedId) === -1) {
-                userModel.blockList.push(blockedId);
-            }
-
-            friendList = userModel.get('friends');
-            index = friendList.indexOf(blockedId);
-
-            if (index !== -1){
-                friendList.splice(index, 1);
-                userModel.friends = friendList;
-            }
-
-            userModel
-                .save(function(err){
-                    if (err){
-                        return callback(err);
-                    }
-
-                    callback(null, userModel);
-                });
-        });*/
     }
 
     return {

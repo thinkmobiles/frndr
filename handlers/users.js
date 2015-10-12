@@ -837,7 +837,7 @@ var UserHandler = function (app, db) {
                                             resultObj.avatar = '';
                                         }
 
-                                        if (date > friend.lastReadDate){
+                                        if (date > friend.lastReadDate && friendId === owner){
                                             haveNewMsg = true;
                                         }
 
@@ -846,7 +846,6 @@ var UserHandler = function (app, db) {
                                         resultObj.message = msg;
                                         resultObj.date = date;
                                         resultObj.haveNewMsg = haveNewMsg;
-                                        resultObj.owner = owner;
 
                                         resultArray.push(resultObj);
                                         cb();
@@ -972,7 +971,6 @@ var UserHandler = function (app, db) {
          * @instance
          */
 
-        var userId = req.session.uId;
         var friendId = req.params.id;
 
         if (!CONSTANTS.REG_EXP.OBJECT_ID.test(friendId)){
@@ -989,8 +987,6 @@ var UserHandler = function (app, db) {
                 var photoNames;
                 var galleryArray = [];
                 var images;
-                var friends;
-                var error;
 
                 if (err) {
                     return next(err);

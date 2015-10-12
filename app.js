@@ -37,9 +37,6 @@ module.exports = function () {
 
     //=====socket.io==========================
     var io = require('socket.io')(server);
-
-    require('./helpers/socketEvents')(io);
-
     app.set('io', io);
     //=========================================
 
@@ -55,11 +52,12 @@ module.exports = function () {
         pass: process.env.DB_PASS
     };
 
-
     mainDb = mongoose.createConnection(process.env.DB_HOST, process.env.DB_NAME, process.env.DB_PORT, connectOptions);
 
     require('./models/index')(mainDb);
     app.set('db', mainDb);
+
+    require('./helpers/socketEvents')(app);
 
     mainDb.on('error', console.error.bind(console, 'connection error:'));
     mainDb.once('open', function callback() {
