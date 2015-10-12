@@ -350,7 +350,7 @@ var UserHandler = function (app, db) {
                             //remove user from friend list of other users
                             function(cb){
                                 Contact
-                                    .find({friendId: userId}, function(err, userModels){
+                                    .find({$or: [{friendId: userId}, {userId: userId}]}, function(err, userModels){
                                         if (err){
                                             return cb(err);
                                         }
