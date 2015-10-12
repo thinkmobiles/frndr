@@ -708,7 +708,8 @@ var UserHandler = function (app, db) {
          *      "friendId": "5614d7f92513325c1c5fbd86",
          *      "newFriend": false,
          *      "message": "some message",
-         *      "date": "2015-10-07T08:33:36.187Z"
+         *      "date": "2015-10-07T08:33:36.187Z",
+         *      "haveNewMsg": true
          *  },
          *  {
          *      "name": "",
@@ -716,7 +717,8 @@ var UserHandler = function (app, db) {
          *      "friendId": "560e908d70578cec1c8641fc",
          *      "newFriend": true,
          *      "message": "New friend. Say Hello.",
-         *      "date": ""
+         *      "date": "",
+         *      "haveNewMsg": false
          *  }
          * ]
          *
@@ -735,26 +737,26 @@ var UserHandler = function (app, db) {
         }
 
         Contact
-            .find({userId: userId}, function(err, friends){
+            .find({userId: userId}, function(err, friendsModels){
 
                 if (err){
                     return next(err);
                 }
 
-                if (friends.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
-                    indexFrom = friends.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
+                if (friendsModels.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
+                    indexFrom = friendsModels.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
                     indexTo = CONSTANTS.LIMIT.FRIENDS;
 
                 } else {
-                    indexTo = friends.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
+                    indexTo = friendsModels.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
                 }
 
-                friends = friends.splice(indexFrom, indexTo);
+                friendsModels = friendsModels.splice(indexFrom, indexTo);
 
-                async.eachSeries(friends,
+                async.eachSeries(friendsModels,
 
-                    function (friend, cb) {
-                        var friendId = friend.friendId;
+                    function (friendModel, cb) {
+                        var friendId = friendModel.friendId;
 
                         var chatId = messageHandler.computeChatId(userId, friendId);
 
@@ -837,7 +839,7 @@ var UserHandler = function (app, db) {
                                             resultObj.avatar = '';
                                         }
 
-                                        if (date > friend.lastReadDate && friendId === owner){
+                                        if (date > friendModel.lastReadDate && friendId === owner){
                                             haveNewMsg = true;
                                         }
 
