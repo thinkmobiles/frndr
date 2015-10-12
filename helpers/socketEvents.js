@@ -25,7 +25,13 @@ var socketEvents = function (app) {
             var friendId = data.friendId;
 
             Contact
-                .findOneAndUpdate({userId: userId, friendId: friendId}, {$set: {lastReadDate: Date.now()}}, function(){});
+                .findOneAndUpdate({userId: userId, friendId: friendId}, {$set: {lastReadDate: Date.now()}}, function(err){
+                    if (err){
+                        return console.log(err);
+                    }
+
+
+                });
 
         });
 

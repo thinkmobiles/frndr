@@ -22,7 +22,7 @@ module.exports = function (db) {
                 default: CONSTANTS.REL_STATUSES.SINGLE
             },
             jobTitle: String,
-            smoker: Boolean,
+            smoker: {type: Boolean, default: false},
             sexual: {
                 type: String,
                 default: CONSTANTS.SEXUAL.STRAIGHT

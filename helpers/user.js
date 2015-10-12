@@ -571,13 +571,14 @@ module.exports = function (db) {
                                             userObj = {
                                                 userId: user._id,
                                                 avatar: avatarUrl,
-                                                name: user.profile.name,
-                                                age: user.profile.age,
+                                                name: user.profile.name || '',
+                                                age: user.profile.age || '',
                                                 distance: distance,
                                                 sexual: user.profile.sexual,
-                                                jobTitle: user.profile.jobTitle,
-                                                smoker: user.profile.smoker,
+                                                jobTitle: user.profile.jobTitle || '',
+                                                smoker: user.profile.smoker || '',
                                                 likes: user.profile.things,
+                                                relStatus: user.relStatus,
                                                 bio: user.profile.bio || '',
                                                 gallery: galleryUrls
                                             };
@@ -611,26 +612,30 @@ module.exports = function (db) {
                     return callback(err);
                 }
 
-                if (result){
-                    result.remove(function(err){
-
-                        if (err){
-                            return callback(err);
-                        }
-
-                        User
-                            .findOneAndUpdate({_id: userId}, {$addToSet: {blockList: blockedId}}, function(err){
-
-                                if (err){
-                                    return callback(err);
-                                }
-
-                                callback(null);
-
-                            });
-
-                    });
+                if (!result) {
+                   return callback(null, null);
                 }
+
+
+                result.remove(function (err) {
+
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    User
+                        .findOneAndUpdate({_id: userId}, {$addToSet: {blockList: blockedId}}, function (err) {
+
+                            if (err) {
+                                return callback(err);
+                            }
+
+                            callback(null);
+
+                        });
+
+                });
+
 
             });
 

@@ -14,6 +14,7 @@ module.exports = function (db) {
     var PushTokens = db.model('PushTokens');
     var Like = db.model('Like');
     var SearchSettings = db.model('SearchSettings');
+    var Contact = db.model('Contact');
 
     var host = process.env.HOST;
     var userAgent = request.agent(host);
@@ -730,30 +731,18 @@ module.exports = function (db) {
                         expect(model.likes.length).to.equals(1);
                         expect(model.likes[0]).to.equals(uId1.toString());
 
-                        User
-                            .findOne({_id: uId1}, function (err, resultUser1) {
-                                if (err) {
+                        Contact
+                            .find({$or: [{userId: uId2, friendId: uId1}, {userId: uId1, friendId: uId2}]}, function(err, resultFriends){
+
+                                if (err){
                                     return done(err);
                                 }
 
-                                expect(resultUser1).to.instanceOf(Object);
-                                expect(resultUser1.friends).to.instanceOf(Array);
-                                expect(resultUser1.friends.length).to.equals(1);
-                                expect(resultUser1.friends[0]).to.equals(uId2.toString());
+                                expect(resultFriends).to.instanceof(Array);
+                                expect(resultFriends.length).to.equals(2);
 
-                                User
-                                    .findOne({_id: uId2}, function (err, resultUser2) {
-                                        if (err) {
-                                            return done(err);
-                                        }
+                                done();
 
-                                        expect(resultUser2).to.instanceOf(Object);
-                                        expect(resultUser2.friends).to.instanceOf(Array);
-                                        expect(resultUser2.friends.length).to.equals(1);
-                                        expect(resultUser2.friends[0]).to.equals(uId1.toString());
-
-                                        done(null);
-                                    });
                             });
 
                     });
@@ -797,28 +786,24 @@ module.exports = function (db) {
                                 return done(err);
                             }
 
-                            friendList = user2Model.get('friends');
+
                             blockList = user2Model.get('blockList');
 
-                            expect(friendList.indexOf(uId1.toString())).to.equals(-1);
+
                             expect(blockList.indexOf(uId1.toString())).not.to.equals(-1);
 
-                            User
-                                .findOne({_id: uId1}, function(err, user1Model){
-                                    var friendList;
-                                    var blockList;
+                            Contact
+                                .find({$or: [{userId: uId2, friendId: uId1}, {userId: uId1, friendId: uId2}]}, function(err, friendModel){
 
                                     if (err){
                                         return done(err);
                                     }
 
-                                    friendList = user1Model.get('friends');
-                                    blockList = user1Model.get('blockList');
+                                    expect(friendModel).to.instanceof(Array);
+                                    expect(friendModel.length).to.equals(0);
 
-                                    expect(friendList.indexOf(uId2.toString())).to.equals(-1);
-                                    expect(blockList.indexOf(uId2.toString())).not.to.equals(-1);
+                                    done(null);
 
-                                    done();
                                 });
                         })
                 })
