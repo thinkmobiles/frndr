@@ -708,7 +708,8 @@ var UserHandler = function (app, db) {
          *      "friendId": "5614d7f92513325c1c5fbd86",
          *      "newFriend": false,
          *      "message": "some message",
-         *      "date": "2015-10-07T08:33:36.187Z"
+         *      "date": "2015-10-07T08:33:36.187Z",
+         *      "haveNewMsg": true
          *  },
          *  {
          *      "name": "",
@@ -716,7 +717,8 @@ var UserHandler = function (app, db) {
          *      "friendId": "560e908d70578cec1c8641fc",
          *      "newFriend": true,
          *      "message": "New friend. Say Hello.",
-         *      "date": ""
+         *      "date": "",
+         *      "haveNewMsg": false
          *  }
          * ]
          *
