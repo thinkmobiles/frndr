@@ -3,9 +3,9 @@ process.env.DB_NAME = "FrndrDev";
 process.env.DB_PORT = 27017;
 
 //process.env.HOST = 'http://194.42.200.114:8859';
-//process.env.HOST = 'http://projects.thinkmobiles.com:8859';
+process.env.HOST = 'http://projects.thinkmobiles.com:8859';
 //process.env.HOST = 'http://192.168.88.47:8859';
-process.env.HOST = 'http://localhost:8859';
+//process.env.HOST = 'http://localhost:8859';
 process.env.PORT = '8859';
 
 //process.env.REDIS_HOST = '134.249.164.53';
