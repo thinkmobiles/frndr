@@ -254,12 +254,13 @@ module.exports = function (db) {
     function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
         var coordinates = updateData.coordinates;
+        var validateError;
 
         if (!coordinates || !coordinates.length) {
             return callback(badRequests.NotEnParams({reqParams: 'coordinates'}));
         }
 
-        var validateError = validateCoordinates(coordinates);
+        validateError = validateCoordinates(coordinates);
 
         if (validateError && validateError.constructor === Error) {
             return callback(validateError);
