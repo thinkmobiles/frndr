@@ -72,7 +72,17 @@ var MessageHandler = function (app, db) {
                             return callback(err);
                         }
 
-                        callback();
+                        Contact
+                            .update({userId: userId}, {$set: {isNewFriend: false}}, function(err){
+
+                                if (err){
+                                    return callback(err);
+                                }
+
+                                callback(null);
+
+                            });
+
                     });
             });
     };
@@ -329,7 +339,18 @@ var MessageHandler = function (app, db) {
                         if (err) {
                             return next(err);
                         }
-                        res.status(200).send({success: 'History cleared successfully'});
+
+                        Contact
+                            .update({userId: userId, friendId: friendId}, {$set: {isNewFriend: false}}, function(err){
+
+                                if (err){
+                                    return next(err);
+                                }
+
+                                res.status(200).send({success: 'History cleared successfully'});
+                            });
+
+
                     });
             });
     };

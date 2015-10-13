@@ -761,6 +761,8 @@ var UserHandler = function (app, db) {
 
                     function (friendModel, cb) {
                         var friendId = friendModel.friendId;
+                        var isNewFriend = friendModel.isNewFriend;
+                        var becomesFriendDate = friendModel.becomesFriendDate;
 
                         var chatId = messageHandler.computeChatId(userId, friendId);
 
@@ -794,9 +796,14 @@ var UserHandler = function (app, db) {
 
                                 //TODO: change for old friend when cleared chat history
                                 if (!messageModelsArray.length) {
-                                    msg = 'New friend. Say Hello.';
-                                    newFriend = true;
-                                    date = '';
+                                    if (isNewFriend){
+                                        msg = 'New friend. Say Hello.';
+                                        newFriend = true;
+                                        date = becomesFriendDate;
+                                    } else {
+                                        msg = 'You have clear all messages with this friend';
+                                        date = '';
+                                    }
                                 } else {
                                     msg = messageModelsArray[0].get('text');
                                     owner = messageModelsArray[0].get('owner');

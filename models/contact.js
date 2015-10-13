@@ -10,7 +10,9 @@ module.exports = function (db) {
         lastReadDate: {
             type: Date,
             default: Date.now
-        }
+        },
+        isNewFriend : {type: Boolean, default: true},
+        becomesFriendDate: {type: Date, default: Date.now}
     }, {
         collection: 'Contacts'
     });
