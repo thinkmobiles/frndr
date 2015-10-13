@@ -559,7 +559,9 @@ var UserHandler = function (app, db) {
         }
 
         Contact
-            .find({userId: userId}, function(err, friendsModels){
+            .find({userId: userId})
+            .sort({becomesFriendDate: 1})
+            .exec(function(err, friendsModels){
 
                 if (err){
                     return next(err);
