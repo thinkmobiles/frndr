@@ -366,7 +366,7 @@ module.exports = function (app, db) {
 
         async.parallel([
 
-                //remove userModel
+                //remove User model
                 function(cb){
                     User
                         .remove({_id: objectUserId}, function (err) {
