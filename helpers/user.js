@@ -2,6 +2,7 @@ var badRequests = require('../helpers/badRequests');
 var CONSTANTS = require('../constants');
 var mongoose = require('mongoose');
 var ImageHandler = require('../handlers/image');
+var MessageHandler = require('../handlers/messages');
 
 var async = require('async');
 var _ = require('lodash');
@@ -18,7 +19,7 @@ var relationStatusRegExp = new RegExp(relationStatusString);
 var sexString = '^' + CONSTANTS.SEX.MALE + '$|^' + CONSTANTS.SEX.FEMALE + '$';
 var sexRegExp = new RegExp(sexString);
 
-module.exports = function (db) {
+module.exports = function (app, db) {
 
     'use strict';
 
@@ -29,6 +30,42 @@ module.exports = function (db) {
     var Like = db.model('Like');
     var Contact = db.model('Contact');
     var imageHandler = new ImageHandler(db);
+    var messageHandler = new MessageHandler(app, db);
+
+    function removeAvatar(avatarName, callback) {
+
+        if (!avatarName || !avatarName.length) {
+            return callback();
+        }
+
+        imageHandler.removeImageFile(avatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
+            if (err) {
+                return callback(err);
+            }
+
+            callback();
+        });
+    }
+
+    function removeGalleryPhotoes(galleryArrayNames, callback) {
+
+        if (!galleryArrayNames || !galleryArrayNames.length) {
+            return callback();
+        }
+
+        async.each(galleryArrayNames,
+
+            function (galleryName, cb) {
+                imageHandler.removeImageFile(galleryName, CONSTANTS.BUCKETS.IMAGES, cb);
+            },
+
+            function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                callback();
+            });
+    }
 
     function prepareModelToSave(userModel, options, callback) {
 
@@ -249,7 +286,7 @@ module.exports = function (db) {
 
             });
 
-    };
+    }
 
     function updateUser(userModel, updateData, callback) {
         var uId = userModel.get('_id');
@@ -324,14 +361,162 @@ module.exports = function (db) {
             })
     }
 
-    function deleteUserById(userId, callback) {
-        User
-            .remove({_id: userId}, function (err) {
+    function deleteUserById(userId, imageId, callback) {
+        var objectUserId = ObjectId(userId);
+
+        async.parallel([
+
+                //remove userModel
+                function(cb){
+                    User
+                        .remove({_id: objectUserId}, function (err) {
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            cb();
+                        });
+                },
+
+                //remove user from friend list of other users
+                function(cb){
+                    Contact
+                        .find({$or: [{friendId: userId}, {userId: userId}]}, function(err, userModels){
+                            if (err){
+                                return cb(err);
+                            }
+
+                            if (!userModels.length){
+                                return cb();
+                            }
+
+                            async.each(userModels,
+
+                                function(userModel, eachCb){
+
+                                    userModel.remove(function(err){
+                                        if (err){
+                                            return eachCb(err);
+                                        }
+
+                                        eachCb();
+                                    });
+                                },
+
+                                function(err){
+                                    if (err){
+                                        return cb(err);
+                                    }
+
+                                    cb();
+                                });
+                        });
+                },
+
+                //remove PushToken model
+                function (cb) {
+                    PushTokens.remove({userId: userId}, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+
+                        cb();
+                    });
+                },
+
+                //remove SearchSettings model
+                function (cb) {
+                    SearchSettings.remove({user: objectUserId}, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+
+                        cb();
+                    });
+                },
+
+                //remove Like model
+                function (cb) {
+                    Like.remove({user: objectUserId}, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+
+                        cb();
+                    });
+                },
+
+                //try to delete all user images from Filesystem
+                function (cb) {
+                    Image
+                        .findOne({_id: imageId}, function (err, imageModel) {
+                            var galleryArrayNames;
+                            var avatarName;
+
+                            if (err) {
+                                return cb(err);
+                            }
+
+                            if (!imageModel) {
+                                return cb();
+                            }
+                            avatarName = imageModel.get('avatar');
+                            galleryArrayNames = imageModel.get('gallery');
+
+                            async.parallel([
+
+                                    //remove avatar from filesystem
+                                    function (parallelCb) {
+                                        removeAvatar(avatarName, parallelCb);
+                                    },
+
+                                    //remove gallery photos from filesystem
+                                    function (parallelCb) {
+                                        removeGalleryPhotoes(galleryArrayNames, parallelCb);
+                                    },
+
+                                    //remove Image model
+                                    function (parallelCb) {
+                                        imageModel
+                                            .remove(function (err) {
+                                                if (err) {
+                                                    return parallelCb(err);
+                                                }
+
+                                                parallelCb();
+                                            });
+                                    }
+                                ],
+
+                                function (err) {
+                                    if (err) {
+                                        return cb(err);
+                                    }
+                                    cb();
+                                });
+
+
+                        })
+                },
+
+                //try to remove Messages, or update show array in them
+                function (cb) {
+                    messageHandler.deleteMessages(userId, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+
+                        cb();
+                    });
+                }
+            ],
+
+            function (err) {
                 if (err) {
                     return callback(err);
                 }
 
-                callback(null);
+                callback();
             });
     }
 
