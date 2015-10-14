@@ -551,31 +551,24 @@ var UserHandler = function (app, db) {
         var userId = req.session.uId;
         var pageCount = req.params.page || 1;
         var resultArray = [];
-        var indexFrom = 0;
-        var indexTo;
+        var skipCount;
 
         if (isNaN(pageCount) || pageCount < 1) {
             return next(badRequests.InvalidValue({value: pageCount, param: 'page'}));
         }
 
+        skipCount = (pageCount-1) * CONSTANTS.LIMIT.FRIENDS;
+
         Contact
             .find({userId: userId})
-            .sort({becomesFriendDate: 1})
+            .sort({becomesFriendDate: -1})
+            .skip(skipCount)
+            .limit(CONSTANTS.LIMIT.FRIENDS)
             .exec(function(err, friendsModels){
 
                 if (err){
                     return next(err);
                 }
-
-                if (friendsModels.length > CONSTANTS.LIMIT.FRIENDS * pageCount) {
-                    indexFrom = friendsModels.length - CONSTANTS.LIMIT.FRIENDS * pageCount;
-                    indexTo = CONSTANTS.LIMIT.FRIENDS;
-
-                } else {
-                    indexTo = friendsModels.length - CONSTANTS.LIMIT.FRIENDS * (pageCount - 1);
-                }
-
-                friendsModels = friendsModels.splice(indexFrom, indexTo);
 
                 async.eachSeries(friendsModels,
 
@@ -689,8 +682,6 @@ var UserHandler = function (app, db) {
                         if (err) {
                             return next(err);
                         }
-
-                        resultArray.reverse(); //new friend at start of array
 
                         res.status(200).send(resultArray);
                     });

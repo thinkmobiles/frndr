@@ -110,6 +110,11 @@ var imagesUploader = function (dirConfig) {
 
     function getImagePath(imageName, folderName) {
         var folder = folderName || defaultImageDir;
+
+        if (process.env.NODE_ENV === 'production') {
+            return process.env.EXT_HOST + '/' + defaultUploadsDir + "\/" + process.env.NODE_ENV.toLowerCase() + "\/" + folder + "\/" + imageName;
+        }
+
         return process.env.HOST + '/' + defaultUploadsDir + "\/" + process.env.NODE_ENV.toLowerCase() + "\/" + folder + "\/" + imageName;
     }
 

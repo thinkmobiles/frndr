@@ -8,13 +8,13 @@ var CONSTANTS = require('../constants/index');
 var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
-//var PushHandler = require('./pushes');
+var PushHandler = require('./pushes');
 
 var LikesHandler = function (app, db) {
 
     'use strict';
 
-    //var push = PushHandler(db);
+    var push = PushHandler(db);
     var Like = db.model('Like');
     var User = db.model('User');
     var Contact = db.model('Contact');
@@ -22,8 +22,9 @@ var LikesHandler = function (app, db) {
 
 
     function addToFriend(userId, friendId, callback) {
-        var message = 'You have new friend';
+        var message;
         var contactModel;
+        var friendName;
 
         async
             .series([
@@ -44,16 +45,37 @@ var LikesHandler = function (app, db) {
                         });
                 },
 
+                function(cb){
+                    User.findOne({_id: friendId}, function(err, friendModel){
+                        if (err){
+                            return cb(err);
+                        }
+
+                        if (!friendModel){
+                            return cb(badRequests.DatabaseError());
+                        }
+
+                        friendName = friendModel.profile.name || '';
+                        message = 'You have a new friend ' + friendName;
+
+                        cb();
+                    });
+                },
+
                 function (cb) {
-                    /*push.sendPushNotification(userId, message, function (err) {
+                    var pushOptions = {};
+
+                    pushOptions.category = CONSTANTS.CATEGORIES.FRIEND;
+
+                    push.sendPushNotification(userId, message, pushOptions, function (err) {
                         if (err) {
                             return cb(err);
                         }
 
                         cb(null);
-                    });*/
+                    });
 
-                    cb(null);
+                    //cb(null);
                 }
 
             ],
@@ -107,7 +129,6 @@ var LikesHandler = function (app, db) {
 
                             if (!likeModel) {
                                 likesArray.push(likedUserId);
-
                                 likeModel = new Like({
                                     user: ObjectId(userId),
                                     likes: likesArray,

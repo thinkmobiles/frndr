@@ -94,6 +94,9 @@ module.exports = (function () {
                 if (options && options.sound) {
                     note.sound = options.sound + '.caf';
                 }
+                if (options && options.category) {     // for IOS 8+, for enable background action for push (read/show)
+                    note.category = options.category;
+                }
 
                 this.pushNotification(note, device);
                 return true;

@@ -1,7 +1,13 @@
 
 var path = require('path');
-var apn = require('../helpers/apns')(path.join('config/DevelopmentFrndrAPNS.p12'));
 var async = require('async');
+var apn;
+
+if (process.env.NODE_ENV === 'production') {
+    apn = require('../helpers/apns')(path.join('config/ProductionFrndrAPNS.p12'));
+} else {
+    apn = require('../helpers/apns')(path.join('config/DevelopmentFrndrAPNS.p12'));
+}
 
 module.exports = function(db){
 
