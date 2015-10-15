@@ -169,7 +169,7 @@ module.exports = function (db) {
                 });
         });
 
-        it('SingOut', function (done) {
+        it('SignOut', function (done) {
 
             var url = '/signOut';
 
