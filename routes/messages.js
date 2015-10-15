@@ -13,8 +13,6 @@ module.exports = function(app, db){
     router.get('/:id/:pageCount?', sessionHandler.authenticatedUser, messageHandler.getChatHistory);
     router.post('/', sessionHandler.authenticatedUser, messageHandler.sendMessage);
     router.delete('/', sessionHandler.authenticatedUser, messageHandler.clearHistory);
-    router.post('/sendMsgSocket', messageHandler.testSocket);
-    router.post('/sendPush', messageHandler.sendPush);
 
     return router;
 };

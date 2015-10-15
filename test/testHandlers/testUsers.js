@@ -20,27 +20,21 @@ module.exports = function (db) {
     var userAgent = request.agent(host);
 
     var badUser1 = {
-        pushToken: '13455',
         coordinates: [12.23, 56]
     };
 
     var badUser2 = {
         fbId: 'test2',
-        pushToken: 'qwerty',
         coordinates: [182, -95]
     };
 
     var user1 = {
         fbId: 'test1',
-        pushToken: "125478963",
-        os: 'APPLE',
         coordinates: [88.23, 75.66]
     };
 
     var user2 = {
         fbId: 'test2',
-        pushToken: "996633",
-        os: 'APPLE',
         coordinates: [88, 75]
     };
 
@@ -180,7 +174,8 @@ module.exports = function (db) {
             var url = '/signOut';
 
             userAgent
-                .get(url)
+                .post(url)
+                .send({deviceId: '122'})
                 .end(function (err, res) {
                     if (err) {
                         return done(err);
