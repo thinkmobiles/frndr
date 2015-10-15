@@ -24,11 +24,12 @@ var LikesHandler = function (app, db) {
     var io = app.get('io');
 
 
-    function addToFriend(userId, friendId, callback) {
+    function addToFriend(userId, friendId, sendSocketEvent, callback) {
         var message;
         var contactModel;
         var friendName;
         var resultObj = {};
+        var avatarUrl = '';
 
         async
             .series([
@@ -55,7 +56,7 @@ var LikesHandler = function (app, db) {
                         .exec(function(err, friendModel){
                             var imageModel;
                             var avatarName;
-                            var avatarUrl = '';
+
 
                             if (err){
                                 return cb(err);
@@ -78,17 +79,20 @@ var LikesHandler = function (app, db) {
                                 }
                             }
 
-                            resultObj.name = friendName;
-                            resultObj.friendId = friendId;
-                            resultObj.avatar = avatarUrl;
-                            resultObj.newFriend = true;
-                            resultObj.message = 'New friend. Say Hello.';
-                            resultObj.date = contactModel.becomesFriendDate;
-                            resultObj.haveNewMsg = false;
+                            if (sendSocketEvent){
+                                resultObj.name = friendName;
+                                resultObj.friendId = friendId;
+                                resultObj.avatar = avatarUrl;
+                                resultObj.newFriend = true;
+                                resultObj.message = 'New friend. Say Hello.';
+                                resultObj.date = contactModel.becomesFriendDate;
+                                resultObj.haveNewMsg = false;
 
-                            io.to(userId).emit('new friend', resultObj);
+                                io.to(userId).emit('new friend', resultObj);
 
-                            console.log('>>> new friend event');
+                                console.log('>>> new friend event'); // remove this
+                            }
+
 
                             cb();
                     });
@@ -96,6 +100,12 @@ var LikesHandler = function (app, db) {
 
                 function (cb) {
                     var pushOptions = {};
+
+                    pushOptions.payload = {
+                        avatarUrl: avatarUrl,
+                        friendName: friendName,
+                        friendId: friendId
+                    };
 
                     pushOptions.category = CONSTANTS.CATEGORIES.FRIEND;
 
@@ -223,8 +233,8 @@ var LikesHandler = function (app, db) {
 
                     async
                         .parallel([
-                            async.apply(addToFriend, userId, likedUserId),
-                            async.apply(addToFriend, likedUserId, userId)
+                            async.apply(addToFriend, userId, likedUserId, false),
+                            async.apply(addToFriend, likedUserId, userId, true)
                         ], function (err) {
                             if (err) {
                                 return cb(err);

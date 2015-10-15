@@ -8,14 +8,14 @@ module.exports = (function () {
 
     var apnsClass = function( certificateUrl ){
         var options = {
-            production: false, //todo change
+            production: isProduction,
             pfx: certificateUrl,
             passphrase: "Thinkmobiles2015"
         };
 
         var feedback = new apn.Feedback({
 /*            address: "feedback.push.apple.com",*/
-            production: false,
+            production: isProduction,
             pfx: certificateUrl,
             passphrase: "Thinkmobiles2015",
             "batchFeedback": true,
