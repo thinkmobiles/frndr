@@ -18,8 +18,5 @@ module.exports = function(app, db){
     router.get('/photo/:id?', sessionHandler.authenticatedUser, image.getPhotoUrls);
     router.get('/managePhotos', sessionHandler.authenticatedUser, image.getAvatarAndGallery);
 
-
-    //router.get('/test', image.testResizeImage);
-
     return router;
 };

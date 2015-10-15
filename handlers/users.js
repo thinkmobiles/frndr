@@ -22,6 +22,7 @@ var UserHandler = function (app, db) {
     var Image = db.model('Image');
     var Message = db.model('Message');
     var Contact = db.model('Contact');
+    var PushToken = db.model('PushTokens');
     var session = new SessionHandler();
     var userHelper = require('../helpers/user')(app, db);
     var ObjectId = mongoose.Types.ObjectId;
@@ -140,7 +141,27 @@ var UserHandler = function (app, db) {
          * @instance
          */
 
-        session.kill(req, res, next);
+        var body = req.body;
+        var userId = req.session.uId;
+        var deviceId;
+
+        if (!body.deviceId){
+            return next(badRequests.NotEnParams({reqParams: 'deviceId'}));
+        }
+
+        deviceId = body.deviceId;
+
+        PushToken
+            .remove({userId: userId, deviceId: deviceId}, function(err){
+
+                if (err){
+                    return next(err);
+                }
+
+                session.kill(req, res, next);
+
+            });
+
     };
 
     this.addPushToken = function (req, res, next) {
@@ -846,49 +867,6 @@ var UserHandler = function (app, db) {
 
                 res.status(200).send(friendModelJSON);
             });
-    };
-
-
-
-
-
-
-    // TODO  TEST (remove in production)
-
-    this.testUser = function (req, res, next) {
-
-        var userModel;
-
-        var userObj = {
-            'loc.coordinates': [1, 2],
-            "pushToken": "ssss",
-            "os": "APPLE",
-            profile: {
-                sex: 'M',
-                age: 33,
-                relStatus: 'singleWithBaby',
-                smoker: false,
-                sexual: 'any'
-            }
-        };
-
-        for (var i = 0; i < 1000; i++) {
-            userObj['fbId'] = 'age' + i;
-
-            userModel = new User(userObj);
-
-            userModel
-                .save(function (err) {
-
-                    if (err) {
-                        return next(err);
-                    }
-
-                });
-        }
-
-        res.status(200).send({success: 'Users created successfully'});
-
     };
 
 };

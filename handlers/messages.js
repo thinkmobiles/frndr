@@ -532,47 +532,6 @@ var MessageHandler = function (app, db) {
         });
     };
 
-    // TODO remove in production
-
-    this.sendPush = function(req, res, next){
-
-
-        var msg = req.body.msg;
-        var pushToken = req.body.pushToken;
-
-        apn.sendPush(pushToken, msg);
-
-        res.status(200).send({success: 'Push not. sent successfully'});
-
-    };
-
-    this.testSocket = function(req, res, next){
-
-        /* request body
-
-            {
-                "to":"560e908d70578cec1c8641fc",
-                "ownerId":"56122113fe4ac5281086b9ef",
-                "friendId":"560e908d70578cec1c8641fc",
-                "message":"test message"
-            }
-
-        */
-
-        var body = req.body;
-
-        var msg = body.message;
-        var userId = body.ownerId;
-        var friendId = body.friendId;
-        var uId = body.to;
-
-        var io = app.get('io');
-
-        io.to(uId).emit('chat message', {ownerId: userId, friendId: friendId, message: msg});
-        res.status(200).send({success: "Message sent successfully"});
-
-    }
-
 };
 
 module.exports = MessageHandler;

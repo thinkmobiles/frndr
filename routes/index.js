@@ -13,7 +13,7 @@ module.exports = function (app, db) {
     });
 
     app.post('/signIn', userHandler.signInClient);
-    app.get('/signOut', userHandler.signOut);
+    app.post('/signOut', userHandler.signOut);
 
     app.use('/users', userRouter);
     app.use('/image', imageRouter);
