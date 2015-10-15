@@ -9,22 +9,26 @@ var async = require('async');
 var badRequests = require('../helpers/badRequests');
 var mongoose = require('mongoose');
 var PushHandler = require('./pushes');
+var ImageHandler = require('./image');
 
 var LikesHandler = function (app, db) {
 
     'use strict';
 
     var push = PushHandler(db);
+    var imageHandler = new ImageHandler(db);
     var Like = db.model('Like');
     var User = db.model('User');
     var Contact = db.model('Contact');
     var ObjectId = mongoose.Types.ObjectId;
+    var io = app.get('io');
 
 
     function addToFriend(userId, friendId, callback) {
         var message;
         var contactModel;
         var friendName;
+        var resultObj = {};
 
         async
             .series([
@@ -46,19 +50,47 @@ var LikesHandler = function (app, db) {
                 },
 
                 function(cb){
-                    User.findOne({_id: friendId}, function(err, friendModel){
-                        if (err){
-                            return cb(err);
-                        }
+                    User.findOne({_id: friendId})
+                        .populate({path:'images', select: '-_id avatar'})
+                        .exec(function(err, friendModel){
+                            var imageModel;
+                            var avatarName;
+                            var avatarUrl = '';
 
-                        if (!friendModel){
-                            return cb(badRequests.DatabaseError());
-                        }
+                            if (err){
+                                return cb(err);
+                            }
 
-                        friendName = friendModel.profile.name || '';
-                        message = 'You have a new friend ' + friendName;
+                            if (!friendModel){
+                                return cb(badRequests.DatabaseError());
+                            }
 
-                        cb();
+                            friendName = friendModel.profile.name || '';
+                            message = 'You have a new friend ' + friendName;
+
+                            imageModel = userModel.images;
+
+                            if (imageModel) {
+                                avatarName = imageModel.get('avatar');
+
+                                if (avatarName){
+                                    avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
+                                }
+                            }
+
+                            resultObj.name = friendName;
+                            resultObj.friendId = friendId;
+                            resultObj.avatar = avatarUrl;
+                            resultObj.newFriend = true;
+                            resultObj.message = 'New friend. Say Hello.';
+                            resultObj.date = contactModel.becomesFriendDate;
+                            resultObj.haveNewMsg = false;
+
+                            io.to(userId).emit('new friend', resultObj);
+
+                            console.log('>>> new friend event');
+
+                            cb();
                     });
                 },
 
@@ -74,8 +106,6 @@ var LikesHandler = function (app, db) {
 
                         cb(null);
                     });
-
-                    //cb(null);
                 }
 
             ],

@@ -759,6 +759,7 @@ module.exports = function (app, db) {
                                                 avatar: avatarUrl,
                                                 name: user.profile.name || '',
                                                 age: user.profile.age || '',
+                                                sex: user.profile.sex,
                                                 distance: distance,
                                                 sexual: user.profile.sexual,
                                                 jobTitle: user.profile.jobTitle || '',

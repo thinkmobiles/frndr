@@ -227,8 +227,6 @@ var MessageHandler = function (app, db) {
 
                                 cb();
                             });
-
-                            //cb();
                         });
                 }
             ],

@@ -33,6 +33,19 @@ var socketEvents = function (app) {
 
         });
 
+        socket.on('last message', function(data){
+            var userId = data.userId;
+
+            Contact
+                .update({userId: userId}, {$set: {isNewFriend: false}}, function(err){
+                    if (err){
+                        return console.log(err);
+                    }
+
+                    console.log('>>> last message was removed');
+                });
+        });
+
         socket.on('disconnect', function(){
             console.log('>>> socket ' + socket.id + ' disconnected');
         });

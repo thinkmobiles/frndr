@@ -626,7 +626,7 @@ var UserHandler = function (app, db) {
                                     .populate({path: 'images', select: '-_id avatar'})
                                     .exec(function (err, userModel) {
                                         var avatarName;
-                                        var avatarUrl;
+                                        var avatarUrl = '';
                                         var resultObj = {};
                                         var imageModel;
                                         var haveNewMsg = false;
@@ -650,15 +650,9 @@ var UserHandler = function (app, db) {
                                         if (imageModel) {
                                             avatarName = imageModel.get('avatar');
 
-                                            if (!avatarName){
-                                                resultObj.avatar = '';
-                                            } else {
+                                            if (avatarName){
                                                 avatarUrl = imageHandler.computeUrl(avatarName, CONSTANTS.BUCKETS.IMAGES);
-                                                resultObj.avatar = avatarUrl;
                                             }
-
-                                        } else {
-                                            resultObj.avatar = '';
                                         }
 
                                         if (date > friendModel.lastReadDate && friendId === owner){
@@ -667,6 +661,7 @@ var UserHandler = function (app, db) {
 
                                         resultObj.friendId = friendId;
                                         resultObj.newFriend = newFriend;
+                                        resultObj.avatar = avatarUrl;
                                         resultObj.message = msg;
                                         resultObj.date = date;
                                         resultObj.haveNewMsg = haveNewMsg;
