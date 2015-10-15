@@ -68,7 +68,7 @@ var LikesHandler = function (app, db) {
                             friendName = friendModel.profile.name || '';
                             message = 'You have a new friend ' + friendName;
 
-                            imageModel = userModel.images;
+                            imageModel = friendModel.images;
 
                             if (imageModel) {
                                 avatarName = imageModel.get('avatar');
