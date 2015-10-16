@@ -196,6 +196,7 @@ var MessageHandler = function (app, db) {
                             var avatarName;
                             var avatarUrl = '';
                             var pushMessage;
+                            var creationDate = new Date();
 
                             if (!userModel || !userModel.images){
                                 return cb(badRequests.DatabaseError());
@@ -217,8 +218,9 @@ var MessageHandler = function (app, db) {
                             pushOptions.category = CONSTANTS.CATEGORIES.MESSAGE;
                             pushMessage = userName + ':\n' + msg;
 
-                            io.to(userId).emit('chat message', {ownerId: userId, friendId: friendId, message: msg, messageId: messageModel._id});
-                            io.to(friendId).emit('chat message', {ownerId: userId, friendId: userId, message: msg, messageId: messageModel._id});
+
+                            io.to(userId).emit('chat message', {ownerId: userId, friendId: friendId, message: msg, messageId: messageModel._id, creationDate: creationDate.toISOString()});
+                            io.to(friendId).emit('chat message', {ownerId: userId, friendId: userId, message: msg, messageId: messageModel._id, creationDate: creationDate.toISOString()});
 
                             pusher.sendPushNotification(friendId, pushMessage, pushOptions, function(err){
                                 if (err){
