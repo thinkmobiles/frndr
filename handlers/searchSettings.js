@@ -45,8 +45,8 @@ var SearchSettingsHandler = function (db) {
             saveData.relationship = relation;
         }
 
-        if (options.hasOwnProperty('smoker')){
-            if (typeof !!options.smoker !== 'boolean') {
+        if (options.smoker){
+            if (options.smoker !== CONSTANTS.SEARCH_SMOKER.ANY || options.smoker !== CONSTANTS.SEARCH_SMOKER.SMOKER || options.smoker !== CONSTANTS.SEARCH_SMOKER.NON_SMOKER ) {
                 return callback(badRequests.InvalidValue({value: options.smoker, param: 'smoker'}));
             }
 
