@@ -652,9 +652,17 @@ module.exports = function (app, db) {
 
                             }
 
-                            smokerObj = {
-                                'profile.smoker': resultUser.smoker
-                            };
+                            if (resultUser.smoker === Contact.SEARCH_SMOKER.NON_SMOKER){
+                                smokerObj = {
+                                    'profile.smoker': false
+                                };
+                            } else if (resultUser.smoker === Contact.SEARCH_SMOKER.SMOKER){
+                                smokerObj = {
+                                    'profile.smoker': true
+                                };
+                            } else {
+                                smokerObj = {};
+                            }
 
                             if (!resultUser.relationship.length){
                                 relStatusArray = [];
