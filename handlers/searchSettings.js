@@ -46,7 +46,7 @@ var SearchSettingsHandler = function (db) {
         }
 
         if (options.smoker){
-            if (options.smoker !== CONSTANTS.SEARCH_SMOKER.ANY || options.smoker !== CONSTANTS.SEARCH_SMOKER.SMOKER || options.smoker !== CONSTANTS.SEARCH_SMOKER.NON_SMOKER ) {
+            if (options.smoker !== CONSTANTS.SEARCH_SMOKER.ANY && options.smoker !== CONSTANTS.SEARCH_SMOKER.SMOKER && options.smoker !== CONSTANTS.SEARCH_SMOKER.NON_SMOKER ) {
                 return callback(badRequests.InvalidValue({value: options.smoker, param: 'smoker'}));
             }
 
