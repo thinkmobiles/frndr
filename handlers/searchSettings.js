@@ -46,7 +46,7 @@ var SearchSettingsHandler = function (db) {
         }
 
         if (options.hasOwnProperty('smoker')){
-            if (typeof options.smoker !== 'boolean') {
+            if (typeof !!options.smoker !== 'boolean') {
                 return callback(badRequests.InvalidValue({value: options.smoker, param: 'smoker'}));
             }
 

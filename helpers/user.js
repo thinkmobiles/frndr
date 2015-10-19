@@ -113,7 +113,7 @@ module.exports = function (app, db) {
 
             if (profile.hasOwnProperty('smoker')){
 
-                if (typeof profile.smoker !== 'boolean') {
+                if (typeof !!profile.smoker !== 'boolean') {
                     return callback(badRequests.InvalidValue({value: profile.smoker, param: 'smoker'}));
                 }
 
@@ -139,7 +139,7 @@ module.exports = function (app, db) {
 
             if (profile.hasOwnProperty('visible')){
 
-                if (typeof profile.visible !== 'boolean') {
+                if (typeof !!profile.visible !== 'boolean') {
                     return callback(badRequests.InvalidValue({value: profile.visible, param: 'visible'}));
                 }
 

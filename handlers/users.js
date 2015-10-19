@@ -435,7 +435,7 @@ var UserHandler = function (app, db) {
 
             if (options.hasOwnProperty('newFriends')){
 
-                if (typeof options.newFriends !== 'boolean') {
+                if (typeof !!options.newFriends !== 'boolean') {
                     return next(badRequests.InvalidValue({value: options.newFriends, param: 'newFriends'}));
                 }
 
@@ -444,7 +444,7 @@ var UserHandler = function (app, db) {
 
             if (options.hasOwnProperty('newMessages')){
 
-                if (typeof options.newMessages !== 'boolean') {
+                if (typeof !!options.newMessages !== 'boolean') {
                     return next(badRequests.InvalidValue({value: options.newMessages, param: 'newMessages'}));
                 }
 
