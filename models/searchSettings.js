@@ -14,7 +14,7 @@ module.exports = function (db) {
         },
         distance: {type: Number, default: 500 * 1609.344},
         relationship: [String],
-        smoker: {type: Boolean, default: false},
+        smoker: {type: String, default: CONSTANTS.SEARCH_SMOKER.NON_SMOKER},
         sexual: {
             type: String,
             default: CONSTANTS.SEXUAL.ANY

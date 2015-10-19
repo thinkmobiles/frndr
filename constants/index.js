@@ -35,6 +35,11 @@ module.exports = {
         FRIENDS: 8,
         FIND_USERS: 10
     },
+    SEARCH_SMOKER:{
+        ANY: 'Any',
+        SMOKER: 'Smoker',
+        NON_SMOKER: 'Non-Smoker'
+    },
     REG_EXP:{
         OBJECT_ID: new RegExp('(^[0-9a-fA-F]{24}$)')
     },
