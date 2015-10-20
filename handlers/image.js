@@ -234,6 +234,7 @@ var imageHandler = function (db) {
 
         var userId = req.session.uId;
         var avatarName;
+        var gallery;
 
         Image.findOne({user: userId}, function (err, imageModel) {
             if (err) {
@@ -245,6 +246,7 @@ var imageHandler = function (db) {
             }
 
             avatarName = imageModel.get('avatar');
+            gallery = imageModel.get('gallery');
 
             if (!avatarName) {
                 return res.status(200).send({success: 'There is no user avatar'});
@@ -257,6 +259,12 @@ var imageHandler = function (db) {
                     return next(err);
                 }
 
+                if (gallery.indexOf(avatarName) !== -1){
+
+                    return res.status(200).send({success: 'Avatar removed successfully'});
+
+                }
+
                 self.removeImageFile(avatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
                     if (err) {
                         return next(err);
@@ -264,6 +272,9 @@ var imageHandler = function (db) {
 
                     res.status(200).send({success: 'Avatar removed successfully'});
                 });
+
+
+
             });
         });
     };
@@ -527,6 +538,8 @@ var imageHandler = function (db) {
         var body = req.body;
         var uId = req.session.uId;
         var newAvatar;
+        var currentAvatar;
+        var currentGallery;
 
         if (!body.newAvatar) {
             return next(badRequests.NotEnParams({reqParams: 'newAvatar'}));
@@ -548,8 +561,22 @@ var imageHandler = function (db) {
                 return next(badRequests.DatabaseError());
             }
 
+            currentAvatar = imageModel.get('avatar');
+            currentGallery = imageModel.get('gallery');
 
-            res.status(200).send({success: 'Avatar changed successfully'});
+            if (currentGallery.indexOf(currentAvatar) !== -1){
+                return res.status(200).send({success: 'Avatar changed successfully'});
+            }
+
+            self.removeImageFile(currentAvatar, CONSTANTS.BUCKETS.IMAGES, function (err) {
+                if (err) {
+                    return next(err);
+                }
+
+                res.status(200).send({success: 'Avatar blabla successfully'});
+            });
+
+
         });
     };
 
