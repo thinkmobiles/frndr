@@ -28,6 +28,7 @@ var UserHandler = function (app, db) {
     var ObjectId = mongoose.Types.ObjectId;
     var imageHandler = new ImageHandler(db);
     var messageHandler = new MessageHandler(app, db);
+    var io = app.get('io');
 
     this.signInClient = function (req, res, next) {
 
@@ -742,6 +743,8 @@ var UserHandler = function (app, db) {
                 if (err) {
                     return next(err);
                 }
+
+                io.to(blockedId).emit('friend deleted', {friendId: userId});
 
                 res.status(200).send({success: 'User blocked successfully'});
             })
