@@ -467,8 +467,14 @@ module.exports = function (app, db) {
 
                                     //remove avatar from filesystem
                                     function (parallelCb) {
+
+                                        if (galleryArrayNames.indexOf(avatarName) !== -1){
+                                            return parallelCb();
+                                        }
+
                                         removeAvatar(avatarName, parallelCb);
                                     },
+
 
                                     //remove gallery photos from filesystem
                                     function (parallelCb) {

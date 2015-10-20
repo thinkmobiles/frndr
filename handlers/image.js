@@ -387,6 +387,8 @@ var imageHandler = function (db) {
 
         Image.findOne({user: userId}, function (err, imageModel) {
             var index;
+            var avatarName;
+            var removedPhotoName;
 
             if (err) {
                 return next(err);
@@ -396,6 +398,7 @@ var imageHandler = function (db) {
                 return next(badRequests.NotFound({target: 'gallery for current user'}));
             }
 
+            avatarName = imageModel.get('avatar');
             photoNames = imageModel.get('gallery');
 
             if (!photoNames.length) {
@@ -408,12 +411,16 @@ var imageHandler = function (db) {
                 return next(badRequests.NotFound({target: 'photo with such file name'}));
             }
 
-            photoNames.splice(index, 1);
+            removedPhotoName = photoNames.splice(index, 1);
             imageModel.gallery = photoNames;
 
             imageModel.save(function (err) {
                 if (err) {
                     return next(err);
+                }
+
+                if (removedPhotoName[0] === avatarName){
+                    return res.status(200).send({success: 'Image from gallery removed successfully'});
                 }
 
                 self.removeImageFile(imageName, CONSTANTS.BUCKETS.IMAGES, function (err) {
