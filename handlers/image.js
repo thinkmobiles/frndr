@@ -526,9 +526,6 @@ var imageHandler = function (db) {
 
         var body = req.body;
         var uId = req.session.uId;
-        var currentAvatar = '';
-        var gallery;
-        var index;
         var newAvatar;
 
         if (!body.newAvatar) {
@@ -541,36 +538,18 @@ var imageHandler = function (db) {
             return next(badRequests.InvalidValue({value: newAvatar, param: 'newAvatar'}));
         }
 
-        Image.findOne({user: uId}, function (err, imageModel) {
+        Image.findOneAndUpdate({user: uId}, {$set: {avatar: newAvatar}}, function (err, imageModel) {
 
             if (err) {
                 return next(err);
             }
 
             if (!imageModel) {
-
                 return next(badRequests.DatabaseError());
-
             }
 
-            gallery = imageModel.get('gallery');
 
-            if (imageModel && imageModel.avatar) {
-                currentAvatar = imageModel.get('avatar');
-                gallery.push(currentAvatar);
-            }
-
-            index = gallery.indexOf(newAvatar);
-
-            gallery.splice(index, 1);
-
-            imageModel.update({$set: {avatar: newAvatar, gallery: gallery}}, function (err) {
-                if (err) {
-                    return next(err);
-                }
-
-                res.status(200).send({success: 'Avatar changed successfully'});
-            });
+            res.status(200).send({success: 'Avatar changed successfully'});
         });
     };
 
