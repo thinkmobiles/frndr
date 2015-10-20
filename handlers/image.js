@@ -96,7 +96,7 @@ var imageHandler = function (db) {
 
         User
             .findOne({_id: uId})
-            .populate({path: 'images', select: 'avatar'})
+            .populate({path: 'images', select: 'avatar gallery'})
             .exec(function (err, userModel) {
                 if (err) {
                     return next(err);
@@ -133,11 +133,17 @@ var imageHandler = function (db) {
 
                     function (cb) {
                         var oldAvatarName;
+                        var galleryPhotoNames;
 
                         if (!userModel.images.avatar) {
                             return cb();
                         }
+                        galleryPhotoNames = userModel.images.gallery;
                         oldAvatarName = userModel.images.avatar;
+
+                        if (galleryPhotoNames.indexOf(oldAvatarName) !== -1){
+                            return cb();
+                        }
 
                         self.removeImageFile(oldAvatarName, CONSTANTS.BUCKETS.IMAGES, function (err) {
                             if (err) {
@@ -580,7 +586,7 @@ var imageHandler = function (db) {
                     return next(err);
                 }
 
-                res.status(200).send({success: 'Avatar blabla successfully'});
+                res.status(200).send({success: 'Avatar changed successfully'});
             });
 
 
