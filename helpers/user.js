@@ -31,6 +31,7 @@ module.exports = function (app, db) {
     var Contact = db.model('Contact');
     var imageHandler = new ImageHandler(db);
     var messageHandler = new MessageHandler(app, db);
+    var io = app.get('io');
 
     function removeAvatar(avatarName, callback) {
 
@@ -393,6 +394,10 @@ module.exports = function (app, db) {
                             async.each(userModels,
 
                                 function(userModel, eachCb){
+
+                                    if (userModel.userId !== userId){
+                                        io.to(userModel.friendId).emit('friend deleted', {friendId: userId});
+                                    }
 
                                     userModel.remove(function(err){
                                         if (err){
