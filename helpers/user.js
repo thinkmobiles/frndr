@@ -396,7 +396,8 @@ module.exports = function (app, db) {
                                 function(userModel, eachCb){
 
                                     if (userModel.userId !== userId){
-                                        io.to(userModel.friendId).emit('friend deleted', {friendId: userId});
+                                        io.to(userModel.userId).emit('friend deleted', {friendId: userId});
+                                        console.log('>>> friend with id: ' + userId + ' deleted. Socket event');
                                     }
 
                                     userModel.remove(function(err){
