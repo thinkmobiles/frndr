@@ -634,7 +634,7 @@ var UserHandler = function (app, db) {
                                         newFriend = true;
                                         date = becomesFriendDate;
                                     } else {
-                                        msg = 'You have clear all messages with this friend';
+                                        msg = 'You have no active chats with this friend';
                                     }
                                 } else {
                                     msg = messageModelsArray[0].get('text');
