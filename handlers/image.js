@@ -552,7 +552,6 @@ var imageHandler = function (db) {
         var uId = req.session.uId;
         var newAvatar;
         var currentAvatar;
-        var currentGallery;
 
         if (!body.newAvatar) {
             return next(badRequests.NotEnParams({reqParams: 'newAvatar'}));
@@ -575,29 +574,15 @@ var imageHandler = function (db) {
             }
 
             currentAvatar = imageModel.get('avatar');
-            currentGallery = imageModel.get('gallery');
 
-            if (currentGallery.indexOf(currentAvatar) !== -1){
-                imageModel
-                    .update({$set: {avatar: newAvatar}}, function(err) {
-                        if (err) {
-                            return next(err);
-                        }
+            imageModel
+                .update({$set: {avatar: newAvatar}, $addToSet: {gallery: currentAvatar}}, function(err) {
+                    if (err) {
+                        return next(err);
+                    }
 
-                        res.status(200).send({success: 'Avatar changed successfully'});
-                    });
-            } else {
-
-                imageModel
-                    .update({$set: {avatar: newAvatar}, $addToSet: {gallery: currentAvatar}}, function(err) {
-                        if (err) {
-                            return next(err);
-                        }
-
-                        res.status(200).send({success: 'Avatar changed successfully'});
-                    });
-            }
-
+                    res.status(200).send({success: 'Avatar changed successfully'});
+                });
         });
     };
 
