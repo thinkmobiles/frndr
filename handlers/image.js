@@ -564,7 +564,7 @@ var imageHandler = function (db) {
             return next(badRequests.InvalidValue({value: newAvatar, param: 'newAvatar'}));
         }
 
-        Image.findOneAndUpdate({user: uId}, {$set: {avatar: newAvatar}}, function (err, imageModel) {
+        Image.findOne({user: uId}, function (err, imageModel) {
 
             if (err) {
                 return next(err);
@@ -578,17 +578,25 @@ var imageHandler = function (db) {
             currentGallery = imageModel.get('gallery');
 
             if (currentGallery.indexOf(currentAvatar) !== -1){
-                return res.status(200).send({success: 'Avatar changed successfully'});
+                imageModel
+                    .update({$set: {avatar: newAvatar}}, function(err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        res.status(200).send({success: 'Avatar changed successfully'});
+                    });
+            } else {
+
+                imageModel
+                    .update({$set: {avatar: newAvatar}, $addToSet: {gallery: currentAvatar}}, function(err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        res.status(200).send({success: 'Avatar changed successfully'});
+                    });
             }
-
-            self.removeImageFile(currentAvatar, CONSTANTS.BUCKETS.IMAGES, function (err) {
-                if (err) {
-                    return next(err);
-                }
-
-                res.status(200).send({success: 'Avatar changed successfully'});
-            });
-
 
         });
     };
