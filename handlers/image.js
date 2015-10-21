@@ -564,6 +564,7 @@ var imageHandler = function (db) {
         }
 
         Image.findOne({user: uId}, function (err, imageModel) {
+            var updateObj;
 
             if (err) {
                 return next(err);
@@ -575,8 +576,19 @@ var imageHandler = function (db) {
 
             currentAvatar = imageModel.get('avatar');
 
+            if (currentAvatar){
+                updateObj = {
+                    $set: {avatar: newAvatar},
+                    $addToSet: {gallery: currentAvatar}
+                };
+            } else {
+                updateObj = {
+                    $set: {avatar: newAvatar}
+                };
+            }
+
             imageModel
-                .update({$set: {avatar: newAvatar}, $addToSet: {gallery: currentAvatar}}, function(err) {
+                .update(updateObj, function(err) {
                     if (err) {
                         return next(err);
                     }
