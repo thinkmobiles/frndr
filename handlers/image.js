@@ -62,14 +62,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/avatar`__
          *
          * This __method__ allows upload _User_ avatar
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/avatar
+         *         146.148.120.34:8859/image/avatar
          *
          * @example Body example:
          *
@@ -170,20 +170,20 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/avatar`__
          *
          * This __method__ allows get _User_ avatar
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/avatar
+         *         146.148.120.34:8859/image/avatar
          *
          * @example Response example:
          *
          *   {
          *     "fileName": "55f91b11233e6ae311af1ca1",
-         *     "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/55f91b11233e6ae311af1ca1.png"
+         *     "url": "146.148.120.34:8859/uploads/development/images/55f91b11233e6ae311af1ca1.png"
          *   }
          *
          * @method getAvatarUrl
@@ -224,14 +224,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/avatar`__
          *
          * This __method__ allows delete _User_ avatar
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/avatar
+         *         146.148.120.34:8859/image/avatar
          *
          *
          * @method removeAvatar
@@ -292,14 +292,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/photo`__
          *
          * This __method__ allows upload _User_ photo to gallery
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/photo
+         *         146.148.120.34:8859/image/photo
          *
          * @example Body example:
          *
@@ -370,14 +370,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/photo`__
          *
          * This __method__ allows delete _User_ photo from gallery
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/photo
+         *         146.148.120.34:8859/image/photo
          *
          * @example Body example:
          *
@@ -458,14 +458,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/photo`__
          *
          * This __method__ allows get _User's_ photos from gallery
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/photo
+         *         146.148.120.34:8859/image/photo
          *
          * @example Response example:
          *
@@ -473,7 +473,7 @@ var imageHandler = function (db) {
          *       "urls": [
          *                  {
          *                      "fileName":"55f8300013f2901e421b026a",
-         *                      "url":"http://projects.thinkmobiles.com:8859/uploads/development/images/55f8300013f2901e421b026a.png"
+         *                      "url":"146.148.120.34:8859/uploads/development/images/55f8300013f2901e421b026a.png"
          *                  }
          *               ]
          *   }
@@ -529,14 +529,14 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/avatar`__
          *
          * This __method__ allows change _User's_ avatar with gallery photo
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/avatar
+         *         146.148.120.34:8859/image/avatar
          *
          * @example Body example:
          *
@@ -605,34 +605,34 @@ var imageHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/image/managePhotos`__
          *
          * This __method__ allows get _User's_ avatar and photos from gallery
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/image/managePhotos
+         *         146.148.120.34:8859/image/managePhotos
          *
          * @example Response example:
          *
          *   {
          *      "avatar": {
          *          "fileName": "56094a45ef04ea9c1eca9005",
-         *          "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56094a45ef04ea9c1eca9005.png"
+         *          "url": "146.148.120.34:8859/uploads/development/images/56094a45ef04ea9c1eca9005.png"
          *      },
          *      "gallery": [
          *          {
          *              "fileName": "5609348e9e7dae241fd45ae7",
-         *              "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/5609348e9e7dae241fd45ae7.png"
+         *              "url": "146.148.120.34:8859/uploads/development/images/5609348e9e7dae241fd45ae7.png"
          *          },
          *          {
          *              "fileName": "560a3b53c55d98e418a22af1",
-         *              "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/560a3b53c55d98e418a22af1.png"
+         *              "url": "146.148.120.34:8859/uploads/development/images/560a3b53c55d98e418a22af1.png"
          *          },
          *          {
          *              "fileName": "560a3b98c55d98e418a22af2",
-         *              "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/560a3b98c55d98e418a22af2.png"
+         *              "url": "146.148.120.34:8859/uploads/development/images/560a3b98c55d98e418a22af2.png"
          *          }
          *      ]
          *   }

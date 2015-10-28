@@ -37,14 +37,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/signIn`__
          *
          * This __method__ allows signIn _User_
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/signIn
+         *         146.148.120.34:8859/signIn
          *
          * @example Body example:
          *
@@ -129,14 +129,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/signOut`__
          *
          * This __method__ allows signOut _User_
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/signOut
+         *         146.148.120.34:8859/signOut
          *
          * @method signOutClient
          * @instance
@@ -172,7 +172,7 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users/pushToken`__
          *
@@ -187,7 +187,7 @@ var UserHandler = function (app, db) {
          *  }
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/pushToken
+         *         146.148.120.34:8859/users/pushToken
          *
          * @param {string} pushToken - Token for sending Push Notifications
          * @param {string} os - Type of device operation system
@@ -223,14 +223,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows get _User_ profile
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users
+         *         146.148.120.34:8859/users
          *
          * @example Response example:
          *
@@ -296,14 +296,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows delete _User_ account
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users
+         *         146.148.120.34:8859/users
          *
          *
          * @method deleteCurrentUser
@@ -343,14 +343,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users`__
          *
          * This __method__ allows update _User_ profile
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users
+         *         146.148.120.34:8859/users
          *
          * @example Body example:
          *
@@ -398,14 +398,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users/notifications`__
          *
          * This __method__ allows update _User's_ notification settings
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/notifications
+         *         146.148.120.34:8859/users/notifications
          *
          * @example Body example:
          *
@@ -471,21 +471,21 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `users/find/:page?`__
          *
          * This __method__ allows find nearest `FRNDR` user's to current _User_
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/find/2
+         *         146.148.120.34:8859/users/find/2
          *
          * @example Response example:
          *
          * [
          *   {
          *      "userId": "560919c349d6a608179610c5",
-         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/560919cb49d6a608179610c7.png",
+         *      "avatar": "146.148.120.34:8859/uploads/development/images/560919cb49d6a608179610c7.png",
          *      "name": "Petrovich",
          *      "age": 25,
          *      "distance": 0,
@@ -499,7 +499,7 @@ var UserHandler = function (app, db) {
          *      ],
          *      "bio": "Some biography",
          *      "gallery": [
-         *          "http://projects.thinkmobiles.com:8859/uploads/development/images/560919cd49d6a608179610c8.png"
+         *          "146.148.120.34:8859/uploads/development/images/560919cd49d6a608179610c8.png"
          *      ]
          *   }
          * ]
@@ -534,14 +534,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users/friendList/:page?`__
          *
          * This __method__ allows to get _User's_ friends list
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/friendList
+         *         146.148.120.34:8859/users/friendList
          *
          * @example Response example:
          *
@@ -557,7 +557,7 @@ var UserHandler = function (app, db) {
          *  },
          *  {
          *      "name": "",
-         *      "avatar": "http://projects.thinkmobiles.com:8859/uploads/development/images/56128ef4a4dce4a001e17a49.png",
+         *      "avatar": "146.148.120.34:8859/uploads/development/images/56128ef4a4dce4a001e17a49.png",
          *      "friendId": "560e908d70578cec1c8641fc",
          *      "newFriend": true,
          *      "message": "New friend. Say Hello.",
@@ -714,14 +714,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users/blockFriend/:id`__
          *
          * This __method__ allows block _User's_ friend
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/blockFriend/55f938010bc036b01945f1e7
+         *         146.148.120.34:8859/users/blockFriend/55f938010bc036b01945f1e7
          *
          * @method blockFriend
          * @instance
@@ -757,14 +757,14 @@ var UserHandler = function (app, db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users/friendProfile/:id`__
          *
          * This __method__ allows get _friends profile_
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/friendProfile/5603acdcbc68399017c2c3e3
+         *         146.148.120.34:8859/users/friendProfile/5603acdcbc68399017c2c3e3
          *
          * @example Response example:
          *
@@ -773,20 +773,20 @@ var UserHandler = function (app, db) {
          *      "images": {
          *          "avatar": {
          *              "fileName": "56091c0c49d6a608179610df",
-         *              "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c0c49d6a608179610df.png"
+         *              "url": "146.148.120.34:8859/uploads/development/images/56091c0c49d6a608179610df.png"
          *          },
          *          "gallery": [
          *              {
          *                  "fileName": "56091c1049d6a608179610e0",
-         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1049d6a608179610e0.png"
+         *                  "url": "146.148.120.34:8859/uploads/development/images/56091c1049d6a608179610e0.png"
          *              },
          *              {
          *                  "fileName": "56091c1149d6a608179610e1",
-         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e1.png"
+         *                  "url": "146.148.120.34:8859/uploads/development/images/56091c1149d6a608179610e1.png"
          *              },
          *              {
          *                  "fileName": "56091c1149d6a608179610e2",
-         *                  "url": "http://projects.thinkmobiles.com:8859/uploads/development/images/56091c1149d6a608179610e2.png"
+         *                  "url": "146.148.120.34:8859/uploads/development/images/56091c1149d6a608179610e2.png"
          *              }
          *          ]
          *      },

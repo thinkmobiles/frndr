@@ -1,5 +1,3 @@
-'use strict';
-
 var socketEvents = function (app) {
 
     'use strict';
@@ -14,7 +12,6 @@ var socketEvents = function (app) {
         socket.emit('connectedToServer', {success: true});
 
         socket.on('authorize', function (userId){
-            console.log('>>> User with userId: ' + userId + ' connected to socket ' + socket.id);
             socket.join(userId);
         });
 
@@ -28,7 +25,6 @@ var socketEvents = function (app) {
                         return console.log(err);
                     }
 
-                    console.log('>>> message read successfull');
                 });
 
         });
@@ -42,13 +38,9 @@ var socketEvents = function (app) {
                         return console.log(err);
                     }
 
-                    console.log('>>> last message was removed');
                 });
         });
 
-        socket.on('disconnect', function(){
-            console.log('>>> socket ' + socket.id + ' disconnected');
-        });
     });
 };
 

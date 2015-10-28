@@ -16,10 +16,7 @@ module.exports = function () {
     var MongoStore = require('connect-mongo')(session);
 
     if (!process.env.NODE_ENV) {
-        //TODO change NODE_ENV for production server
-        //process.env.NODE_ENV = 'test';
-        process.env.NODE_ENV = 'development';
-        //process.env.NODE_ENV = 'production';
+        process.env.NODE_ENV = 'production';
     }
 
     if (process.env.NODE_ENV === 'production') {

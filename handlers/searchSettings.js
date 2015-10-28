@@ -84,14 +84,14 @@ var SearchSettingsHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users/searchSettings`__
          *
          * This __method__ allows get _User_ searchSettings
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/searchSettings
+         *         146.148.120.34:8859/users/searchSettings
          *
          * @example Response example:
          * {
@@ -133,14 +133,14 @@ var SearchSettingsHandler = function (db) {
          *
          * __Content-Type__ `application/json`
          *
-         * __HOST: `http://projects.thinkmobiles.com:8859`__
+         * __HOST: `146.148.120.34:8859`__
          *
          * __URL: `/users/searchSettings`__
          *
          * This __method__ allows update _User's_ searchSettings
          *
          * @example Request example:
-         *         http://projects.thinkmobiles.com:8859/users/searchSettings
+         *         146.148.120.34:8859/users/searchSettings
          *
          * @example Body example:
          * {
