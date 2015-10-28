@@ -8,6 +8,3 @@ process.env.PORT = '8859';
 
 process.env.UPLOADER_TYPE = 'FileSystem';
 process.env.FILESYSTEM_BUCKET = 'public/uploads/' + process.env.NODE_ENV.toLowerCase();
-
-
-
