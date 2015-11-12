@@ -90,7 +90,7 @@ module.exports = function (app, db) {
                 userModel.profile.name = profile.name;
             }
 
-            if (profile.age){
+            if (profile.hasOwnProperty('age')){
 
                 if (isNaN(profile.age) || profile.age > CONSTANTS.AGE.MAX_AGE || profile.age < CONSTANTS.AGE.MIN_AGE) {
                     return callback(badRequests.InvalidValue({value: profile.age, param: 'age'}));
